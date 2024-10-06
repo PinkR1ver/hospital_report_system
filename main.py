@@ -16,7 +16,7 @@ def get_download_link(data, filename, text):
 
 if __name__ == "__main__":
 
-    st.set_page_config(page_title=" Vestibular Function Test Report", page_icon="🧊")
+    st.set_page_config(page_title="Vestibular Function Test Report", page_icon="🧊")
     
     st.title("前庭功能检测报告单")
 
