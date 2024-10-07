@@ -6,6 +6,7 @@ from datetime import date
 import os
 import subprocess
 import hashlib
+import babel.numbers
 
 class VestibularFunctionReport:
     def __init__(self, master):
