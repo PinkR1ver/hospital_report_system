@@ -1,0 +1,5 @@
+/arch
+/build
+/dist
+*.xlsx
+/_pycache_
