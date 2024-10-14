@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
+from datetime import datetime
 
 class BasicInfoPage(ttk.Frame):
     def __init__(self, master, controller):
@@ -37,7 +38,9 @@ class BasicInfoPage(ttk.Frame):
 
         # 出生日期
         ttk.Label(patient_info_frame, text="出生日期:").grid(row=1, column=2, sticky=tk.E, padx=5, pady=5)
-        self.birth_date = DateEntry(patient_info_frame, width=12, background='darkblue', foreground='white', borderwidth=2, date_pattern='yyyy/mm/dd')
+        self.birth_date = DateEntry(patient_info_frame, width=12, background='darkblue', foreground='white', 
+                                    borderwidth=2, date_pattern='yyyy/mm/dd', showweeknumbers=False)
+        self.birth_date.delete(0, tk.END)  # 删除默认日期
         self.birth_date.grid(row=1, column=3, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 检查信息部分
@@ -72,13 +75,16 @@ class BasicInfoPage(ttk.Frame):
         self.equipment_combobox.grid(row=1, column=3, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):
+        birth_date = self.birth_date.get_date() if self.birth_date.get() else None
         return {
-            "ID": self.id_entry.get(),
-            "姓名": self.name_entry.get(),
-            "性别": self.gender_var.get(),
-            "出生日期": self.birth_date.get_date().strftime("%Y/%m/%d"),
-            "检查项目": self.exam_type_var.get(),
-            "检查时间": self.exam_date.get_date().strftime("%Y/%m/%d"),
-            "检查医生": self.doctor_var.get(),
-            "检查设备": self.equipment_var.get()
+            "基本信息": {
+                "ID": self.id_entry.get(),
+                "姓名": self.name_entry.get(),
+                "性别": self.gender_var.get(),
+                "出生日期": birth_date.strftime("%Y/%m/%d") if birth_date else "",
+                "检查项目": self.exam_type_var.get(),
+                "检查时间": self.exam_date.get_date().strftime("%Y/%m/%d"),
+                "检查医生": self.doctor_var.get(),
+                "检查设备": self.equipment_var.get()
+            }
         }
