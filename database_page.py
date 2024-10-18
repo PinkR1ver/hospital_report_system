@@ -8,6 +8,7 @@ class DatabasePage(ttk.Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
+        self.db_path = self.controller.db_path
         self.create_widgets()
 
     def create_widgets(self):
@@ -43,14 +44,39 @@ class DatabasePage(ttk.Frame):
         ttk.Button(button_frame, text="查看详情", command=self.view_report).grid(row=0, column=0, padx=(0, 5))
         ttk.Button(button_frame, text="编辑报告", command=self.edit_report).grid(row=0, column=1, padx=(0, 5))
         ttk.Button(button_frame, text="删除报告", command=self.delete_report).grid(row=0, column=2)
+        
+        # 添加滚动条
+        scrollbar = ttk.Scrollbar(main_frame, orient=tk.VERTICAL, command=self.report_tree.yview)
+        scrollbar.grid(row=1, column=1, sticky=(tk.N, tk.S))
+        self.report_tree.configure(yscrollcommand=scrollbar.set)
+        
+        ttk.Button(button_frame, text="刷新列表", command=self.load_reports).grid(row=0, column=3, padx=(5, 0))
 
         # 加载报告数据
         self.load_reports()
 
     def load_reports(self):
-        # 从数据库文件夹加载所有报告
-        # 这里需要实现从文件系统读取报告的逻辑
-        pass
+        self.report_tree.delete(*self.report_tree.get_children())  # 清空现有的报告列表
+        report_folder = os.path.join(self.db_path, "report")
+        
+        for date_folder in os.listdir(report_folder):
+            date_path = os.path.join(report_folder, date_folder)
+            if os.path.isdir(date_path):
+                for report_file in os.listdir(date_path):
+                    if report_file.endswith('.json'):
+                        file_path = os.path.join(date_path, report_file)
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                        
+                        basic_info = data.get("基本信息", {})
+                        patient_id = basic_info.get("ID", "未知")
+                        name = basic_info.get("姓名", "未知")
+                        exam_time = basic_info.get("检查时间", "未知")
+                        
+                        self.report_tree.insert("", "end", values=(patient_id, name, exam_time), tags=(file_path,))
+
+        # 按检查时间排序
+        self.report_tree.set_children('', sorted(self.report_tree.get_children(''), key=lambda x: self.report_tree.item(x)['values'][2], reverse=True))
 
     def search_reports(self):
         # 实现搜索功能
