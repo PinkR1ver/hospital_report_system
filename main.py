@@ -5,6 +5,9 @@ import os
 import shutil
 from datetime import datetime
 import subprocess
+import platform
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 # 导入所有页面
 from basic_info_page import BasicInfoPage
@@ -202,14 +205,48 @@ class VestibularFunctionReport:
         try:
             with open(self.config_file, 'r') as f:
                 config = json.load(f)
-                self.db_path = config.get('db_path')
         except FileNotFoundError:
+            # create empty config file
+            with open(self.config_file, 'w') as f:
+                json.dump({}, f)
+                
+        self.load_database_path()
+        self.load_fonts()
+        self.save_config()
+        
+    def load_database_path(self):
+        config = json.load(open(self.config_file, 'r'))
+        try:
+            self.db_path = config['db_path']
+            if not os.path.exists(self.db_path):
+                os.makedirs(self.db_path, exist_ok=True)
+        except Exception as e:
             self.db_path = os.path.join(os.getcwd(), "vest_database")
-            os.makedirs(self.db_path, exist_ok=True)
-            self.save_config()
+            if not os.path.exists(self.db_path):
+                os.makedirs(self.db_path, exist_ok=True)
+        
+    def load_fonts(self):
+        config = json.load(open(self.config_file, 'r'))
+        try:
+            ttfont = TTFont(config['font_name'], config['font_path'])
+            self.font_name = config['font_name']
+            self.font_path = config['font_path']
+            pdfmetrics.registerFont(ttfont)
+        except Exception as e:
+            font_name = "SimSun"
+            font_path = os.path.join(os.getcwd(), "SIMSUN.ttf")
+            
+            try:
+                pdfmetrics.registerFont(TTFont(font_name, font_path))
+                self.font_name = font_name
+                self.font_path = font_path
+            except Exception as e:
+                messagebox.showerror("错误", f"无法加载字体: {e}\n将使用默认字体。")
+                self.font_name = None
+                self.font_path = None
 
     def save_config(self):
-        config = {'db_path': self.db_path}
+        config = {'db_path': self.db_path, 'font_name': self.font_name, 'font_path': self.font_path}
         with open(self.config_file, 'w') as f:
             json.dump(config, f)
 
@@ -222,10 +259,12 @@ class VestibularFunctionReport:
             
     def open_db_folder(self):
         if os.path.exists(self.db_path):
-            if os.name == 'nt':  # Windows
+            if platform.system() == "Windows":
                 os.startfile(self.db_path)
-            elif os.name == 'posix':  # macOS and Linux
-                subprocess.call(['open', self.db_path])
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.call(["open", self.db_path])
+            else:  # Linux和其他类Unix系统
+                subprocess.call(["xdg-open", self.db_path])
         else:
             messagebox.showerror("错误", f"数据库文件夹不存在: {self.db_path}")
 

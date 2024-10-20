@@ -3,13 +3,25 @@ from tkinter import ttk, messagebox
 import json
 import os
 from datetime import datetime
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+import tempfile
+import subprocess
+import platform
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 class DatabasePage(ttk.Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
         self.db_path = self.controller.db_path
+        self.config_file = self.controller.config_file
+        self.load_config()
         self.create_widgets()
+
 
     def create_widgets(self):
         # 创建主框架
@@ -76,15 +88,82 @@ class DatabasePage(ttk.Frame):
                         self.report_tree.insert("", "end", values=(patient_id, name, exam_time), tags=(file_path,))
 
         # 按检查时间排序
-        self.report_tree.set_children('', sorted(self.report_tree.get_children(''), key=lambda x: self.report_tree.item(x)['values'][2], reverse=True))
+        # self.report_tree.set_children('', sorted(self.report_tree.get_children(''), key=lambda x: self.report_tree.item(x)['values'][2], reverse=True))
 
     def search_reports(self):
         # 实现搜索功能
         pass
 
     def view_report(self):
-        # 查看选中报告的详细信息
-        pass
+        selected_item = self.report_tree.selection()
+        if not selected_item:
+            messagebox.showwarning("警告", "请先选择一个报告")
+            return
+
+        file_path = self.report_tree.item(selected_item)['tags'][0]
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # 创建一个临时文件来保存PDF
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            pdf_path = tmp_file.name
+
+        # 创建PDF文档
+        doc = SimpleDocTemplate(pdf_path, pagesize=letter)
+        elements = []
+        styles = getSampleStyleSheet()
+        
+        pdfmetrics.registerFont(TTFont(self.font_name, self.font_path))
+        styles['Title'].fontName = self.font_name
+        styles['Heading2'].fontName = self.font_name
+        styles['Normal'].fontName = self.font_name
+
+        # 添加标题
+        elements.append(Paragraph("前庭功能检查报告", styles['Title']))
+        elements.append(Spacer(1, 12))
+
+        # 遍历所有检查项目
+        for test_name, test_data in data.items():
+            if isinstance(test_data, dict) and any(test_data.values()):
+                elements.append(Paragraph(test_name, styles['Heading2']))
+                elements.append(Spacer(1, 6))
+
+                table_data = []
+                for key, value in test_data.items():
+                    if value:  # 只添加非空值
+                        table_data.append([key, str(value)])
+
+                if table_data:
+                    t = Table(table_data)
+                    t.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'SimSun'),
+                        ('FONTSIZE', (0, 0), (-1, 0), 14),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                        ('FONTNAME', (0, 1), (-1, -1), 'SimSun'),
+                        ('FONTSIZE', (0, 1), (-1, -1), 12),
+                        ('TOPPADDING', (0, 1), (-1, -1), 6),
+                        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+                    ]))
+                    elements.append(t)
+                    elements.append(Spacer(1, 12))
+
+        # 生成PDF
+        doc.build(elements)
+
+        # 打开生成的PDF文件
+        if platform.system() == "Windows":
+            os.startfile(pdf_path)
+        elif platform.system() == "Darwin":  # macOS
+            subprocess.call(["open", pdf_path])
+        else:  # Linux和其他类Unix系统
+            subprocess.call(["xdg-open", pdf_path])
 
     def edit_report(self):
         # 编辑选中的报告
@@ -93,3 +172,11 @@ class DatabasePage(ttk.Frame):
     def delete_report(self):
         # 删除选中的报告
         pass
+    
+    def load_config(self):
+        config = json.load(open(self.config_file, 'r'))
+        self.font_name = config['font_name']
+        self.font_path = config['font_path']
+    
+    def get_data(self):
+        return {}

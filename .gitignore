@@ -3,3 +3,4 @@
 /dist
 *.xlsx
 /_pycache_
+config.json
