@@ -119,36 +119,35 @@ class DatabasePage(ttk.Frame):
         elements.append(Paragraph("前庭功能检查报告", styles['Title']))
         elements.append(Spacer(1, 12))
 
-        def add_table(data, level=0):
+        def add_table(data):
             table_data = []
             for key, value in data.items():
                 if isinstance(value, dict):
                     table_data.append([Paragraph(key, styles['Heading2']), ''])
-                    table_data.extend(add_table(value, level+1))
+                    table_data.extend(add_table(value))
                 elif value:
                     table_data.append([Paragraph(key, styles['Normal']), Paragraph(str(value), styles['Normal'])])
             
             if table_data:
                 t = Table(table_data, colWidths=[doc.width/2.5, doc.width/2.5])
                 t.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                     ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                     ('FONTNAME', (0, 0), (-1, -1), self.font_name),
                     ('FONTSIZE', (0, 0), (-1, -1), 10),
                     ('TOPPADDING', (0, 0), (-1, -1), 3),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('LEFTPADDING', (0, 0), (-1, -1), 6 + level * 10),
                 ]))
-                return [t]
-            return []
+                return t
+            return None
 
         for test_name, test_data in data.items():
             elements.append(Paragraph(test_name, styles['Heading2']))
             elements.append(Spacer(1, 6))
             if isinstance(test_data, dict):
-                elements.extend(add_table(test_data))
+                table = add_table(test_data)
+                if table:
+                    elements.append(table)
             elements.append(Spacer(1, 12))
 
         doc.build(elements)
