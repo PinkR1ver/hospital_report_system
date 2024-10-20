@@ -61,24 +61,20 @@ class OVEMPTestPage(ttk.Frame):
     def get_data(self):
         data = {
             "眼肌前庭诱发肌源性电位 (oVEMP)": {
-                "右耳": {
-                    "声强阈值 (分贝)": self.right_threshold_var.get(),
-                    "N10波潜伏期 (毫秒)": self.right_n10_latency_var.get(),
-                    "P15波潜伏期 (毫秒)": self.right_p15_latency_var.get(),
-                    "N10-P15波间期 (毫秒)": self.right_n10_p15_interval_var.get(),
-                    "N10波振幅 (微伏)": self.right_n10_amplitude_var.get(),
-                    "P15波振幅 (微伏)": self.right_p15_amplitude_var.get(),
-                    "N10-P15波振幅 (微伏)": self.right_n10_p15_amplitude_var.get()
-                },
-                "左耳": {
-                    "声强阈值 (分贝)": self.left_threshold_var.get(),
-                    "N10波潜伏期 (毫秒)": self.left_n10_latency_var.get(),
-                    "P15波潜伏期 (毫秒)": self.left_p15_latency_var.get(),
-                    "N10-P15波间期 (毫秒)": self.left_n10_p15_interval_var.get(),
-                    "N10波振幅 (微伏)": self.left_n10_amplitude_var.get(),
-                    "P15波振幅 (微伏)": self.left_p15_amplitude_var.get(),
-                    "N10-P15波振幅 (微伏)": self.left_n10_p15_amplitude_var.get()
-                },
+                "右耳声强阈值 (分贝)": self.right_threshold_var.get(),
+                "右耳N10波潜伏期 (毫秒)": self.right_n10_latency_var.get(),
+                "右耳P15波潜伏期 (毫秒)": self.right_p15_latency_var.get(),
+                "右耳N10-P15波间期 (毫秒)": self.right_n10_p15_interval_var.get(),
+                "右耳N10波振幅 (微伏)": self.right_n10_amplitude_var.get(),
+                "右耳P15波振幅 (微伏)": self.right_p15_amplitude_var.get(),
+                "右耳N10-P15波振幅 (微伏)": self.right_n10_p15_amplitude_var.get(),
+                "左耳声强阈值 (分贝)": self.left_threshold_var.get(),
+                "左耳N10波潜伏期 (毫秒)": self.left_n10_latency_var.get(),
+                "左耳P15波潜伏期 (毫秒)": self.left_p15_latency_var.get(),
+                "左耳N10-P15波间期 (毫秒)": self.left_n10_p15_interval_var.get(),
+                "左耳N10波振幅 (微伏)": self.left_n10_amplitude_var.get(),
+                "左耳P15波振幅 (微伏)": self.left_p15_amplitude_var.get(),
+                "左耳N10-P15波振幅 (微伏)": self.left_n10_p15_amplitude_var.get(),
                 "oVEMP耳间不对称性 (%)": self.asymmetry_var.get(),
                 "检查结果": self.result_var.get()
             }

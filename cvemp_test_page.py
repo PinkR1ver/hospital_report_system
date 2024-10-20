@@ -61,24 +61,20 @@ class CVEMPTestPage(ttk.Frame):
     def get_data(self):
         data = {
             "颈肌前庭诱发肌源性电位 (cVEMP)": {
-                "右耳": {
-                    "声强阈值 (分贝)": self.right_threshold_var.get(),
-                    "P13波潜伏期 (毫秒)": self.right_p13_latency_var.get(),
-                    "N23波潜伏期 (毫秒)": self.right_n23_latency_var.get(),
-                    "P13-N23波间期 (毫秒)": self.right_p13_n23_interval_var.get(),
-                    "P13波振幅 (微伏)": self.right_p13_amplitude_var.get(),
-                    "N23波振幅 (微伏)": self.right_n23_amplitude_var.get(),
-                    "P13-N23波振幅 (微伏)": self.right_p13_n23_amplitude_var.get()
-                },
-                "左耳": {
-                    "声强阈值 (分贝)": self.left_threshold_var.get(),
-                    "P13波潜伏期 (毫秒)": self.left_p13_latency_var.get(),
-                    "N23波潜伏期 (毫秒)": self.left_n23_latency_var.get(),
-                    "P13-N23波间期 (毫秒)": self.left_p13_n23_interval_var.get(),
-                    "P13波振幅 (微伏)": self.left_p13_amplitude_var.get(),
-                    "N23波振幅 (微伏)": self.left_n23_amplitude_var.get(),
-                    "P13-N23波振幅 (微伏)": self.left_p13_n23_amplitude_var.get()
-                },
+                "右耳声强阈值 (分贝)": self.right_threshold_var.get(),
+                "右耳P13波潜伏期 (毫秒)": self.right_p13_latency_var.get(),
+                "右耳N23波潜伏期 (毫秒)": self.right_n23_latency_var.get(),
+                "右耳P13-N23波间期 (毫秒)": self.right_p13_n23_interval_var.get(),
+                "右耳P13波振幅 (微伏)": self.right_p13_amplitude_var.get(),
+                "右耳N23波振幅 (微伏)": self.right_n23_amplitude_var.get(),
+                "右耳P13-N23波振幅 (微伏)": self.right_p13_n23_amplitude_var.get(),
+                "左耳声强阈值 (分贝)": self.left_threshold_var.get(),
+                "左耳P13波潜伏期 (毫秒)": self.left_p13_latency_var.get(),
+                "左耳N23波潜伏期 (毫秒)": self.left_n23_latency_var.get(),
+                "左耳P13-N23波间期 (毫秒)": self.left_p13_n23_interval_var.get(),
+                "左耳P13波振幅 (微伏)": self.left_p13_amplitude_var.get(),
+                "左耳N23波振幅 (微伏)": self.left_n23_amplitude_var.get(),
+                "左耳P13-N23波振幅 (微伏)": self.left_p13_n23_amplitude_var.get(),
                 "cVEMP耳间不对称性 (%)": self.asymmetry_var.get(),
                 "检查结果": self.result_var.get()
             }

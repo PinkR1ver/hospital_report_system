@@ -2,5 +2,5 @@
 /build
 /dist
 *.xlsx
-/_pycache_
+/__pycache__
 config.json
