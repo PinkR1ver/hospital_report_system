@@ -97,3 +97,30 @@ class HeadImpulseTestPage(ttk.Frame):
                 "头脉冲试验检查结果": self.hit_result_var.get()
             }
         }
+
+    def set_data(self, data):
+        canals = [
+            ("左外半规管", "vor_left_lateral", "pr_left_lateral"),
+            ("右外半规管", "vor_right_lateral", "pr_right_lateral"),
+            ("左前半规管", "vor_left_anterior", "pr_left_anterior"),
+            ("右后半规管", "vor_right_posterior", "pr_right_posterior"),
+            ("左后半规管", "vor_left_posterior", "pr_left_posterior"),
+            ("右前半规管", "vor_right_anterior", "pr_right_anterior")
+        ]
+        
+        for canal_name, vor_attr, pr_attr in canals:
+            getattr(self, vor_attr).delete(0, tk.END)
+            getattr(self, vor_attr).insert(0, data.get(f"VOR增益 ({canal_name})", ""))
+            getattr(self, pr_attr).delete(0, tk.END)
+            getattr(self, pr_attr).insert(0, data.get(f"PR分数 ({canal_name})", ""))
+        
+        self.hit_suppression_var.set(data.get("头脉冲试验性眼跳抑制", ""))
+        
+        if data.get("头脉冲试验示意图"):
+            self.image_path = data.get("头脉冲试验示意图")
+            self.image_button.config(text="图片已选择")
+        else:
+            self.image_path = ""
+            self.image_button.config(text="选择图片")
+        
+        self.hit_result_var.set(data.get("头脉冲试验检查结果", ""))

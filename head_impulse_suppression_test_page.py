@@ -61,3 +61,20 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
                 "头脉冲抑制试验检查结果": self.test_result.get()
             }
         }
+
+    def set_data(self, data):
+        self.left_gain.delete(0, tk.END)
+        self.left_gain.insert(0, data.get("头脉冲抑制试验增益 (左外半规管)", ""))
+        
+        self.right_gain.delete(0, tk.END)
+        self.right_gain.insert(0, data.get("头脉冲抑制试验增益 (右外半规管)", ""))
+        
+        self.compensatory_saccade.set(data.get("头脉冲抑制试验补偿性扫视波", ""))
+        
+        self.image_path = data.get("头脉冲抑制试验示意图", "")
+        if self.image_path:
+            self.image_button.config(text="图片已选择")
+        else:
+            self.image_button.config(text="选择图片")
+        
+        self.test_result.set(data.get("头脉冲抑制试验检查结果", ""))

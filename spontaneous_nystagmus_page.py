@@ -49,3 +49,11 @@ class SpontaneousNystagmusPage(ttk.Frame):
                 "自发性眼震检查结果": self.exam_result_var.get()
             }
         }
+    
+    def set_data(self, data):
+        self.nystagmus_mode_var.set(data.get("自发性眼震模式", ""))
+        self.nystagmus_speed_entry.delete(0, tk.END)
+        self.nystagmus_speed_entry.insert(0, data.get("自发性眼震速度", ""))
+        self.fixation_suppression_var.set(data.get("自发性眼震固视抑制", ""))
+        self.exam_result_var.set(data.get("自发性眼震检查结果", ""))
+

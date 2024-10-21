@@ -88,3 +88,15 @@ class BasicInfoPage(ttk.Frame):
                 "检查设备": self.equipment_var.get()
             }
         }
+
+    def set_data(self, data):
+        self.id_entry.delete(0, tk.END)
+        self.id_entry.insert(0, data.get("ID", ""))
+        self.name_entry.delete(0, tk.END)
+        self.name_entry.insert(0, data.get("姓名", ""))
+        self.gender_var.set(data.get("性别", ""))
+        self.birth_date.set_date(data.get("出生日期", ""))
+        self.exam_type_var.set(data.get("检查项目", ""))
+        self.exam_date.set_date(data.get("检查时间", ""))
+        self.doctor_var.set(data.get("检查医生", ""))
+        self.equipment_var.set(data.get("检查设备", ""))

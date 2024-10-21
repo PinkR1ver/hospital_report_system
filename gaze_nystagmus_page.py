@@ -54,3 +54,10 @@ class GazeNystagmusPage(ttk.Frame):
             data["凝视性眼震"][f"凝视性眼震速度（{direction}）"] = self.speed_entries[direction].get()
         data["凝视性眼震"]["凝视性眼震检查结果"] = self.exam_result_var.get()
         return data
+    
+    def set_data(self, data):
+        for direction in ['上', '下', '左', '右']:
+            self.nystagmus_vars[direction].set(data.get(f"凝视性眼震模式（{direction}）", ""))
+            self.speed_entries[direction].delete(0, tk.END)
+            self.speed_entries[direction].insert(0, data.get(f"凝视性眼震速度（{direction}）", ""))
+        self.exam_result_var.set(data.get("凝视性眼震检查结果", ""))

@@ -24,3 +24,6 @@ class VORSuppressionPage(ttk.Frame):
                 "检查结果": self.vor_suppression_result.get()
             }
         }
+
+    def set_data(self, data):
+        self.vor_suppression_result.set(data.get("检查结果", ""))

@@ -36,3 +36,10 @@ class ReverseSkewPage(ttk.Frame):
                 "眼位反向偏斜检查结果": self.skew_result.get()
             }
         }
+        
+    def set_data(self, data):
+        self.hr_skew.delete(0, tk.END)
+        self.hr_skew.insert(0, data.get("眼位反向偏斜 (HR, 度)", ""))
+        self.vr_skew.delete(0, tk.END)
+        self.vr_skew.insert(0, data.get("眼位反向偏斜 (VR, 度)", ""))
+        self.skew_result.set(data.get("眼位反向偏斜检查结果", ""))

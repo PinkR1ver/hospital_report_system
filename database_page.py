@@ -12,6 +12,7 @@ import subprocess
 import platform
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from edit_report_page import EditReportPage
 
 class DatabasePage(ttk.Frame):
     def __init__(self, master, controller):
@@ -160,8 +161,16 @@ class DatabasePage(ttk.Frame):
             subprocess.call(["xdg-open", pdf_path])
 
     def edit_report(self):
-        # 编辑选中的报告
-        pass
+        selected_item = self.report_tree.selection()
+        if not selected_item:
+            messagebox.showwarning("警告", "请先选择一个报告")
+            return
+
+        file_path = self.report_tree.item(selected_item)['tags'][0]
+        edit_page = EditReportPage(self, file_path)
+        self.wait_window(edit_page)
+        # 刷新报告列表
+        self.load_reports()
 
     def delete_report(self):
         # 删除选中的报告
@@ -174,3 +183,4 @@ class DatabasePage(ttk.Frame):
     
     def get_data(self):
         return {}
+

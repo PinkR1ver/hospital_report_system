@@ -26,3 +26,7 @@ class FistulaTestPage(ttk.Frame):
                 "结果": self.result_var.get()
             }
         }
+    
+    def set_data(self, data):
+        self.result_entry.delete(0, tk.END)
+        self.result_entry.insert(0, data.get("结果", ""))

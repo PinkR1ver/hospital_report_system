@@ -80,3 +80,25 @@ class OVEMPTestPage(ttk.Frame):
             }
         }
         return data
+
+    def set_data(self, data):
+        sides = ['右耳', '左耳']
+        for side in sides:
+            self.threshold_entries[side].delete(0, tk.END)
+            self.threshold_entries[side].insert(0, data.get(f"{side}声强阈值 (分贝)", ""))
+            self.n10_latency_entries[side].delete(0, tk.END)
+            self.n10_latency_entries[side].insert(0, data.get(f"{side}N10波潜伏期 (毫秒)", ""))
+            self.p15_latency_entries[side].delete(0, tk.END)
+            self.p15_latency_entries[side].insert(0, data.get(f"{side}P15波潜伏期 (毫秒)", ""))
+            self.n10_p15_interval_entries[side].delete(0, tk.END)
+            self.n10_p15_interval_entries[side].insert(0, data.get(f"{side}N10-P15波间期 (毫秒)", ""))
+            self.n10_amplitude_entries[side].delete(0, tk.END)
+            self.n10_amplitude_entries[side].insert(0, data.get(f"{side}N10波振幅 (微伏)", ""))
+            self.p15_amplitude_entries[side].delete(0, tk.END)
+            self.p15_amplitude_entries[side].insert(0, data.get(f"{side}P15波振幅 (微伏)", ""))
+            self.n10_p15_amplitude_entries[side].delete(0, tk.END)
+            self.n10_p15_amplitude_entries[side].insert(0, data.get(f"{side}N10-P15波振幅 (微伏)", ""))
+        self.asymmetry_entry.delete(0, tk.END)
+        self.asymmetry_entry.insert(0, data.get("oVEMP耳间不对称性 (%)", ""))
+        self.result_entry.delete(0, tk.END)
+        self.result_entry.insert(0, data.get("检查结果", ""))

@@ -54,3 +54,18 @@ class SaccadePage(ttk.Frame):
                 "扫视检查结果": self.saccade_result.get()
             }
         }
+        
+    def set_data(self, data):
+        self.right_delay.delete(0, tk.END)
+        self.right_delay.insert(0, data.get("扫视延迟时间 (右向, 毫秒)", ""))
+        self.left_delay.delete(0, tk.END)
+        self.left_delay.insert(0, data.get("扫视延迟时间 (左向, 毫秒)", ""))
+        self.right_peak_velocity.delete(0, tk.END)
+        self.right_peak_velocity.insert(0, data.get("扫视峰速度 (右向, 度/秒)", ""))
+        self.left_peak_velocity.delete(0, tk.END)
+        self.left_peak_velocity.insert(0, data.get("扫视峰速度 (左向, 度/秒)", ""))
+        self.right_accuracy.delete(0, tk.END)
+        self.right_accuracy.insert(0, data.get("扫视精确度 (右向, %)", ""))
+        self.left_accuracy.delete(0, tk.END)
+        self.left_accuracy.insert(0, data.get("扫视精确度 (左向, %)", ""))
+        self.saccade_result.set(data.get("扫视检查结果", ""))

@@ -39,3 +39,9 @@ class HeadShakingTestPage(ttk.Frame):
                 "检查结果": self.test_result.get()
             }
         }
+
+    def set_data(self, data):
+        self.nystagmus_mode.set(data.get("眼震模式", ""))
+        self.nystagmus_speed.delete(0, tk.END)
+        self.nystagmus_speed.insert(0, data.get("眼震速度", ""))
+        self.test_result.set(data.get("检查结果", ""))

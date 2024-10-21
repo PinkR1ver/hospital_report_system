@@ -24,3 +24,6 @@ class VisualEnhancedVORPage(ttk.Frame):
                 "检查结果": self.vor_result.get()
             }
         }
+        
+    def set_data(self, data):
+        self.vor_result.set(data.get("检查结果", ""))

@@ -98,3 +98,18 @@ class DixHallpikeTestPage(ttk.Frame):
                 "检查结果": self.test_result.get()
             }
         }
+        
+    def set_data(self, data):
+        sides = [('right', '右侧'), ('left', '左侧')]
+        for side_prefix, side_name in sides:
+            getattr(self, f"{side_prefix}_nystagmus_mode").set(data.get(f"{side_name}眼震模式", ""))
+            getattr(self, f"{side_prefix}_sitting_nystagmus_mode").set(data.get(f"{side_name}坐起眼震模式", ""))
+            getattr(self, f"{side_prefix}_nystagmus_dizziness").set(data.get(f"{side_name}出现眼震/头晕", ""))
+            getattr(self, f"{side_prefix}_latency").delete(0, tk.END)
+            getattr(self, f"{side_prefix}_latency").insert(0, data.get(f"{side_name}眼震潜伏期 (秒)", ""))
+            getattr(self, f"{side_prefix}_duration").delete(0, tk.END)
+            getattr(self, f"{side_prefix}_duration").insert(0, data.get(f"{side_name}眼震持续时长 (秒)", ""))
+            getattr(self, f"{side_prefix}_max_speed").delete(0, tk.END)
+            getattr(self, f"{side_prefix}_max_speed").insert(0, data.get(f"{side_name}眼震最大速度 (度/秒)", ""))
+            getattr(self, f"{side_prefix}_fatigue").set(data.get(f"{side_name}眼震疲劳性", ""))
+        self.test_result.set(data.get("检查结果", ""))

@@ -49,3 +49,10 @@ class OtherPositionTestPage(ttk.Frame):
                 "检查结果": self.result_var.get()
             }
         }
+        
+    def set_data(self, data):
+        self.sitting_supine_var.set(data.get("坐位-平卧试验", ""))
+        self.sitting_head_down_var.set(data.get("坐位-低头试验", ""))
+        self.sitting_head_up_var.set(data.get("坐位-仰头试验", ""))
+        self.zero_plane_var.set(data.get("零平面", ""))
+        self.result_var.set(data.get("检查结果", ""))
