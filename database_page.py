@@ -13,6 +13,7 @@ import platform
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from edit_report_page import EditReportPage
+import shutil
 
 class DatabasePage(ttk.Frame):
     def __init__(self, master, controller):
@@ -173,9 +174,45 @@ class DatabasePage(ttk.Frame):
         self.load_reports()
 
     def delete_report(self):
-        # 删除选中的报告
-        pass
-    
+        selected_item = self.report_tree.selection()
+        if not selected_item:
+            messagebox.showwarning("警告", "请先选择一个报告")
+            return
+
+        if messagebox.askyesno("确认", "确定要删除选中的报告吗？"):
+            file_path = self.report_tree.item(selected_item)['tags'][0]
+            
+            # 创建删除的归档目录
+            deleted_report_dir = os.path.join(self.db_path, "arch", "deleted", "report")
+            deleted_pic_dir = os.path.join(self.db_path, "arch", "deleted", "pic")
+            os.makedirs(deleted_report_dir, exist_ok=True)
+            os.makedirs(deleted_pic_dir, exist_ok=True)
+
+            # 获取当前日期和时间
+            current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            # 移动报告文件
+            report_filename = os.path.basename(file_path)
+            new_report_filename = f"{os.path.splitext(report_filename)[0]}_{current_time}{os.path.splitext(report_filename)[1]}"
+            shutil.move(file_path, os.path.join(deleted_report_dir, new_report_filename))
+
+            # 移动相关图片
+            with open(os.path.join(deleted_report_dir, new_report_filename), 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            for test_name in ['头脉冲试验', '头脉冲抑制试验']:
+                if test_name in data and f'{test_name}示意图' in data[test_name]:
+                    pic_path = data[test_name][f'{test_name}示意图']
+                    if os.path.exists(os.path.join(self.db_path, pic_path)):
+                        pic_filename = os.path.basename(pic_path)
+                        new_pic_filename = f"{os.path.splitext(pic_filename)[0]}_{current_time}{os.path.splitext(pic_filename)[1]}"
+                        shutil.move(os.path.join(self.db_path, pic_path), os.path.join(deleted_pic_dir, new_pic_filename))
+
+            # 从树形视图中删除项目
+            self.report_tree.delete(selected_item)
+
+            messagebox.showinfo("成功", "报告已成功删除并归档")
+
     def load_config(self):
         config = json.load(open(self.config_file, 'r'))
         self.font_name = config['font_name']
@@ -183,4 +220,3 @@ class DatabasePage(ttk.Frame):
     
     def get_data(self):
         return {}
-
