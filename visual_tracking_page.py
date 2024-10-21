@@ -43,9 +43,6 @@ class VisualTrackingPage(ttk.Frame):
         }
         
     def set_data(self, data):
-        self.curve_type_entry.delete(0, tk.END)
-        self.curve_type_entry.insert(0, data.get("视跟踪曲线分型", ""))
-        self.gain_entry.delete(0, tk.END)
-        self.gain_entry.insert(0, data.get("视跟踪增益", ""))
-        self.result_entry.delete(0, tk.END)
-        self.result_entry.insert(0, data.get("视跟踪检查结果", ""))
+        self.curve_type_var.set(data.get("视跟踪曲线分型", ""))
+        self.gain_var.set(data.get("视跟踪增益", ""))
+        self.result_var.set(data.get("视跟踪检查结果", ""))

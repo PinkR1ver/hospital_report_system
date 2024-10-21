@@ -105,20 +105,13 @@ class CaloricTestPage(ttk.Frame):
             }
         }
         
+        
     def set_data(self, data):
-        self.uw_side_entry.delete(0, tk.END)
-        self.uw_side_entry.insert(0, data.get("单侧减弱侧别 (UW)", ""))
-        self.uw_value_entry.delete(0, tk.END)
-        self.uw_value_entry.insert(0, data.get("单侧减弱数值 (UW, %)", ""))
-        self.dp_side_entry.delete(0, tk.END)
-        self.dp_side_entry.insert(0, data.get("优势偏向侧别 (DP)", ""))
-        self.dp_value_entry.delete(0, tk.END)
-        self.dp_value_entry.insert(0, data.get("优势偏向数值 (DP, 度/秒)", ""))
-        self.right_sum_entry.delete(0, tk.END)
-        self.right_sum_entry.insert(0, data.get("最大慢相速度总和（右耳, 度/秒）", ""))
-        self.left_sum_entry.delete(0, tk.END)
-        self.left_sum_entry.insert(0, data.get("最大慢相速度总和（左耳, 度/秒）", ""))
-        self.fi_entry.delete(0, tk.END)
-        self.fi_entry.insert(0, data.get("固视抑制指数 (FI, %)", ""))
-        self.result_entry.delete(0, tk.END)
-        self.result_entry.insert(0, data.get("检查结果", ""))
+        self.uw_side_var.set(data.get("单侧减弱侧别 (UW)", ""))
+        self.uw_value_var.set(data.get("单侧减弱数值 (UW, %)", ""))
+        self.dp_side_var.set(data.get("优势偏向侧别 (DP)", ""))
+        self.dp_value_var.set(data.get("优势偏向数值 (DP, 度/秒)", ""))
+        self.right_ear_spv_var.set(data.get("最大慢相速度总和（右耳, 度/秒）", ""))
+        self.left_ear_spv_var.set(data.get("最大慢相速度总和（左耳, 度/秒）", ""))
+        self.fi_var.set(data.get("固视抑制指数 (FI, %)", ""))
+        self.result_var.set(data.get("检查结果", ""))

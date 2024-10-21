@@ -81,24 +81,16 @@ class CVEMPTestPage(ttk.Frame):
         }
         return data
 
-def set_data(self, data):
-    sides = ['右耳', '左耳']
-    for side in sides:
-        self.threshold_entries[side].delete(0, tk.END)
-        self.threshold_entries[side].insert(0, data.get(f"{side}声强阈值 (分贝)", ""))
-        self.p13_latency_entries[side].delete(0, tk.END)
-        self.p13_latency_entries[side].insert(0, data.get(f"{side}P13波潜伏期 (毫秒)", ""))
-        self.n23_latency_entries[side].delete(0, tk.END)
-        self.n23_latency_entries[side].insert(0, data.get(f"{side}N23波潜伏期 (毫秒)", ""))
-        self.p13_n23_interval_entries[side].delete(0, tk.END)
-        self.p13_n23_interval_entries[side].insert(0, data.get(f"{side}P13-N23波间期 (毫秒)", ""))
-        self.p13_amplitude_entries[side].delete(0, tk.END)
-        self.p13_amplitude_entries[side].insert(0, data.get(f"{side}P13波振幅 (微伏)", ""))
-        self.n23_amplitude_entries[side].delete(0, tk.END)
-        self.n23_amplitude_entries[side].insert(0, data.get(f"{side}N23波振幅 (微伏)", ""))
-        self.p13_n23_amplitude_entries[side].delete(0, tk.END)
-        self.p13_n23_amplitude_entries[side].insert(0, data.get(f"{side}P13-N23波振幅 (微伏)", ""))
-    self.asymmetry_entry.delete(0, tk.END)
-    self.asymmetry_entry.insert(0, data.get("cVEMP耳间不对称性 (%)", ""))
-    self.result_entry.delete(0, tk.END)
-    self.result_entry.insert(0, data.get("检查结果", ""))
+    def set_data(self, data):
+        sides = ['右耳', '左耳']
+        for side in sides:
+            prefix = 'right' if side == '右耳' else 'left'
+            getattr(self, f"{prefix}_threshold_var").set(data.get(f"{side}声强阈值 (分贝)", ""))
+            getattr(self, f"{prefix}_p13_latency_var").set(data.get(f"{side}P13波潜伏期 (毫秒)", ""))
+            getattr(self, f"{prefix}_n23_latency_var").set(data.get(f"{side}N23波潜伏期 (毫秒)", ""))
+            getattr(self, f"{prefix}_p13_n23_interval_var").set(data.get(f"{side}P13-N23波间期 (毫秒)", ""))
+            getattr(self, f"{prefix}_p13_amplitude_var").set(data.get(f"{side}P13波振幅 (微伏)", ""))
+            getattr(self, f"{prefix}_n23_amplitude_var").set(data.get(f"{side}N23波振幅 (微伏)", ""))
+            getattr(self, f"{prefix}_p13_n23_amplitude_var").set(data.get(f"{side}P13-N23波振幅 (微伏)", ""))
+        self.asymmetry_var.set(data.get("cVEMP耳间不对称性 (%)", ""))
+        self.result_var.set(data.get("检查结果", ""))

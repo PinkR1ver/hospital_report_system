@@ -49,11 +49,7 @@ class OptoKineticNystagmusPage(ttk.Frame):
         }
 
     def set_data(self, data):
-        self.asymmetry_entry.delete(0, tk.END)
-        self.asymmetry_entry.insert(0, data.get("不对称性（%）", ""))
-        self.right_gain_entry.delete(0, tk.END)
-        self.right_gain_entry.insert(0, data.get("向右视标增益", ""))
-        self.left_gain_entry.delete(0, tk.END)
-        self.left_gain_entry.insert(0, data.get("向左视标增益", ""))
-        self.result_entry.delete(0, tk.END)
-        self.result_entry.insert(0, data.get("检查结果", ""))
+        self.asymmetry_var.set(data.get("不对称性（%）", ""))
+        self.right_gain_var.set(data.get("向右视标增益", ""))
+        self.left_gain_var.set(data.get("向左视标增益", ""))
+        self.result_var.set(data.get("检查结果", ""))
