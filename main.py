@@ -188,18 +188,23 @@ class VestibularFunctionReport:
         menubar = tk.Menu(self.master)
         self.master.config(menu=menubar)
 
+        # 文件菜单
         file_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="文件", menu=file_menu)
         file_menu.add_command(label="保存", command=self.save_data)
-        file_menu.add_separator()
         file_menu.add_command(label="退出", command=self.master.quit)
 
-        # 添加数据库菜单
+        # 数据库菜单
         db_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="数据库", menu=db_menu)
-        db_menu.add_command(label="浏览报告", command=self.show_database)
-        db_menu.add_command(label="打开数据库文件夹", command=self.open_db_folder)
+        db_menu.add_command(label="查看数据库", command=self.show_database)
         db_menu.add_command(label="更改数据库文件夹", command=self.change_db_folder)
+        db_menu.add_command(label="打开数据库文件夹", command=self.open_db_folder)
+
+        # 帮助菜单
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="帮助", menu=help_menu)
+        help_menu.add_command(label="关于", command=self.show_about)
 
     def load_config(self):
         try:
@@ -224,6 +229,14 @@ class VestibularFunctionReport:
             self.db_path = os.path.join(os.getcwd(), "vest_database")
             if not os.path.exists(self.db_path):
                 os.makedirs(self.db_path, exist_ok=True)
+                
+        report_folder = os.path.join(self.db_path, "report")
+        if not os.path.exists(report_folder):
+            os.makedirs(report_folder, exist_ok=True)
+            
+        pic_folder = os.path.join(self.db_path, "pic")
+        if not os.path.exists(pic_folder):
+            os.makedirs(pic_folder, exist_ok=True)
         
     def load_fonts(self):
         config = json.load(open(self.config_file, 'r'))
@@ -335,8 +348,21 @@ class VestibularFunctionReport:
     def show_database(self):
         self.show_page("database")
 
+    def show_about(self):
+        about_text = """
+        前庭功能检查报告系统
+        版本: 1.0.0
+        
+        本软件遵循 MIT 许可证
+        
+        Copyright (c) 2023 Your Company Name
+        
+        Author: JudeW
+        Email: pinkr1veroops@gmail.com
+        """
+        messagebox.showinfo("关于", about_text)
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = VestibularFunctionReport(root)
     root.mainloop()
-
