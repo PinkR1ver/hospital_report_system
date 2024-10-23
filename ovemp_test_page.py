@@ -55,7 +55,7 @@ class OVEMPTestPage(ttk.Frame):
         ttk.Label(frame, text="oVEMP检查结果:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
         self.result_var = tk.StringVar()
         result_combobox = ttk.Combobox(frame, textvariable=self.result_var, width=20)
-        result_combobox['values'] = ["正常", "异常", "配合欠佳"]
+        result_combobox['values'] = ["", "正常", "异常", "配合欠佳"]
         result_combobox.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):

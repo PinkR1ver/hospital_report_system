@@ -30,7 +30,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         # 补偿性扫视波
         ttk.Label(main_frame, text="头脉冲抑制试验补偿性扫视波:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
         self.compensatory_saccade = ttk.Combobox(main_frame, 
-                                                 values=["左外半规管", "右外半规管", "阴性", "配合欠佳", "NULL"])
+                                                 values=["", "左外半规管", "右外半规管", "阴性", "配合欠佳"])
         self.compensatory_saccade.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 示意图
@@ -41,7 +41,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         # 检查结果
         ttk.Label(main_frame, text="头脉冲抑制试验检查结果:").grid(row=4, column=0, sticky=tk.E, padx=5, pady=5)
         self.test_result = ttk.Combobox(main_frame, 
-                                        values=["左外半规管功能低下", "右外半规管功能低下", "双侧外半规管功能低下", "配合欠佳"])
+                                        values=["", "左外半规管功能低下", "右外半规管功能低下", "双侧外半规管功能低下", "配合欠佳"])
         self.test_result.grid(row=4, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def select_image(self):

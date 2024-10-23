@@ -23,26 +23,26 @@ class DixHallpikeTestPage(ttk.Frame):
             # 眼震模式
             ttk.Label(side_frame, text="眼震模式:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
             setattr(self, f"{side_prefix}_nystagmus_mode", ttk.Combobox(side_frame, values=[
-                "上跳伴右扭眼震", "上跳伴左扭眼震", "下跳伴右扭眼震", "下跳伴左扭眼震",
+                "", "上跳伴右扭眼震", "上跳伴左扭眼震", "下跳伴右扭眼震", "下跳伴左扭眼震",
                 "右跳眼震", "左跳眼震", "右跳+右扭眼震", "左跳+左扭眼震",
                 "右扭眼震", "左扭眼震", "上跳眼震", "下跳眼震",
-                "其他", "阴性", "配合欠佳", "NULL"
+                "其他", "阴性", "配合欠佳"
             ], width=25))
             getattr(self, f"{side_prefix}_nystagmus_mode").grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # 坐起眼震模式
             ttk.Label(side_frame, text="坐起眼震模式:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
             setattr(self, f"{side_prefix}_sitting_nystagmus_mode", ttk.Combobox(side_frame, values=[
-                "上跳伴右扭眼震", "上跳伴左扭眼震", "下跳伴右扭眼震", "下跳伴左扭眼震",
+                "", "上跳伴右扭眼震", "上跳伴左扭眼震", "下跳伴右扭眼震", "下跳伴左扭眼震",
                 "右跳眼震", "左跳眼震", "右跳+右扭眼震", "左跳+左扭眼震",
                 "右扭眼震", "左扭眼震", "上跳眼震", "下跳眼震",
-                "其他", "阴性", "配合欠佳", "NULL"
+                "其他", "阴性", "配合欠佳"
             ], width=25))
             getattr(self, f"{side_prefix}_sitting_nystagmus_mode").grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # 出现眼震/头晕
             ttk.Label(side_frame, text="出现眼震/头晕:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
-            setattr(self, f"{side_prefix}_nystagmus_dizziness", ttk.Combobox(side_frame, values=["是", "否", "配合欠佳", "NULL"], width=25))
+            setattr(self, f"{side_prefix}_nystagmus_dizziness", ttk.Combobox(side_frame, values=["", "是", "否", "配合欠佳"], width=25))
             getattr(self, f"{side_prefix}_nystagmus_dizziness").grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # 眼震潜伏期
@@ -62,7 +62,7 @@ class DixHallpikeTestPage(ttk.Frame):
 
             # 眼震疲劳性
             ttk.Label(side_frame, text="眼震疲劳性:").grid(row=6, column=0, sticky=tk.E, padx=5, pady=5)
-            setattr(self, f"{side_prefix}_fatigue", ttk.Combobox(side_frame, values=["是", "否", "配合欠佳", "NULL"], width=25))
+            setattr(self, f"{side_prefix}_fatigue", ttk.Combobox(side_frame, values=["", "是", "否", "配合欠佳"], width=25))
             getattr(self, f"{side_prefix}_fatigue").grid(row=6, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 位置试验检查结果
@@ -71,7 +71,7 @@ class DixHallpikeTestPage(ttk.Frame):
         result_frame.columnconfigure(0, weight=1)
 
         self.test_result = ttk.Combobox(result_frame, values=[
-            "右后半规管良性阵发性位置性眩晕", "左后半规管良性阵发性位置性眩晕",
+            "", "右后半规管良性阵发性位置性眩晕", "左后半规管良性阵发性位置性眩晕",
             "双侧后半规管良性阵发性位置性眩晕", "右前半规管良性阵发性位置性眩晕",
             "左前半规管良性阵发性位置性眩晕", "双侧前半规管良性阵发性位置性眩晕",
             "不典型良性阵发性位置性眩晕", "阴性", "配合欠佳"

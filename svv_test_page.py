@@ -17,7 +17,7 @@ class SVVTestPage(ttk.Frame):
         ttk.Label(main_frame, text="主观视觉垂直线偏斜方向:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.direction_var = tk.StringVar()
         direction_combobox = ttk.Combobox(main_frame, textvariable=self.direction_var, width=20)
-        direction_combobox['values'] = ["左偏", "右偏", "无偏斜", "配合欠佳"]
+        direction_combobox['values'] = ["", "左偏", "右偏", "无偏斜", "配合欠佳"]
         direction_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 主观视觉垂直线偏斜角度（度）
@@ -30,7 +30,7 @@ class SVVTestPage(ttk.Frame):
         ttk.Label(main_frame, text="主观视觉垂直线检查结果:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
         self.result_var = tk.StringVar()
         result_combobox = ttk.Combobox(main_frame, textvariable=self.result_var, width=20)
-        result_combobox['values'] = ["正常", "异常", "配合欠佳"]
+        result_combobox['values'] = ["", "正常", "异常", "配合欠佳"]
         result_combobox.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):

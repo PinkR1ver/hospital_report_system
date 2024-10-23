@@ -17,7 +17,7 @@ class FistulaTestPage(ttk.Frame):
         ttk.Label(main_frame, text="瘘管试验结果:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.result_var = tk.StringVar()
         result_combobox = ttk.Combobox(main_frame, textvariable=self.result_var, width=30)
-        result_combobox['values'] = ["阴性", "右侧阳性", "左侧阳性", "双侧阳性", "配合欠佳"]
+        result_combobox['values'] = ["", "阴性", "右侧阳性", "左侧阳性", "双侧阳性", "配合欠佳"]
         result_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):

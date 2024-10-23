@@ -31,7 +31,7 @@ class CaloricTestPage(ttk.Frame):
         ttk.Label(frame, text="侧别:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.uw_side_var = tk.StringVar()
         uw_side_combobox = ttk.Combobox(frame, textvariable=self.uw_side_var, width=20)
-        uw_side_combobox['values'] = ["右耳", "左耳", "左右对称"]
+        uw_side_combobox['values'] = ["", "右耳", "左耳", "左右对称"]
         uw_side_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         ttk.Label(frame, text="数值 (%):").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
@@ -46,7 +46,7 @@ class CaloricTestPage(ttk.Frame):
         ttk.Label(frame, text="侧别:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.dp_side_var = tk.StringVar()
         dp_side_combobox = ttk.Combobox(frame, textvariable=self.dp_side_var, width=20)
-        dp_side_combobox['values'] = ["右耳", "左耳", "左右对称"]
+        dp_side_combobox['values'] = ["", "右耳", "左耳", "左右对称"]
         dp_side_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         ttk.Label(frame, text="数值 (度/秒):").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
@@ -85,7 +85,7 @@ class CaloricTestPage(ttk.Frame):
         self.result_var = tk.StringVar()
         result_combobox = ttk.Combobox(frame, textvariable=self.result_var, width=40)
         result_combobox['values'] = [
-            "左外半规管功能减退", "右外半规管功能减退",
+            "", "左外半规管功能减退", "右外半规管功能减退",
             "双外半规管功能减退", "双外半规管功能正常",
             "配合欠佳"
         ]

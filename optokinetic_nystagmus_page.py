@@ -35,7 +35,7 @@ class OptoKineticNystagmusPage(ttk.Frame):
         ttk.Label(main_frame, text="视动性眼震检查结果:").grid(row=3, column=0, sticky=tk.E, padx=5, pady=5)
         self.result_var = tk.StringVar()
         result_combobox = ttk.Combobox(main_frame, textvariable=self.result_var, width=20)
-        result_combobox['values'] = ["正常", "异常", "配合欠佳"]
+        result_combobox['values'] = ["", "正常", "异常", "配合欠佳"]
         result_combobox.grid(row=3, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):

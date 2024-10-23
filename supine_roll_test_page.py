@@ -23,16 +23,16 @@ class SupineRollTestPage(ttk.Frame):
             # 眼震模式
             ttk.Label(side_frame, text="眼震模式:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
             setattr(self, f"{side_prefix}_nystagmus_mode", ttk.Combobox(side_frame, values=[
-                "上跳伴右扭眼震", "上跳伴左扭眼震", "下跳伴右扭眼震", "下跳伴左扭眼震",
+                "", "上跳伴右扭眼震", "上跳伴左扭眼震", "下跳伴右扭眼震", "下跳伴左扭眼震",
                 "右跳眼震", "左跳眼震", "右跳+右扭眼震", "左跳+左扭眼震",
                 "右扭眼震", "左扭眼震", "上跳眼震", "下跳眼震",
-                "其他", "阴性", "配合欠佳", "NULL"
+                "其他", "阴性", "配合欠佳"
             ], width=25))
             getattr(self, f"{side_prefix}_nystagmus_mode").grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # 出现眼震/头晕
             ttk.Label(side_frame, text="出现眼震/头晕:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
-            setattr(self, f"{side_prefix}_nystagmus_dizziness", ttk.Combobox(side_frame, values=["是", "否", "配合欠佳", "NULL"], width=25))
+            setattr(self, f"{side_prefix}_nystagmus_dizziness", ttk.Combobox(side_frame, values=["是", "否", "配合欠佳"], width=25))
             getattr(self, f"{side_prefix}_nystagmus_dizziness").grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # 眼震潜伏期
@@ -56,7 +56,7 @@ class SupineRollTestPage(ttk.Frame):
         result_frame.columnconfigure(0, weight=1)
 
         self.test_result = ttk.Combobox(result_frame, values=[
-            "右外水平半规管良性阵发性位置性眩晕", "左外水平半规管良性阵发性位置性眩晕",
+            "", "右外水平半规管良性阵发性位置性眩晕", "左外水平半规管良性阵发性位置性眩晕",
             "右外水平半规管椭圆囊瘘", "左外水平半规管椭圆囊瘘",
             "右外水平半规管杯囊瘘", "左外水平半规管杯囊瘘",
             "不典型位置性眼震", "阴性", "配合欠佳"

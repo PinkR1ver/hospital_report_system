@@ -32,7 +32,7 @@ class SaccadePage(ttk.Frame):
         # 扫视检查结果
         result_frame = ttk.LabelFrame(main_frame, text="扫视检查结果", padding="10 10 10 10")
         result_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.E, tk.W), pady=(20, 0))
-        self.saccade_result = ttk.Combobox(result_frame, values=["正常", "异常", "配合欠佳"])
+        self.saccade_result = ttk.Combobox(result_frame, values=["", "正常", "异常", "配合欠佳"])
         self.saccade_result.grid(row=0, column=0, sticky=(tk.E, tk.W), padx=5, pady=5)
         result_frame.columnconfigure(0, weight=1)
 

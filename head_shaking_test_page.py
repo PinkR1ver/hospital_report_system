@@ -16,8 +16,8 @@ class HeadShakingTestPage(ttk.Frame):
         # 眼震模式（摇头试验）
         ttk.Label(main_frame, text="眼震模式（摇头试验）:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.nystagmus_mode = ttk.Combobox(main_frame, values=[
-            "I型摇头眼震", "II型摇头眼震", "III型摇头眼震", "IV型摇头眼震", 
-            "其他", "阴性", "配合欠佳", "NULL"
+            "", "I型摇头眼震", "II型摇头眼震", "III型摇头眼震", "IV型摇头眼震", 
+            "其他", "阴性", "配合欠佳"
         ], width=20)
         self.nystagmus_mode.grid(row=0, column=1, sticky=tk.W, padx=5, pady=5)
 
@@ -28,7 +28,7 @@ class HeadShakingTestPage(ttk.Frame):
 
         # 摇头试验检查结果
         ttk.Label(main_frame, text="摇头试验检查结果:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
-        self.test_result = ttk.Combobox(main_frame, values=["正常", "异常", "配合欠佳"], width=20)
+        self.test_result = ttk.Combobox(main_frame, values=["", "正常", "异常", "配合欠佳"], width=20)
         self.test_result.grid(row=2, column=1, sticky=tk.W, padx=5, pady=5)
 
     def get_data(self):
