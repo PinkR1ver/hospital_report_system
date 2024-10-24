@@ -32,7 +32,7 @@ class EditReportPage(tk.Toplevel):
     def __init__(self, master, file_path):
         super().__init__(master)
         self.title("编辑报告")
-        self.geometry("800x600")
+        self.geometry("1000x600")
         self.file_path = file_path
         self.create_menu()
         self.create_widgets()
@@ -49,57 +49,56 @@ class EditReportPage(tk.Toplevel):
         file_menu.add_command(label="退出", command=self.destroy)
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame = ttk.Frame(self)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.canvas = tk.Canvas(main_frame)
-        scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = ttk.Frame(self.canvas)
+        # 创建侧边栏
+        self.sidebar = ttk.Frame(self.main_frame, width=200, relief="sunken", borderwidth=1)
+        self.sidebar.pack(side="left", fill="y", padx=5, pady=5)
 
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(
-                scrollregion=self.canvas.bbox("all")
-            )
-        )
-
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=scrollbar.set)
-
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-
-        # 绑定鼠标滚轮事件到整个窗口
-        self.bind("<MouseWheel>", self._on_mousewheel)
-        self.bind("<Button-4>", self._on_mousewheel)
-        self.bind("<Button-5>", self._on_mousewheel)
+        # 创建主内容区域
+        self.content_frame = ttk.Frame(self.main_frame)
+        self.content_frame.pack(side="right", fill="both", expand=True, padx=5, pady=5)
 
         # 创建所有测试页面
         self.pages = {
-            "基本信息": BasicInfoPage(self.scrollable_frame, self),
-            "自发性眼震": SpontaneousNystagmusPage(self.scrollable_frame, self),
-            "凝视性眼震": GazeNystagmusPage(self.scrollable_frame, self),
-            "头脉冲试验": HeadImpulseTestPage(self.scrollable_frame, self),
-            "头脉冲抑制试验": HeadImpulseSuppressionTestPage(self.scrollable_frame, self),
-            "眼位反向偏斜": ReverseSkewPage(self.scrollable_frame, self),
-            "扫视检查": SaccadePage(self.scrollable_frame, self),
-            "视觉增强前庭-眼反射试验": VisualEnhancedVORPage(self.scrollable_frame, self),
-            "前庭-眼反射抑制试验": VORSuppressionPage(self.scrollable_frame, self),
-            "摇头试验": HeadShakingTestPage(self.scrollable_frame, self),
-            "位置试验 (Dix-Hallpike试验)": DixHallpikeTestPage(self.scrollable_frame, self),
-            "位置试验 (仰卧滚转试验)": SupineRollTestPage(self.scrollable_frame, self),
-            "位置试验(其他)": OtherPositionTestPage(self.scrollable_frame, self),
-            "视跟踪": VisualTrackingPage(self.scrollable_frame, self),
-            "视动性眼震": OptoKineticNystagmusPage(self.scrollable_frame, self),
-            "瘘管试验": FistulaTestPage(self.scrollable_frame, self),
-            "温度试验": CaloricTestPage(self.scrollable_frame, self),
-            "颈肌前庭诱发肌源性电位 (cVEMP)": CVEMPTestPage(self.scrollable_frame, self),
-            "眼肌前庭诱发肌源性电位 (oVEMP)": OVEMPTestPage(self.scrollable_frame, self),
-            "主观视觉垂直线 (SVV)": SVVTestPage(self.scrollable_frame, self)
+            "基本信息": BasicInfoPage(self.content_frame, self),
+            "自发性眼震": SpontaneousNystagmusPage(self.content_frame, self),
+            "凝视性眼震": GazeNystagmusPage(self.content_frame, self),
+            "头脉冲试验": HeadImpulseTestPage(self.content_frame, self),
+            "头脉冲抑制试验": HeadImpulseSuppressionTestPage(self.content_frame, self),
+            "眼位反向偏斜": ReverseSkewPage(self.content_frame, self),
+            "扫视检查": SaccadePage(self.content_frame, self),
+            "视觉增强前庭-眼反射试验": VisualEnhancedVORPage(self.content_frame, self),
+            "前庭-眼反射抑制试验": VORSuppressionPage(self.content_frame, self),
+            "摇头试验": HeadShakingTestPage(self.content_frame, self),
+            "位置试验 (Dix-Hallpike试验)": DixHallpikeTestPage(self.content_frame, self),
+            "位置试验 (仰卧滚转试验)": SupineRollTestPage(self.content_frame, self),
+            "位置试验(其他)": OtherPositionTestPage(self.content_frame, self),
+            "视跟踪": VisualTrackingPage(self.content_frame, self),
+            "视动性眼震": OptoKineticNystagmusPage(self.content_frame, self),
+            "瘘管试验": FistulaTestPage(self.content_frame, self),
+            "温度试验": CaloricTestPage(self.content_frame, self),
+            "颈肌前庭诱发肌源性电位 (cVEMP)": CVEMPTestPage(self.content_frame, self),
+            "眼肌前庭诱发肌源性电位 (oVEMP)": OVEMPTestPage(self.content_frame, self),
+            "主观视觉垂直线 (SVV)": SVVTestPage(self.content_frame, self)
         }
 
-        for page in self.pages.values():
-            page.pack(fill=tk.X, padx=10, pady=5)
+        # 在侧边栏中添加按钮
+        for i, (name, page) in enumerate(self.pages.items()):
+            btn = ttk.Button(self.sidebar, text=name, command=lambda p=page: self.show_page(p))
+            btn.pack(fill="x", padx=5, pady=2)
+            page.pack_forget()  # 初始时隐藏所有页面
+
+        # 默认显示第一个页面
+        self.current_page = list(self.pages.values())[0]
+        self.show_page(self.current_page)
+
+    def show_page(self, page):
+        if self.current_page:
+            self.current_page.pack_forget()
+        page.pack(fill="both", expand=True)
+        self.current_page = page
 
     def load_data(self):
         with open(self.file_path, 'r', encoding='utf-8') as f:
@@ -173,12 +172,6 @@ class EditReportPage(tk.Toplevel):
 
                         # 更新数据中的图片路径（保持不变）
                         data[test_name][test_name + '示意图'] = os.path.relpath(old_path, db_path)
-
-    def _on_mousewheel(self, event):
-        if event.num == 5 or event.delta < 0:
-            self.canvas.yview_scroll(1, "units")
-        elif event.num == 4 or event.delta > 0:
-            self.canvas.yview_scroll(-1, "units")
 
 # 在主应用程序中使用这个页面的示例
 if __name__ == "__main__":

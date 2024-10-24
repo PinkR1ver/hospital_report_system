@@ -59,7 +59,7 @@ class HeadImpulseTestPage(ttk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        # 创建一个带滚动条的画布
+        # 创建一个带滚动条的画布，但只用于这个页面
         self.canvas = tk.Canvas(self)
         self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = ttk.Frame(self.canvas)
@@ -74,8 +74,8 @@ class HeadImpulseTestPage(ttk.Frame):
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        # 绑定鼠标滚轮事件
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        # 绑定鼠标滚轮事件到画布
+        self.canvas.bind("<MouseWheel>", self._on_mousewheel)
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
@@ -259,3 +259,4 @@ class HeadImpulseTestPage(ttk.Frame):
         root = self.winfo_toplevel()
         root.deiconify()
         self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
+
