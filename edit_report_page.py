@@ -149,29 +149,48 @@ class EditReportPage(tk.Toplevel):
 
     def process_images(self, data, pic_arch_dir, arch_path):
         db_path = os.path.dirname(os.path.dirname(os.path.dirname(self.file_path)))
-        # read archive file get old_path
+        # 读取归档文件获取旧路径
         with open(arch_path, 'r', encoding='utf-8') as f:
             archive_data = json.load(f)
             
+        # 处理图片
         for test_name in ['头脉冲试验', '头脉冲抑制试验']:
             if test_name in archive_data and (test_name + '示意图') in archive_data[test_name]:
                 old_path = archive_data[test_name][test_name + '示意图']
                 if os.path.exists(os.path.join(db_path, old_path)):
                     new_path = data[test_name][test_name + '示意图']
                     if old_path != new_path:
-                        # 移动旧图片到归档目录
-                        old_filename = os.path.basename(old_path)
-                        old_path = os.path.join(db_path, old_path)
-                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                        arch_filename = f"{os.path.splitext(old_filename)[0]}_{timestamp}{os.path.splitext(old_filename)[1]}"
-                        arch_pic_path = os.path.join(pic_arch_dir, arch_filename)
-                        shutil.move(old_path, arch_pic_path)
+                        self.archive_and_update_file(db_path, old_path, new_path, pic_arch_dir, data[test_name], test_name + '示意图')
 
-                        # 复制新图片到原位置
-                        shutil.copy2(new_path, old_path)
+        # 处理视频
+        video_tests = [
+            '仰卧滚转试验', '自发性眼震', '位置试验(其他)', '视动性眼震',
+            '摇头试验', '凝视性眼震', '位置试验 (Dix-Hallpike试验)'
+        ]
+        for test_name in video_tests:
+            if test_name in archive_data and '视频' in archive_data[test_name]:
+                old_path = archive_data[test_name]['视频']
+                if os.path.exists(os.path.join(db_path, old_path)):
+                    new_path = data[test_name]['视频']
+                    if old_path != new_path:
+                        self.archive_and_update_file(db_path, old_path, new_path, pic_arch_dir, data[test_name], '视频')
 
-                        # 更新数据中的图片路径（保持不变）
-                        data[test_name][test_name + '示意图'] = os.path.relpath(old_path, db_path)
+    def archive_and_update_file(self, db_path, old_path, new_path, arch_dir, data_dict, key):
+        old_filename = os.path.basename(old_path)
+        old_full_path = os.path.join(db_path, old_path)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        arch_filename = f"{os.path.splitext(old_filename)[0]}_{timestamp}{os.path.splitext(old_filename)[1]}"
+        arch_file_path = os.path.join(arch_dir, arch_filename)
+
+        # 移动旧文件到归档目录
+        shutil.move(old_full_path, arch_file_path)
+
+        # 复制新文件到原位置
+        new_full_path = os.path.join(db_path, new_path)
+        shutil.copy2(new_full_path, old_full_path)
+
+        # 更新数据中的文件路径（保持不变）
+        data_dict[key] = os.path.relpath(old_full_path, db_path)
 
 # 在主应用程序中使用这个页面的示例
 if __name__ == "__main__":
