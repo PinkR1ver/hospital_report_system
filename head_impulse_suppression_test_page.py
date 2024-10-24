@@ -5,9 +5,10 @@ import os
 from datetime import datetime
 
 class ScreenshotWindow(tk.Toplevel):
-    def __init__(self, master, callback):
+    def __init__(self, master, callback, cancel_callback):
         super().__init__(master)
         self.callback = callback
+        self.cancel_callback = cancel_callback
         self.attributes('-fullscreen', True)
         self.attributes('-alpha', 0.3)
         self.configure(bg='grey')
@@ -21,6 +22,7 @@ class ScreenshotWindow(tk.Toplevel):
         self.canvas.bind("<ButtonPress-1>", self.on_press)
         self.canvas.bind("<B1-Motion>", self.on_drag)
         self.canvas.bind("<ButtonRelease-1>", self.on_release)
+        self.bind("<Escape>", self.on_cancel)
 
     def on_press(self, event):
         self.start_x = self.canvas.canvasx(event.x)
@@ -43,12 +45,17 @@ class ScreenshotWindow(tk.Toplevel):
         self.callback(screenshot)
         self.destroy()
 
+    def on_cancel(self, event):
+        self.cancel_callback()
+        self.destroy()
+
 class HeadImpulseSuppressionTestPage(ttk.Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
         self.image_path = ""
         self.screenshot = None
+        self.screenshot_window = None
         self.create_widgets()
 
     def create_widgets(self):
@@ -95,12 +102,19 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         self.compensatory_saccade.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 示意图
-        ttk.Label(main_frame, text="头脉冲抑制试验示意图:").grid(row=3, column=0, sticky=tk.E, padx=5, pady=5)
-        self.image_button = ttk.Button(main_frame, text="选择图片", command=self.select_image)
-        self.image_button.grid(row=3, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
-        
-        self.image_label = ttk.Label(main_frame)
-        self.image_label.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
+        image_frame = ttk.LabelFrame(main_frame, text="头脉冲抑制试验示意图", padding="10 10 10 10")
+        image_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
+        image_frame.columnconfigure(0, weight=1)
+        image_frame.columnconfigure(1, weight=1)
+
+        self.image_button = ttk.Button(image_frame, text="截取图片", command=self.select_image)
+        self.image_button.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
+
+        self.cancel_button = ttk.Button(image_frame, text="取消截图", command=self.cancel_screenshot, state=tk.DISABLED)
+        self.cancel_button.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+
+        self.image_label = ttk.Label(image_frame)
+        self.image_label.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 检查结果
         ttk.Label(main_frame, text="头脉冲抑制试验检查结果:").grid(row=5, column=0, sticky=tk.E, padx=5, pady=5)
@@ -111,12 +125,13 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
     def select_image(self):
         root = self.winfo_toplevel()  # 获取顶层窗口
         root.withdraw()  # 隐藏顶层窗口
+        self.cancel_button.config(state=tk.NORMAL)  # 启用取消按钮
         self.after(100, self.start_screenshot)  # 短暂延迟后开始截图
 
     def start_screenshot(self):
         root = self.winfo_toplevel()  # 获取顶层窗口
-        screenshot_window = ScreenshotWindow(root, self.show_screenshot)
-        screenshot_window.focus_force()
+        self.screenshot_window = ScreenshotWindow(root, self.show_screenshot, self.cancel_screenshot)
+        self.screenshot_window.focus_force()
 
     def show_screenshot(self, screenshot):
         self.screenshot = screenshot
@@ -135,6 +150,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         self.image_label.image = photo  # 保持对图片的引用
         
         self.image_button.config(text="重新截图")
+        self.cancel_button.config(state=tk.NORMAL)  # 保持取消按钮为启用状态
         
         # 保存图片
         self.save_screenshot()
@@ -160,7 +176,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         return {
             "头脉冲抑制试验": {
                 "头脉冲抑制试验增益 (左外半规管)": self.left_gain.get(),
-                "头脉冲抑制试验增益 (右外半规管)": self.right_gain.get(),
+                "头脉冲抑制���验增益 (右外半规管)": self.right_gain.get(),
                 "头脉冲抑制试验补偿性扫视波": self.compensatory_saccade.get(),
                 "头脉冲抑制试验示意图": self.image_path,
                 "头脉冲抑制试验检查结果": self.test_result.get()
@@ -182,7 +198,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
             self.load_image()
         else:
             self.image_path = ""
-            self.image_button.config(text="选择图片")
+            self.image_button.config(text="截取图片")
             self.image_label.config(image="")
         
         self.test_result.set(data.get("头脉冲抑制试验检查结果", ""))
@@ -204,3 +220,18 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
 
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+    def cancel_screenshot(self):
+        if self.screenshot_window:
+            self.screenshot_window.destroy()
+        
+        # 清除已截取的图片
+        self.screenshot = None
+        self.image_path = ""
+        self.image_label.config(image="")
+        self.image_button.config(text="截取图片")
+        
+        root = self.winfo_toplevel()
+        root.deiconify()
+        self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
+
