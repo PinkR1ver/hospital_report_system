@@ -176,7 +176,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         return {
             "头脉冲抑制试验": {
                 "头脉冲抑制试验增益 (左外半规管)": self.left_gain.get(),
-                "头脉冲抑制���验增益 (右外半规管)": self.right_gain.get(),
+                "头脉冲抑制试验增益 (右外半规管)": self.right_gain.get(),
                 "头脉冲抑制试验补偿性扫视波": self.compensatory_saccade.get(),
                 "头脉冲抑制试验示意图": self.image_path,
                 "头脉冲抑制试验检查结果": self.test_result.get()

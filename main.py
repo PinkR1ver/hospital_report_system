@@ -237,6 +237,10 @@ class VestibularFunctionReport:
         pic_folder = os.path.join(self.db_path, "pic")
         if not os.path.exists(pic_folder):
             os.makedirs(pic_folder, exist_ok=True)
+            
+        video_folder = os.path.join(self.db_path, "video")
+        if not os.path.exists(video_folder):
+            os.makedirs(video_folder, exist_ok=True)
         
     def load_fonts(self):
         config = json.load(open(self.config_file, 'r'))

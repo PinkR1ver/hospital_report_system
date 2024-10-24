@@ -113,12 +113,16 @@ class EditReportPage(tk.Toplevel):
         arch_dir = os.path.join(db_path, 'arch', 'modified')
         report_arch_dir = os.path.join(arch_dir, 'report')
         pic_arch_dir = os.path.join(arch_dir, 'pic')
+        video_arch_dir = os.path.join(arch_dir, 'video')
+        
         if not os.path.exists(arch_dir):
             os.makedirs(arch_dir)
         if not os.path.exists(report_arch_dir):
             os.makedirs(report_arch_dir)
         if not os.path.exists(pic_arch_dir):
             os.makedirs(pic_arch_dir)
+        if not os.path.exists(video_arch_dir):
+            os.makedirs(video_arch_dir)
 
         # 生成归档文件名
         original_filename = os.path.basename(self.file_path)
@@ -139,7 +143,7 @@ class EditReportPage(tk.Toplevel):
                 data[key] = page_data
 
         # 处理图片
-        self.process_images(data, pic_arch_dir, arch_path)
+        self.process_images(data, pic_arch_dir, video_arch_dir, arch_path)
 
         with open(self.file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -147,8 +151,9 @@ class EditReportPage(tk.Toplevel):
         messagebox.showinfo("保存成功", f"报告已成功保存\n原始文件已归档为: {arch_filename}")
         self.destroy()
 
-    def process_images(self, data, pic_arch_dir, arch_path):
+    def process_images(self, data, pic_arch_dir, vedio_arch_dir, arch_path):
         db_path = os.path.dirname(os.path.dirname(os.path.dirname(self.file_path)))
+        self.db_path = db_path
         # 读取归档文件获取旧路径
         with open(arch_path, 'r', encoding='utf-8') as f:
             archive_data = json.load(f)
@@ -157,40 +162,101 @@ class EditReportPage(tk.Toplevel):
         for test_name in ['头脉冲试验', '头脉冲抑制试验']:
             if test_name in archive_data and (test_name + '示意图') in archive_data[test_name]:
                 old_path = archive_data[test_name][test_name + '示意图']
-                if os.path.exists(os.path.join(db_path, old_path)):
-                    new_path = data[test_name][test_name + '示意图']
-                    if old_path != new_path:
+                if old_path and os.path.exists(os.path.join(db_path, old_path)):
+                    new_path = data.get(test_name, {}).get(test_name + '示意图')
+                    if new_path and old_path != new_path:
                         self.archive_and_update_file(db_path, old_path, new_path, pic_arch_dir, data[test_name], test_name + '示意图')
-
+                    elif not new_path:
+                        # 如果新数据中没有图片，则删除旧图片
+                        os.remove(os.path.join(db_path, old_path))
+                        data[test_name].pop(test_name + '示意图', None)
+                if old_path == '':
+                    new_path = data.get(test_name, {}).get(test_name + '示意图')
+                    if new_path:
+                        pic_data_dir = os.path.join(db_path, 'pic', datetime.now().strftime("%Y-%m-%d"))
+                        self.process_image(data, test_name, test_name + '示意图', pic_data_dir)
+                        
         # 处理视频
         video_tests = [
-            '仰卧滚转试验', '自发性眼震', '位置试验(其他)', '视动性眼震',
+            '仰卧滚转试验', '自发性眼震', '位置试验(其他)', '瘘管试验',
             '摇头试验', '凝视性眼震', '位置试验 (Dix-Hallpike试验)'
         ]
         for test_name in video_tests:
             if test_name in archive_data and '视频' in archive_data[test_name]:
                 old_path = archive_data[test_name]['视频']
-                if os.path.exists(os.path.join(db_path, old_path)):
-                    new_path = data[test_name]['视频']
-                    if old_path != new_path:
-                        self.archive_and_update_file(db_path, old_path, new_path, pic_arch_dir, data[test_name], '视频')
+                if old_path and os.path.exists(os.path.join(db_path, old_path)):
+                    new_path = data.get(test_name, {}).get('视频')
+                    if new_path and old_path != new_path:
+                        self.archive_and_update_file(db_path, old_path, new_path, vedio_arch_dir, data[test_name], '视频')
+                    elif not new_path:
+                        # 如果新数据中没有视频，则删除旧视频
+                        os.remove(os.path.join(db_path, old_path))
+                        data[test_name].pop('视频', None)
+                if old_path == '':
+                    new_path = data.get(test_name, {}).get('视频')
+                    if new_path:
+                        vedio_data_dir = os.path.join(db_path, 'video', datetime.now().strftime("%Y-%m-%d"))
+                        self.process_video(data, test_name, vedio_data_dir)
+                
 
     def archive_and_update_file(self, db_path, old_path, new_path, arch_dir, data_dict, key):
-        old_filename = os.path.basename(old_path)
         old_full_path = os.path.join(db_path, old_path)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        arch_filename = f"{os.path.splitext(old_filename)[0]}_{timestamp}{os.path.splitext(old_filename)[1]}"
-        arch_file_path = os.path.join(arch_dir, arch_filename)
-
-        # 移动旧文件到归档目录
-        shutil.move(old_full_path, arch_file_path)
-
-        # 复制新文件到原位置
         new_full_path = os.path.join(db_path, new_path)
-        shutil.copy2(new_full_path, old_full_path)
+        
+        if os.path.exists(old_full_path):
+            # 生成归档文件名
+            old_filename = os.path.basename(old_path)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            arch_filename = f"{os.path.splitext(old_filename)[0]}_{timestamp}{os.path.splitext(old_filename)[1]}"
+            arch_file_path = os.path.join(arch_dir, arch_filename)
 
-        # 更新数据中的文件路径（保持不变）
-        data_dict[key] = os.path.relpath(old_full_path, db_path)
+            # 移动旧文件到归档目录
+            shutil.move(old_full_path, arch_file_path)
+
+        if os.path.exists(new_full_path):
+            # 复制新文件到原位置
+            shutil.copy2(new_full_path, old_full_path)
+            # 更新数据中的文件路径（保持相对路径不变）
+            data_dict[key] = old_path
+        else:
+            # 如果新文件不存在，则从数据字典中删除该键
+            data_dict.pop(key, None)
+            
+            
+    def translate_test_name(self, test_name):
+        translation = {
+            "头脉冲试验": "head_impulse_test",
+            "头脉冲抑制试验": "head_impulse_suppression_test",
+            "位置试验 (Dix-Hallpike试验)": "dix_hallpike_test",
+            "仰卧滚转试验": "supine_roll_test",
+            "自发性眼震": "spontaneous_nystagmus",
+            "位置试验(其他)": "other_position_test",
+            "视动性眼震": "optokinetic_nystagmus",
+            "摇头试验": "head_shaking_test",
+            "凝视性眼震": "gaze_nystagmus",
+            "瘘管试验": "fistula_test"
+        }
+        return translation.get(test_name, test_name.lower().replace(' ', '_'))
+
+    def process_image(self, data, test_name, image_key, pic_folder):
+        image_path = data.get(test_name, {}).get(image_key)
+        if image_path:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            test_name_en = self.translate_test_name(test_name)
+            new_filename = f"{test_name_en}_{timestamp}{os.path.splitext(image_path)[1]}"
+            new_path = os.path.join(pic_folder, new_filename)
+            shutil.copy(image_path, new_path)
+            data[test_name][image_key] = os.path.relpath(new_path, self.db_path)
+
+    def process_video(self, data, test_name, video_folder):
+        video_path = data.get(test_name, {}).get("视频")
+        if video_path:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            test_name_en = self.translate_test_name(test_name)
+            new_filename = f"{test_name_en}_{timestamp}{os.path.splitext(video_path)[1]}"
+            new_path = os.path.join(video_folder, new_filename)
+            shutil.copy(video_path, new_path)
+            data[test_name]["视频"] = os.path.relpath(new_path, self.db_path)
 
 # 在主应用程序中使用这个页面的示例
 if __name__ == "__main__":
