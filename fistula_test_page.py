@@ -1,10 +1,13 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog, messagebox
+import os
+import subprocess
 
 class FistulaTestPage(ttk.Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
+        self.video_path = ""
         self.create_widgets()
 
     def create_widgets(self):
@@ -20,12 +23,66 @@ class FistulaTestPage(ttk.Frame):
         result_combobox['values'] = ["", "阴性", "右侧阳性", "左侧阳性", "双侧阳性", "配合欠佳"]
         result_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
+        # 视频导入部分
+        video_frame = ttk.Frame(main_frame)
+        video_frame.grid(row=1, column=0, columnspan=2, pady=10)
+
+        self.video_button = ttk.Button(video_frame, text="导入视频", command=self.import_video)
+        self.video_button.grid(row=0, column=0, padx=5)
+
+        self.open_video_button = ttk.Button(video_frame, text="打开视频", command=self.open_video, state=tk.DISABLED)
+        self.open_video_button.grid(row=0, column=1, padx=5)
+
+        self.cancel_video_button = ttk.Button(video_frame, text="取消视频", command=self.cancel_video, state=tk.DISABLED)
+        self.cancel_video_button.grid(row=0, column=2, padx=5)
+
+        self.video_label = ttk.Label(video_frame, text="未选择视频")
+        self.video_label.grid(row=1, column=0, columnspan=3, pady=5)
+
+    def import_video(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv")])
+        if file_path:
+            self.video_path = file_path
+            video_filename = os.path.basename(file_path)
+            self.video_label.config(text=f"已选择视频: {video_filename}")
+            self.open_video_button.config(state=tk.NORMAL)
+            self.cancel_video_button.config(state=tk.NORMAL)
+
+    def open_video(self):
+        if self.video_path:
+            if os.path.exists(self.video_path):
+                if os.name == 'nt':  # Windows
+                    os.startfile(self.video_path)
+                elif os.name == 'posix':  # macOS and Linux
+                    subprocess.call(('open', self.video_path))
+            else:
+                tk.messagebox.showerror("错误", "视频文件不存在")
+
+    def cancel_video(self):
+        if self.video_path:
+            result = messagebox.askyesno("确认", "确定要取消选择的视频吗？")
+            if result:
+                self.video_path = ""
+                self.video_label.config(text="未选择视频")
+                self.open_video_button.config(state=tk.DISABLED)
+                self.cancel_video_button.config(state=tk.DISABLED)
+
     def get_data(self):
         return {
             "瘘管试验": {
-                "结果": self.result_var.get()
+                "结果": self.result_var.get(),
+                "视频": self.video_path
             }
         }
     
     def set_data(self, data):
         self.result_var.set(data.get("结果", ""))
+        self.video_path = data.get("视频", "")
+        if self.video_path:
+            self.video_label.config(text=f"已选择视频: {os.path.basename(self.video_path)}")
+            self.open_video_button.config(state=tk.NORMAL)
+            self.cancel_video_button.config(state=tk.NORMAL)
+        else:
+            self.video_label.config(text="未选择视频")
+            self.open_video_button.config(state=tk.DISABLED)
+            self.cancel_video_button.config(state=tk.DISABLED)

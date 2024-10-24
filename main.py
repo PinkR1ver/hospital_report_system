@@ -313,6 +313,11 @@ class VestibularFunctionReport:
         if not os.path.exists(pic_date_folder):
             os.makedirs(pic_date_folder)
         
+        # 创建视频日期文件夹
+        video_date_folder = os.path.join(self.db_path, "video", current_date)
+        if not os.path.exists(video_date_folder):
+            os.makedirs(video_date_folder)
+        
         # 生成文件名
         patient_id = basic_info["ID"]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -322,29 +327,60 @@ class VestibularFunctionReport:
         file_path = os.path.join(report_folder, filename)
         
         # 处理头脉冲试验图片
-        hit_image_path = data.get("头脉冲试验", {}).get("头脉冲试验示意图")
-        if hit_image_path:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            new_filename = f"head_impulse_test_{timestamp}{os.path.splitext(hit_image_path)[1]}"
-            new_path = os.path.join(pic_date_folder, new_filename)
-            shutil.copy(hit_image_path, new_path)
-            data["头脉冲试验"]["头脉冲试验示意图"] = os.path.relpath(new_path, self.db_path)
+        self.process_image(data, "头脉冲试验", "头脉冲试验示意图", pic_date_folder)
         
         # 处理头脉冲抑制试验图片
-        his_image_path = data.get("头脉冲抑制试验", {}).get("头脉冲抑制试验示意图")
-        if his_image_path:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            new_filename = f"head_impulse_suppression_{timestamp}{os.path.splitext(his_image_path)[1]}"
-            new_path = os.path.join(pic_date_folder, new_filename)
-            shutil.copy(his_image_path, new_path)
-            data["头脉冲抑制试验"]["头脉冲抑制试验示意图"] = os.path.relpath(new_path, self.db_path)
+        self.process_image(data, "头脉冲抑制试验", "头脉冲抑制试验示意图", pic_date_folder)
+        
+        # 处理视频
+        video_tests = [
+            '位置试验 (Dix-Hallpike试验)', '仰卧滚转试验', '自发性眼震', '位置试验(其他)', 
+            '视动性眼震', '摇头试验', '凝视性眼震', '瘘管试验'
+        ]
+        for test_name in video_tests:
+            self.process_video(data, test_name, video_date_folder)
         
         # 保存数据到文件
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         
         messagebox.showinfo("保存成功", f"数据已成功保存到:\n{file_path}")
-        
+
+    def translate_test_name(self, test_name):
+        translation = {
+            "头脉冲试验": "head_impulse_test",
+            "头脉冲抑制试验": "head_impulse_suppression_test",
+            "位置试验 (Dix-Hallpike试验)": "dix_hallpike_test",
+            "仰卧滚转试验": "supine_roll_test",
+            "自发性眼震": "spontaneous_nystagmus",
+            "位置试验(其他)": "other_position_test",
+            "视动性眼震": "optokinetic_nystagmus",
+            "摇头试验": "head_shaking_test",
+            "凝视性眼震": "gaze_nystagmus",
+            "瘘管试验": "fistula_test"
+        }
+        return translation.get(test_name, test_name.lower().replace(' ', '_'))
+
+    def process_image(self, data, test_name, image_key, pic_folder):
+        image_path = data.get(test_name, {}).get(image_key)
+        if image_path:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            test_name_en = self.translate_test_name(test_name)
+            new_filename = f"{test_name_en}_{timestamp}{os.path.splitext(image_path)[1]}"
+            new_path = os.path.join(pic_folder, new_filename)
+            shutil.copy(image_path, new_path)
+            data[test_name][image_key] = os.path.relpath(new_path, self.db_path)
+
+    def process_video(self, data, test_name, video_folder):
+        video_path = data.get(test_name, {}).get("视频")
+        if video_path:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            test_name_en = self.translate_test_name(test_name)
+            new_filename = f"{test_name_en}_{timestamp}{os.path.splitext(video_path)[1]}"
+            new_path = os.path.join(video_folder, new_filename)
+            shutil.copy(video_path, new_path)
+            data[test_name]["视频"] = os.path.relpath(new_path, self.db_path)
+
     def show_database(self):
         self.show_page("database")
 

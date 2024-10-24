@@ -55,28 +55,19 @@ class HeadShakingTestPage(ttk.Frame):
     def import_video(self):
         file_path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv")])
         if file_path:
-            db_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            video_dir = os.path.join(db_path, "video", datetime.now().strftime("%Y-%m-%d"))
-            os.makedirs(video_dir, exist_ok=True)
-
+            self.video_path = file_path
             video_filename = os.path.basename(file_path)
-            new_video_path = os.path.join(video_dir, video_filename)
-            shutil.copy2(file_path, new_video_path)
-
-            self.video_path = os.path.relpath(new_video_path, db_path)
             self.video_label.config(text=f"已选择视频: {video_filename}")
             self.open_video_button.config(state=tk.NORMAL)
             self.cancel_video_button.config(state=tk.NORMAL)
 
     def open_video(self):
         if self.video_path:
-            db_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            full_path = os.path.join(db_path, self.video_path)
-            if os.path.exists(full_path):
+            if os.path.exists(self.video_path):
                 if os.name == 'nt':  # Windows
-                    os.startfile(full_path)
+                    os.startfile(self.video_path)
                 elif os.name == 'posix':  # macOS and Linux
-                    subprocess.call(('open', full_path))
+                    subprocess.call(('open', self.video_path))
             else:
                 tk.messagebox.showerror("错误", "视频文件不存在")
 
