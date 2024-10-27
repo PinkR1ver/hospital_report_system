@@ -225,7 +225,7 @@ class DatabasePage(ttk.Frame):
                 ["左", gaze_data.get("凝视性眼震模式（左）", ""), gaze_data.get("凝视性眼震速度（左）", "")],
                 ["右", gaze_data.get("凝视性眼震模式（右）", ""), gaze_data.get("凝视性眼震速度（右）", "")]
             ]
-            gaze_table = Table(gaze_table_data, colWidths=[doc.width/6, doc.width/2, doc.width/3])
+            gaze_table = Table(gaze_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
             gaze_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -255,7 +255,7 @@ class DatabasePage(ttk.Frame):
                 ["左后", hit_data.get("VOR增益 (左后半规管)", ""), hit_data.get("PR分数 (左后半规管)", "")],
                 ["右前", hit_data.get("VOR增益 (右前半规管)", ""), hit_data.get("PR分数 (右前半规管)", "")]
             ]
-            hit_table = Table(hit_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            hit_table = Table(hit_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
             hit_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -281,7 +281,7 @@ class DatabasePage(ttk.Frame):
                 ["左外", hit_suppression_data.get("头脉冲抑制试验增益 (左外半规管)", "")],
                 ["右外", hit_suppression_data.get("头脉冲抑制试验增益 (右外半规管)", "")]
             ]
-            hit_suppression_table = Table(hit_suppression_table_data, colWidths=[doc.width/2, doc.width/2])
+            hit_suppression_table = Table(hit_suppression_table_data, colWidths=[doc.width/6, doc.width/6])
             hit_suppression_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -303,11 +303,10 @@ class DatabasePage(ttk.Frame):
             elements.append(Paragraph("眼位反向偏斜 (skew deviation):", styles['Heading2']))
             elements.append(Spacer(1, 6))
             skew_table_data = [
-                ["项目", "结果"],
                 ["HR (度)", skew_data.get("眼位反向偏斜 (HR, 度)", "")],
                 ["VR (度)", skew_data.get("眼位反向偏斜 (VR, 度)", "")]
             ]
-            skew_table = Table(skew_table_data, colWidths=[doc.width/2, doc.width/2])
+            skew_table = Table(skew_table_data, colWidths=[doc.width/6, doc.width/6])
             skew_table.setStyle(TableStyle([
                 ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
                 ('ALIGN', (1, 0), (1, -1), 'LEFT'),
@@ -331,7 +330,7 @@ class DatabasePage(ttk.Frame):
                 ["峰速度 (度/秒)", saccade_data.get("扫视峰速度 (右向, 度/秒)", ""), saccade_data.get("扫视峰速度 (左向, 度/秒)", "")],
                 ["精确度 (%)", saccade_data.get("扫视精确度 (右向, %)", ""), saccade_data.get("扫视精确度 (左向, %)", "")]
             ]
-            saccade_table = Table(saccade_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            saccade_table = Table(saccade_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
             saccade_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -369,11 +368,9 @@ class DatabasePage(ttk.Frame):
             elements.append(Paragraph("摇头试验 (head shaking test):", styles['Heading2']))
             elements.append(Spacer(1, 6))
             hst_table_data = [
-                ["眼震模式", hst_data.get("眼震模式", "")],
-                ["眼震速度", f"{hst_data.get('眼震速度', '')} 度/秒"],
-                ["检查结果", hst_data.get("检查结果", "")]
+                ["眼震模式:", hst_data.get("眼震模式", ""), "眼震速度:", f"{hst_data.get('眼震速度', '')} 度/秒", "检查结果:", hst_data.get("检查结果", "")]
             ]
-            hst_table = Table(hst_table_data, colWidths=[doc.width/4, doc.width*3/4])
+            hst_table = Table(hst_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
             hst_table.setStyle(TableStyle([
                 ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
                 ('ALIGN', (1, 0), (1, -1), 'LEFT'),
@@ -399,7 +396,7 @@ class DatabasePage(ttk.Frame):
                 ["眼震最大速度 (度/秒)", dix_hallpike_data.get("右侧眼震最大速度 (度/秒)", ""), dix_hallpike_data.get("左侧眼震最大速度 (度/秒)", "")],
                 ["眼震疲劳性", dix_hallpike_data.get("右侧眼震疲劳性", ""), dix_hallpike_data.get("左侧眼震疲劳性", "")]
             ]
-            dix_hallpike_table = Table(dix_hallpike_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            dix_hallpike_table = Table(dix_hallpike_table_data, colWidths=[doc.width/4, doc.width/6, doc.width/6])
             dix_hallpike_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -428,7 +425,7 @@ class DatabasePage(ttk.Frame):
                 ["眼震持续时长 (秒)", roll_test_data.get("右侧眼震持续时长 (秒)", ""), roll_test_data.get("左侧眼震持续时长 (秒)", "")],
                 ["眼震最大速度 (度/秒)", roll_test_data.get("右侧眼震最大速度 (度/秒)", ""), roll_test_data.get("左侧眼震最大速度 (度/秒)", "")]
             ]
-            roll_test_table = Table(roll_test_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            roll_test_table = Table(roll_test_table_data, colWidths=[doc.width/4, doc.width/6, doc.width/6])
             roll_test_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -494,12 +491,9 @@ class DatabasePage(ttk.Frame):
             elements.append(Paragraph("视动性眼震 (optokinetic nystagmus):", styles['Heading2']))
             elements.append(Spacer(1, 6))
             okn_table_data = [
-                ["不对称性（%）", okn_data.get("不对称性（%）", "")],
-                ["向右视标增益", okn_data.get("向右视标增益", "")],
-                ["向左视标增益", okn_data.get("向左视标增益", "")],
-                ["检查结果", okn_data.get("检查结果", "")]
+                ["不对称性（%）:", okn_data.get("不对称性（%）", ""), "向右视标增益:", okn_data.get("向右视标增益", ""), "向左视标增益:", okn_data.get("向左视标增益", ""), "检查结果:", okn_data.get("检查结果", "")]
             ]
-            okn_table = Table(okn_table_data, colWidths=[doc.width/3, doc.width*2/3])
+            okn_table = Table(okn_table_data, colWidths=[doc.width/8, doc.width/8, doc.width/8, doc.width/8])
             okn_table.setStyle(TableStyle([
                 ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
                 ('ALIGN', (1, 0), (1, -1), 'LEFT'),
@@ -565,7 +559,7 @@ class DatabasePage(ttk.Frame):
                 ["N23波振幅 (微伏)", cvemp_data.get("右耳N23波振幅 (微伏)", ""), cvemp_data.get("左耳N23波振幅 (微伏)", "")],
                 ["P13-N23波振幅 (微伏)", cvemp_data.get("右耳P13-N23波振幅 (微伏)", ""), cvemp_data.get("左耳P13-N23波振幅 (微伏)", "")]
             ]
-            cvemp_table = Table(cvemp_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            cvemp_table = Table(cvemp_table_data, colWidths=[doc.width/4, doc.width/6, doc.width/6])
             cvemp_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -597,7 +591,7 @@ class DatabasePage(ttk.Frame):
                 ["P15波振幅 (微伏)", ovemp_data.get("右耳P15波振幅 (微伏)", ""), ovemp_data.get("左耳P15波振幅 (微伏)", "")],
                 ["N10-P15波振幅 (微伏)", ovemp_data.get("右耳N10-P15波振幅 (微伏)", ""), ovemp_data.get("左耳N10-P15波振幅 (微伏)", "")]
             ]
-            ovemp_table = Table(ovemp_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            ovemp_table = Table(ovemp_table_data, colWidths=[doc.width/4, doc.width/6, doc.width/6])
             ovemp_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
