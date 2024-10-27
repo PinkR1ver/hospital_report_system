@@ -192,40 +192,40 @@ class DatabasePage(ttk.Frame):
         
         test_results_list = []
         
-        # 凝视性眼震
-        
-        ## check if gaze data exists
-        
-        gaze_data = data.get("凝视性眼震", {})
-
-        has_gaze_data = any([
-            gaze_data.get("凝视性眼震模式（右）"),
-            gaze_data.get("凝视性眼震速度（右）"),
-            gaze_data.get("凝视性眼震模式（左）"),
-            gaze_data.get("凝视性眼震速度（左）"),
-            gaze_data.get("凝视性眼震模式（上）"),
-            gaze_data.get("凝视性眼震速度（上）"),
-            gaze_data.get("凝视性眼震模式（下）"),
-            gaze_data.get("凝视性眼震速度（下）"),
-            gaze_data.get("凝视性眼震检查结果")
-        ])
-
-        if has_gaze_data:
-            
-            gaze_data_title = Paragraph("凝视试验 (gaze test):", styles['Heading2'])
-            elements.append(gaze_data_title)
+        # 自发性眼震
+        spontaneous_data = data.get("自发性眼震", {})
+        if spontaneous_data:
+            elements.append(Paragraph("自发性眼震 (spontaneous nystagmus):", styles['Heading2']))
             elements.append(Spacer(1, 6))
-
-            # 创建一个表格来呈现凝视眼震的结果
-            gaze_table_data = [
-                ["方向", "凝视性眼震模式", "凝视性眼震速度 (°/s)"],
-                ["右凝视", gaze_data.get("凝视性眼震模式（右）", ""), gaze_data.get("凝视性眼震速度（右）", "")],
-                ["左凝视", gaze_data.get("凝视性眼震模式（左）", ""), gaze_data.get("凝视性眼震速度（左）", "")],
-                ["上凝视", gaze_data.get("凝视性眼震模式（上）", ""), gaze_data.get("凝视性眼震速度（上）", "")],
-                ["下凝视", gaze_data.get("凝视性眼震模式（下）", ""), gaze_data.get("凝视性眼震速度（下）", "")]
+            spontaneous_table_data = [
+                ["模式", spontaneous_data.get("自发性眼震模式", "")],
+                ["速度", f"{spontaneous_data.get('自发性眼震速度', '')} 度/秒"],
+                ["结果", spontaneous_data.get("自发性眼震检查结果", "")]
             ]
+            spontaneous_table = Table(spontaneous_table_data, colWidths=[doc.width/4, doc.width*3/4])
+            spontaneous_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(spontaneous_table)
+            elements.append(Spacer(1, 12))
 
-            gaze_table = Table(gaze_table_data, colWidths=[doc.width/8, doc.width/3, doc.width/5])
+        # 凝视性眼震
+        gaze_data = data.get("凝视性眼震", {})
+        if gaze_data:
+            elements.append(Paragraph("凝视性眼震 (gaze nystagmus):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            gaze_table_data = [
+                ["方向", "模式", "速度 (度/秒)"],
+                ["上", gaze_data.get("凝视性眼震模式（上）", ""), gaze_data.get("凝视性眼震速度（上）", "")],
+                ["下", gaze_data.get("凝视性眼震模式（下）", ""), gaze_data.get("凝视性眼震速度（下）", "")],
+                ["左", gaze_data.get("凝视性眼震模式（左）", ""), gaze_data.get("凝视性眼震速度（左）", "")],
+                ["右", gaze_data.get("凝视性眼震模式（右）", ""), gaze_data.get("凝视性眼震速度（右）", "")]
+            ]
+            gaze_table = Table(gaze_table_data, colWidths=[doc.width/6, doc.width/2, doc.width/3])
             gaze_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -238,84 +238,403 @@ class DatabasePage(ttk.Frame):
             ]))
             elements.append(gaze_table)
             elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"凝视性眼震检查结果: {gaze_data.get('凝视性眼震检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
 
-            gaze_result = Paragraph(f"凝视性眼震检查结果: {gaze_data.get('凝视性眼震检查结果', '')}", styles['Normal'])
-            test_results_list.append(gaze_result)
-            elements.append(gaze_result)
+        # 头脉冲试验
+        hit_data = data.get("头脉冲试验", {})
+        if hit_data:
+            elements.append(Paragraph("头脉冲试验 (head impulse test):", styles['Heading2']))
             elements.append(Spacer(1, 6))
-            
-        # 自发性眼震
-        spontaneous_data = data.get("自发性眼震", {})
-
-        # 检查是否有任何自发性眼震的具体数据
-        has_spontaneous_data = any([
-            spontaneous_data.get("自发性眼震模式"),
-            spontaneous_data.get("自发性眼震速度"),
-            spontaneous_data.get("自发性眼震检查结果")
-        ])
-
-        if has_spontaneous_data:
-            spontaneous_title = Paragraph("自发性眼震 (spontaneous nystagmus):", styles['Heading2'])
-            spontaneous_title.alignment = 0  # 左对齐
-            elements.append(spontaneous_title)
-            elements.append(Spacer(1, 6))
-
-            # 创建一个表格来呈现自发性眼震的结果
-            spontaneous_table_data = [
-                ["模式:", spontaneous_data.get("自发性眼震模式", ""), "速度（度/s）:", spontaneous_data.get("自发性眼震速度", ""), "结果:", spontaneous_data.get("自发性眼震检查结果", "")],
+            hit_table_data = [
+                ["半规管", "VOR增益", "PR分数"],
+                ["左外", hit_data.get("VOR增益 (左外半规管)", ""), hit_data.get("PR分数 (左外半规管)", "")],
+                ["右外", hit_data.get("VOR增益 (右外半规管)", ""), hit_data.get("PR分数 (右外半规管)", "")],
+                ["左前", hit_data.get("VOR增益 (左前半规管)", ""), hit_data.get("PR分数 (左前半规管)", "")],
+                ["右后", hit_data.get("VOR增益 (右后半规管)", ""), hit_data.get("PR分数 (右后半规管)", "")],
+                ["左后", hit_data.get("VOR增益 (左后半规管)", ""), hit_data.get("PR分数 (左后半规管)", "")],
+                ["右前", hit_data.get("VOR增益 (右前半规管)", ""), hit_data.get("PR分数 (右前半规管)", "")]
             ]
+            hit_table = Table(hit_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            hit_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(hit_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"头脉冲试验检查结果: {hit_data.get('头脉冲试验检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
 
-            # 创建表格
-            spontaneous_table = Table(spontaneous_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
-            spontaneous_table.setStyle(TableStyle([
+        # 头脉冲抑制试验
+        hit_suppression_data = data.get("头脉冲抑制试验", {})
+        if hit_suppression_data:
+            elements.append(Paragraph("头脉冲抑制试验 (head impulse suppression test):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            hit_suppression_table_data = [
+                ["半规管", "增益"],
+                ["左外", hit_suppression_data.get("头脉冲抑制试验增益 (左外半规管)", "")],
+                ["右外", hit_suppression_data.get("头脉冲抑制试验增益 (右外半规管)", "")]
+            ]
+            hit_suppression_table = Table(hit_suppression_table_data, colWidths=[doc.width/2, doc.width/2])
+            hit_suppression_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(hit_suppression_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"头脉冲抑制试验检查结果: {hit_suppression_data.get('头脉冲抑制试验检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 眼位反向偏斜
+        skew_data = data.get("眼位反向偏斜", {})
+        if skew_data:
+            elements.append(Paragraph("眼位反向偏斜 (skew deviation):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            skew_table_data = [
+                ["项目", "结果"],
+                ["HR (度)", skew_data.get("眼位反向偏斜 (HR, 度)", "")],
+                ["VR (度)", skew_data.get("眼位反向偏斜 (VR, 度)", "")]
+            ]
+            skew_table = Table(skew_table_data, colWidths=[doc.width/2, doc.width/2])
+            skew_table.setStyle(TableStyle([
                 ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
                 ('ALIGN', (1, 0), (1, -1), 'LEFT'),
                 ('FONTNAME', (0, 0), (-1, -1), self.font_name),
                 ('FONTSIZE', (0, 0), (-1, -1), 10),
-                ('TOPPADDING', (0, 0), (-1, -1), 1),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
-                ('RIGHTPADDING', (0, 0), (0, -1), 20),  # 在标签和值之间添加更多空间
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
             ]))
-            elements.append(spontaneous_table)
+            elements.append(skew_table)
             elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"眼位反向偏斜检查结果: {skew_data.get('眼位反向偏斜检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 扫视检查
+        saccade_data = data.get("扫视检查", {})
+        if saccade_data:
+            elements.append(Paragraph("扫视检查 (saccade test):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            saccade_table_data = [
+                ["项目", "右向", "左向"],
+                ["延迟时间 (毫秒)", saccade_data.get("扫视延迟时间 (右向, 毫秒)", ""), saccade_data.get("扫视延迟时间 (左向, 毫秒)", "")],
+                ["峰速度 (度/秒)", saccade_data.get("扫视峰速度 (右向, 度/秒)", ""), saccade_data.get("扫视峰速度 (左向, 度/秒)", "")],
+                ["精确度 (%)", saccade_data.get("扫视精确度 (右向, %)", ""), saccade_data.get("扫视精确度 (左向, %)", "")]
+            ]
+            saccade_table = Table(saccade_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            saccade_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(saccade_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"扫视检查结果: {saccade_data.get('扫视检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 视觉增强前庭-眼反射试验
+        vvor_data = data.get("视觉增强前庭-眼反射试验", {})
+        if vvor_data:
+            elements.append(Paragraph("视觉增强前庭-眼反射试验 (VVOR):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"检查结果: {vvor_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 前庭-眼反射抑制试验
+        vor_suppression_data = data.get("前庭-眼反射抑制试验", {})
+        if vor_suppression_data:
+            elements.append(Paragraph("前庭-眼反射抑制试验 (VOR suppression):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"检查结果: {vor_suppression_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 摇头试验
+        hst_data = data.get("摇头试验", {})
+        if hst_data:
+            elements.append(Paragraph("摇头试验 (head shaking test):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            hst_table_data = [
+                ["眼震模式", hst_data.get("眼震模式", "")],
+                ["眼震速度", f"{hst_data.get('眼震速度', '')} 度/秒"],
+                ["检查结果", hst_data.get("检查结果", "")]
+            ]
+            hst_table = Table(hst_table_data, colWidths=[doc.width/4, doc.width*3/4])
+            hst_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(hst_table)
+            elements.append(Spacer(1, 12))
+
+        # 位置试验 (Dix-Hallpike试验)
+        dix_hallpike_data = data.get("位置试验 (Dix-Hallpike试验)", {})
+        if dix_hallpike_data:
+            elements.append(Paragraph("位置试验 (Dix-Hallpike试验):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            dix_hallpike_table_data = [
+                ["项目", "右侧", "左侧"],
+                ["眼震模式", dix_hallpike_data.get("右侧眼震模式", ""), dix_hallpike_data.get("左侧眼震模式", "")],
+                ["坐起眼震模式", dix_hallpike_data.get("右侧坐起眼震模式", ""), dix_hallpike_data.get("左侧坐起眼震模式", "")],
+                ["出现眼震/头晕", dix_hallpike_data.get("右侧出现眼震/头晕", ""), dix_hallpike_data.get("左侧出现眼震/头晕", "")],
+                ["眼震潜伏期 (秒)", dix_hallpike_data.get("右侧眼震潜伏期 (秒)", ""), dix_hallpike_data.get("左侧眼震潜伏期 (秒)", "")],
+                ["眼震持续时长 (秒)", dix_hallpike_data.get("右侧眼震持续时长 (秒)", ""), dix_hallpike_data.get("左侧眼震持续时长 (秒)", "")],
+                ["眼震最大速度 (度/秒)", dix_hallpike_data.get("右侧眼震最大速度 (度/秒)", ""), dix_hallpike_data.get("左侧眼震最大速度 (度/秒)", "")],
+                ["眼震疲劳性", dix_hallpike_data.get("右侧眼震疲劳性", ""), dix_hallpike_data.get("左侧眼震疲劳性", "")]
+            ]
+            dix_hallpike_table = Table(dix_hallpike_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            dix_hallpike_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(dix_hallpike_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"检查结果: {dix_hallpike_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 位置试验 (仰卧滚转试验)
+        roll_test_data = data.get("位置试验 (仰卧滚转试验)", {})
+        if roll_test_data:
+            elements.append(Paragraph("位置试验 (仰卧滚转试验):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            roll_test_table_data = [
+                ["项目", "右侧", "左侧"],
+                ["眼震模式", roll_test_data.get("右侧眼震模式", ""), roll_test_data.get("左侧眼震模式", "")],
+                ["出现眼震/头晕", roll_test_data.get("右侧出现眼震/头晕", ""), roll_test_data.get("左侧出现眼震/头晕", "")],
+                ["眼震潜伏期 (秒)", roll_test_data.get("右侧眼震潜伏期 (秒)", ""), roll_test_data.get("左侧眼震潜伏期 (秒)", "")],
+                ["眼震持续时长 (秒)", roll_test_data.get("右侧眼震持续时长 (秒)", ""), roll_test_data.get("左侧眼震持续时长 (秒)", "")],
+                ["眼震最大速度 (度/秒)", roll_test_data.get("右侧眼震最大速度 (度/秒)", ""), roll_test_data.get("左侧眼震最大速度 (度/秒)", "")]
+            ]
+            roll_test_table = Table(roll_test_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            roll_test_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(roll_test_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"检查结果: {roll_test_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 位置试验(其他)
+        other_position_test_data = data.get("位置试验(其他)", {})
+        if other_position_test_data:
+            elements.append(Paragraph("位置试验(其他):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            other_position_test_table_data = [
+                ["坐位-平卧试验", other_position_test_data.get("坐位-平卧试验", "")],
+                ["坐位-低头试验", other_position_test_data.get("坐位-低头试验", "")],
+                ["坐位-仰头试验", other_position_test_data.get("坐位-仰头试验", "")],
+                ["零平面", other_position_test_data.get("零平面", "")],
+                ["检查结果", other_position_test_data.get("检查结果", "")]
+            ]
+            other_position_test_table = Table(other_position_test_table_data, colWidths=[doc.width/3, doc.width*2/3])
+            other_position_test_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(other_position_test_table)
+            elements.append(Spacer(1, 12))
+
+        # 视跟踪
+        pursuit_data = data.get("视跟踪", {})
+        if pursuit_data:
+            elements.append(Paragraph("视跟踪 (smooth pursuit):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            pursuit_table_data = [
+                ["视跟踪曲线分型", pursuit_data.get("视跟踪曲线分型", "")],
+                ["视跟踪增益", pursuit_data.get("视跟踪增益", "")],
+                ["视跟踪检查结果", pursuit_data.get("视跟踪检查结果", "")]
+            ]
+            pursuit_table = Table(pursuit_table_data, colWidths=[doc.width/3, doc.width*2/3])
+            pursuit_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(pursuit_table)
+            elements.append(Spacer(1, 12))
+
+        # 视动性眼震
+        okn_data = data.get("视动性眼震", {})
+        if okn_data:
+            elements.append(Paragraph("视动性眼震 (optokinetic nystagmus):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            okn_table_data = [
+                ["不对称性（%）", okn_data.get("不对称性（%）", "")],
+                ["向右视标增益", okn_data.get("向右视标增益", "")],
+                ["向左视标增益", okn_data.get("向左视标增益", "")],
+                ["检查结果", okn_data.get("检查结果", "")]
+            ]
+            okn_table = Table(okn_table_data, colWidths=[doc.width/3, doc.width*2/3])
+            okn_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(okn_table)
+            elements.append(Spacer(1, 12))
+
+        # 瘘管试验
+        fistula_test_data = data.get("瘘管试验", {})
+        if fistula_test_data:
+            elements.append(Paragraph("瘘管试验 (fistula test):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"结果: {fistula_test_data.get('结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 温度试验
+        caloric_data = data.get("温度试验", {})
+        if caloric_data:
+            elements.append(Paragraph("温度试验 (caloric test):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            caloric_table_data = [
+                ["项目", "结果"],
+                ["单侧减弱侧别 (UW)", caloric_data.get("单侧减弱侧别 (UW)", "")],
+                ["单侧减弱数值 (UW, %)", caloric_data.get("单侧减弱数值 (UW, %)", "")],
+                ["优势偏向侧别 (DP)", caloric_data.get("优势偏向侧别 (DP)", "")],
+                ["优势偏向数值 (DP, 度/秒)", caloric_data.get("优势偏向数值 (DP, 度/秒)", "")],
+                ["最大慢相速度总和（右耳, 度/秒）", caloric_data.get("最大慢相速度总和（右耳, 度/秒）", "")],
+                ["最大慢相速度总和（左耳, 度/秒）", caloric_data.get("最大慢相速度总和（左耳, 度/秒）", "")],
+                ["固视抑制指数 (FI, %)", caloric_data.get("固视抑制指数 (FI, %)", "")]
+            ]
+            caloric_table = Table(caloric_table_data, colWidths=[doc.width/2, doc.width/2])
+            caloric_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(caloric_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"温度试验检查结果: {caloric_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
             
-            # 温度试验
-            caloric_data = data.get("温度试验", {})
-
-            if caloric_data:
-                caloric_title = Paragraph("温度试验 (caloric test):", styles['Heading2'])
-                elements.append(caloric_title)
-                elements.append(Spacer(1, 6))
-
-                caloric_table_data = [
-                    ["项目", "结果"],
-                    ["单侧减弱侧别 (UW)", caloric_data.get("单侧减弱侧别 (UW)", "")],
-                    ["单侧减弱数值 (UW, %)", caloric_data.get("单侧减弱数值 (UW, %)", "")],
-                    ["优势偏向侧别 (DP)", caloric_data.get("优势偏向侧别 (DP)", "")],
-                    ["优势偏向数值 (DP, 度/秒)", caloric_data.get("优势偏向数值 (DP, 度/秒)", "")],
-                    ["最大慢相速度总和（右耳, 度/秒）", caloric_data.get("最大慢相速度总和（右耳, 度/秒）", "")],
-                    ["最大慢相速度总和（左耳, 度/秒）", caloric_data.get("最大慢相速度总和（左耳, 度/秒）", "")],
-                    ["固视抑制指数 (FI, %)", caloric_data.get("固视抑制指数 (FI, %)", "")]
-                ]
-
-                caloric_table = Table(caloric_table_data, colWidths=[doc.width/3, doc.width/4])
-                caloric_table.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                    ('FONTNAME', (0, 0), (-1, -1), self.font_name),
-                    ('FONTSIZE', (0, 0), (-1, -1), 10),
-                    ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-                    ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black)
-                ]))
-                elements.append(caloric_table)
-                elements.append(Spacer(1, 6))
-
-                caloric_result = Paragraph(f"温度试验检查结果: {caloric_data.get('检查结果', '')}", styles['Normal'])
-                elements.append(caloric_result)
-                elements.append(Spacer(1, 12))
             
+        # 颈肌前庭诱发肌源性电位 (cVEMP)
+        cvemp_data = data.get("颈肌前庭诱发肌源性电位 (cVEMP)", {})
+        if cvemp_data:
+            elements.append(Paragraph("颈肌前庭诱发肌源性电位 (cVEMP):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            cvemp_table_data = [
+                ["项目", "右耳", "左耳"],
+                ["声强阈值 (分贝)", cvemp_data.get("右耳声强阈值 (分贝)", ""), cvemp_data.get("左耳声强阈值 (分贝)", "")],
+                ["P13波潜伏期 (毫秒)", cvemp_data.get("右耳P13波潜伏期 (毫秒)", ""), cvemp_data.get("左耳P13波潜伏期 (毫秒)", "")],
+                ["N23波潜伏期 (毫秒)", cvemp_data.get("右耳N23波潜伏期 (毫秒)", ""), cvemp_data.get("左耳N23波潜伏期 (毫秒)", "")],
+                ["P13-N23波间期 (毫秒)", cvemp_data.get("右耳P13-N23波间期 (毫秒)", ""), cvemp_data.get("左耳P13-N23波间期 (毫秒)", "")],
+                ["P13波振幅 (微伏)", cvemp_data.get("右耳P13波振幅 (微伏)", ""), cvemp_data.get("左耳P13波振幅 (微伏)", "")],
+                ["N23波振幅 (微伏)", cvemp_data.get("右耳N23波振幅 (微伏)", ""), cvemp_data.get("左耳N23波振幅 (微伏)", "")],
+                ["P13-N23波振幅 (微伏)", cvemp_data.get("右耳P13-N23波振幅 (微伏)", ""), cvemp_data.get("左耳P13-N23波振幅 (微伏)", "")]
+            ]
+            cvemp_table = Table(cvemp_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            cvemp_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(cvemp_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"cVEMP耳间不对称性 (%): {cvemp_data.get('cVEMP耳间不对称性 (%)', '')}", styles['Normal']))
+            elements.append(Paragraph(f"检查结果: {cvemp_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 眼肌前庭诱发肌源性电位 (oVEMP)
+        ovemp_data = data.get("眼肌前庭诱发肌源性电位 (oVEMP)", {})
+        if ovemp_data:
+            elements.append(Paragraph("眼肌前庭诱发肌源性电位 (oVEMP):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            ovemp_table_data = [
+                ["项目", "右耳", "左耳"],
+                ["声强阈值 (分贝)", ovemp_data.get("右耳声强阈值 (分贝)", ""), ovemp_data.get("左耳声强阈值 (分贝)", "")],
+                ["N10波潜伏期 (毫秒)", ovemp_data.get("右耳N10波潜伏期 (毫秒)", ""), ovemp_data.get("左耳N10波潜伏期 (毫秒)", "")],
+                ["P15波潜伏期 (毫秒)", ovemp_data.get("右耳P15波潜伏期 (毫秒)", ""), ovemp_data.get("左耳P15波潜伏期 (毫秒)", "")],
+                ["N10-P15波间期 (毫秒)", ovemp_data.get("右耳N10-P15波间期 (毫秒)", ""), ovemp_data.get("左耳N10-P15波间期 (毫秒)", "")],
+                ["N10波振幅 (微伏)", ovemp_data.get("右耳N10波振幅 (微伏)", ""), ovemp_data.get("左耳N10波振幅 (微伏)", "")],
+                ["P15波振幅 (微伏)", ovemp_data.get("右耳P15波振幅 (微伏)", ""), ovemp_data.get("左耳P15波振幅 (微伏)", "")],
+                ["N10-P15波振幅 (微伏)", ovemp_data.get("右耳N10-P15波振幅 (微伏)", ""), ovemp_data.get("左耳N10-P15波振幅 (微伏)", "")]
+            ]
+            ovemp_table = Table(ovemp_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
+            ovemp_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(ovemp_table)
+            elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"oVEMP耳间不对称性 (%): {ovemp_data.get('oVEMP耳间不对称性 (%)', '')}", styles['Normal']))
+            elements.append(Paragraph(f"检查结果: {ovemp_data.get('检查结果', '')}", styles['Normal']))
+            elements.append(Spacer(1, 12))
+
+        # 主观视觉垂直线 (SVV)
+        svv_data = data.get("主观视觉垂直线 (SVV)", {})
+        if svv_data:
+            elements.append(Paragraph("主观视觉垂直线 (SVV):", styles['Heading2']))
+            elements.append(Spacer(1, 6))
+            svv_table_data = [
+                ["偏斜方向", svv_data.get("偏斜方向", "")],
+                ["偏斜角度（度）", svv_data.get("偏斜角度（度）", "")],
+                ["检查结果", svv_data.get("检查结果", "")]
+            ]
+            svv_table = Table(svv_table_data, colWidths=[doc.width/3, doc.width*2/3])
+            svv_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+            ]))
+            elements.append(svv_table)
+            elements.append(Spacer(1, 12))
+                
         
         # all test results
         # for result in test_results_list:
