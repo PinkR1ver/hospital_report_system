@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, FrameBreak, PageTemplate, BaseDocTemplate, Frame
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, FrameBreak, PageTemplate, BaseDocTemplate, Frame, Image as ReportLabImage
 from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet
 import tempfile
@@ -15,6 +15,9 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from edit_report_page import EditReportPage
 import shutil
+from reportlab.lib.utils import ImageReader
+from PIL import Image as PILImage
+import io
 
 class MyDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
@@ -76,7 +79,7 @@ class DatabasePage(ttk.Frame):
         scrollbar.grid(row=1, column=1, sticky=(tk.N, tk.S))
         self.report_tree.configure(yscrollcommand=scrollbar.set)
 
-        # 创建按钮框架
+        # 创建按钮��架
         button_frame = ttk.Frame(main_frame)
         button_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(10, 0))
         ttk.Button(button_frame, text="查看详情", command=self.view_report).grid(row=0, column=0, padx=(0, 5))
@@ -200,6 +203,7 @@ class DatabasePage(ttk.Frame):
             spontaneous_table_data = [
                 ["模式", spontaneous_data.get("自发性眼震模式", "")],
                 ["速度", f"{spontaneous_data.get('自发性眼震速度', '')} 度/秒"],
+                ["固视抑制", spontaneous_data.get("自发性眼震固视抑制", "")],
                 ["结果", spontaneous_data.get("自发性眼震检查结果", "")]
             ]
             spontaneous_table = Table(spontaneous_table_data, colWidths=[doc.width/4, doc.width*3/4])
@@ -241,6 +245,20 @@ class DatabasePage(ttk.Frame):
             elements.append(Paragraph(f"凝视性眼震检查结果: {gaze_data.get('凝视性眼震检查结果', '')}", styles['Normal']))
             elements.append(Spacer(1, 12))
 
+        # 添加图片的函数
+        def add_image(image_path, width=None):
+            if os.path.exists(image_path):
+                img = PILImage.open(image_path)
+                img_width, img_height = img.size
+                aspect = img_height / float(img_width)
+                
+                if width is None:
+                    width = doc.width * 0.8  # 默认宽度为页面宽度的80%
+                
+                height = width * aspect
+                elements.append(ReportLabImage(image_path, width=width, height=height))
+                elements.append(Spacer(1, 12))
+
         # 头脉冲试验
         hit_data = data.get("头脉冲试验", {})
         if hit_data:
@@ -255,7 +273,7 @@ class DatabasePage(ttk.Frame):
                 ["左后", hit_data.get("VOR增益 (左后半规管)", ""), hit_data.get("PR分数 (左后半规管)", "")],
                 ["右前", hit_data.get("VOR增益 (右前半规管)", ""), hit_data.get("PR分数 (右前半规管)", "")]
             ]
-            hit_table = Table(hit_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
+            hit_table = Table(hit_table_data, colWidths=[doc.width/6, doc.width/4, doc.width/6])
             hit_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -268,33 +286,43 @@ class DatabasePage(ttk.Frame):
             ]))
             elements.append(hit_table)
             elements.append(Spacer(1, 6))
+            elements.append(Paragraph(f"头脉冲试验扫视波: {hit_data.get('头脉冲试验扫视波', '')}", styles['Normal']))
             elements.append(Paragraph(f"头脉冲试验检查结果: {hit_data.get('头脉冲试验检查结果', '')}", styles['Normal']))
+            
+            # 添加头脉冲试验示意图
+            hit_image = hit_data.get("头脉冲试验示意图", "")
+            if hit_image:
+                add_image(os.path.join(self.db_path, hit_image))
+            
             elements.append(Spacer(1, 12))
 
         # 头脉冲抑制试验
         hit_suppression_data = data.get("头脉冲抑制试验", {})
         if hit_suppression_data:
-            elements.append(Paragraph("头脉冲抑制试验 (head impulse suppression test):", styles['Heading2']))
+            elements.append(Paragraph("头脉冲抑制试验 (head impulse test suppression):", styles['Heading2']))
             elements.append(Spacer(1, 6))
             hit_suppression_table_data = [
-                ["半规管", "增益"],
-                ["左外", hit_suppression_data.get("头脉冲抑制试验增益 (左外半规管)", "")],
-                ["右外", hit_suppression_data.get("头脉冲抑制试验增益 (右外半规管)", "")]
+                ["增益（左外半规管）", hit_suppression_data.get("头脉冲抑制试验增益 (左外半规管)", "")],
+                ["增益（右外半规管）", hit_suppression_data.get("头脉冲抑制试验增益 (右外半规管)", "")],
+                ["补偿性扫视波", hit_suppression_data.get("头脉冲抑制试验补偿性扫视波", "")]
             ]
-            hit_suppression_table = Table(hit_suppression_table_data, colWidths=[doc.width/6, doc.width/6])
+            hit_suppression_table = Table(hit_suppression_table_data, colWidths=[doc.width/3, doc.width/3, doc.width/3])
             hit_suppression_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
                 ('FONTNAME', (0, 0), (-1, -1), self.font_name),
                 ('FONTSIZE', (0, 0), (-1, -1), 10),
                 ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
             ]))
             elements.append(hit_suppression_table)
             elements.append(Spacer(1, 6))
             elements.append(Paragraph(f"头脉冲抑制试验检查结果: {hit_suppression_data.get('头脉冲抑制试验检查结果', '')}", styles['Normal']))
+            
+            # 添加头脉冲制试验示意图
+            hit_suppression_image = hit_suppression_data.get("头脉冲抑制试验示意图", "")
+            if hit_suppression_image:
+                add_image(os.path.join(self.db_path, hit_suppression_image))
+            
             elements.append(Spacer(1, 12))
 
         # 眼位反向偏斜

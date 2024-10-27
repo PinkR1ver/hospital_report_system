@@ -31,15 +31,20 @@ class SpontaneousNystagmusPage(ttk.Frame):
         ttk.Label(main_frame, text="自发性眼震速度 (度/秒):").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
         self.nystagmus_speed = ttk.Entry(main_frame, width=30)
         self.nystagmus_speed.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # 自发性眼震固视抑制
+        ttk.Label(main_frame, text="自发性眼震固视抑制:").grid(row=3, column=0, sticky=tk.E, padx=5, pady=5)
+        self.fixation_suppression = ttk.Combobox(main_frame, values=["", "固视抑制", "固视不抑制", "配合欠佳"], width=30)
+        self.fixation_suppression.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 自发性眼震检查结果
         ttk.Label(main_frame, text="自发性眼震检查结果:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
         self.exam_result = ttk.Combobox(main_frame, values=["", "正常", "异常", "配合欠佳"], width=30)
-        self.exam_result.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.exam_result.grid(row=3, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 视频导入
         video_frame = ttk.Frame(main_frame)
-        video_frame.grid(row=3, column=0, columnspan=2, pady=10)
+        video_frame.grid(row=4, column=0, columnspan=2, pady=10)
 
         self.video_button = ttk.Button(video_frame, text="导入视频", command=self.import_video)
         self.video_button.grid(row=0, column=0, padx=5)
@@ -91,6 +96,7 @@ class SpontaneousNystagmusPage(ttk.Frame):
                 "自发性眼震模式": self.nystagmus_mode.get(),
                 "自发性眼震速度": self.nystagmus_speed.get(),
                 "自发性眼震检查结果": self.exam_result.get(),
+                "自发性眼震固视抑制": self.fixation_suppression.get(),
                 "视频": self.video_path
             }
         }
@@ -99,6 +105,7 @@ class SpontaneousNystagmusPage(ttk.Frame):
         self.nystagmus_mode.set(data.get("自发性眼震模式", ""))
         self.nystagmus_speed.delete(0, tk.END)
         self.nystagmus_speed.insert(0, data.get("自发性眼震速度", ""))
+        self.fixation_suppression.set(data.get("自发性眼震固视抑制", ""))
         self.exam_result.set(data.get("自发性眼震检查结果", ""))
         self.video_path = data.get("视频", "")
         if self.video_path:

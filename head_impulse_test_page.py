@@ -109,8 +109,8 @@ class HeadImpulseTestPage(ttk.Frame):
             setattr(self, pr_attr, ttk.Entry(canal_frame))
             getattr(self, pr_attr).grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
-        # 头脉冲抑制试验补偿性扫视波
-        compensatory_saccade_frame = ttk.LabelFrame(main_frame, text="头脉冲抑制试验补偿性扫视波", padding="10 10 10 10")
+        # 头脉冲试验补偿性扫视波
+        compensatory_saccade_frame = ttk.LabelFrame(main_frame, text="头脉冲试验扫视波", padding="10 10 10 10")
         compensatory_saccade_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
         compensatory_saccade_frame.columnconfigure(0, weight=1)
 
@@ -210,7 +210,7 @@ class HeadImpulseTestPage(ttk.Frame):
                 "PR分数 (左后半规管)": self.pr_left_posterior.get(),
                 "VOR增益 (右前半规管)": self.vor_right_anterior.get(),
                 "PR分数 (右前半规管)": self.pr_right_anterior.get(),
-                "头脉冲抑制试验补偿性扫视波": self.hit_compensatory_saccade_var.get(),
+                "头脉冲试验扫视波": self.hit_compensatory_saccade_var.get(),
                 "头脉冲试验示意图": self.image_path,
                 "头脉冲试验检查结果": self.hit_result_var.get()
             }
@@ -232,7 +232,7 @@ class HeadImpulseTestPage(ttk.Frame):
             getattr(self, pr_attr).delete(0, tk.END)
             getattr(self, pr_attr).insert(0, data.get(f"PR分数 ({canal_name})", ""))
         
-        self.hit_compensatory_saccade_var.set(data.get("头脉冲抑制试验补偿性扫视波", ""))
+        self.hit_compensatory_saccade_var.set(data.get("头脉冲试验扫视波", ""))
         
         if data.get("头脉冲试验示意图"):
             self.image_path = data.get("头脉冲试验示意图")
