@@ -5,7 +5,8 @@ import os
 from datetime import datetime
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, FrameBreak, PageTemplate, BaseDocTemplate, Frame
+from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet
 import tempfile
 import subprocess
@@ -14,6 +15,29 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from edit_report_page import EditReportPage
 import shutil
+
+class MyDocTemplate(BaseDocTemplate):
+    def __init__(self, filename, **kw):
+        BaseDocTemplate.__init__(self, filename, **kw)
+        frame = Frame(
+            self.leftMargin, self.bottomMargin, 
+            self.width, self.height, 
+            id='normal'
+        )
+        template = PageTemplate('normal', [frame], onPage=self.add_page_elements)
+        self.addPageTemplates([template])
+
+    def add_page_elements(self, canvas, doc):
+        canvas.saveState()
+        canvas.setFont(self.font_name, 10)
+        canvas.drawRightString(doc.pagesize[0] - 1*cm, 1*cm, f"检查者: {self.examiner}")
+        canvas.restoreState()
+
+class CustomDocTemplate(MyDocTemplate):
+    def __init__(self, filename, examiner, font_name, **kw):
+        self.examiner = examiner
+        self.font_name = font_name
+        MyDocTemplate.__init__(self, filename, **kw)
 
 class DatabasePage(ttk.Frame):
     def __init__(self, master, controller):
@@ -96,6 +120,12 @@ class DatabasePage(ttk.Frame):
         # 实现搜索功能
         pass
 
+    def calculate_age(self, birth_date):
+        today = datetime.now()
+        birth_date = datetime.strptime(birth_date, "%Y/%m/%d")
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        return age
+
     def view_report(self):
         selected_item = self.report_tree.selection()
         if not selected_item:
@@ -108,52 +138,199 @@ class DatabasePage(ttk.Frame):
 
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
             pdf_path = tmp_file.name
+            
+        basic_info = data.get("基本信息", {})
 
-        doc = SimpleDocTemplate(pdf_path, pagesize=letter)
+        examiner = basic_info.get('检查医生', '_________________')
+        doc = CustomDocTemplate(pdf_path, examiner, self.font_name, pagesize=letter,
+                                leftMargin=20, rightMargin=20,
+                                topMargin=20, bottomMargin=20)
+        
         elements = []
         styles = getSampleStyleSheet()
         
         pdfmetrics.registerFont(TTFont(self.font_name, self.font_path))
         styles['Title'].fontName = self.font_name
+        styles['Heading1'].fontName = self.font_name
         styles['Heading2'].fontName = self.font_name
+        styles['Heading2'].fontSize = 12
+        styles['Heading2'].bold = True
+        styles['Heading2'].alignment = 0
         styles['Normal'].fontName = self.font_name
 
-        elements.append(Paragraph("前庭功能检查报告", styles['Title']))
-        elements.append(Spacer(1, 12))
+        # 标题
+        # elements.append(Paragraph("四川大学华西医院耳鼻咽喉头颈外科", styles['Title']))
+        # I want the title to be left aligned and more left offset
+        title_paragraph = Paragraph("前庭功能检测报告单", styles['Title'])
+        elements.append(title_paragraph)
+        elements.append(Spacer(1, 4))
+        
+        # 添加双横线
+        elements.append(Paragraph("=" * 100, styles['Normal']))
 
-        def add_table(data):
-            table_data = []
-            for key, value in data.items():
-                if isinstance(value, dict):
-                    table_data.append([Paragraph(key, styles['Heading2']), ''])
-                    table_data.extend(add_table(value))
-                elif value:
-                    table_data.append([Paragraph(key, styles['Normal']), Paragraph(str(value), styles['Normal'])])
+        # 基本信息
+        birth_date = basic_info.get("出生日期", "")
+        age = f"{self.calculate_age(birth_date)}岁" if birth_date else ""
+        
+        basic_info_data = [
+            ["登记号/住院号:", basic_info.get("ID", ""), "姓名:", basic_info.get("姓名", ""), "性别:", basic_info.get("性别", ""), "年龄:", age],
+            ["医嘱项目:", basic_info.get("检查项目", ""), "测试设备:", basic_info.get("检查设备", ""),  "检查日期:", basic_info.get("检查时间", "")],
+        ]
+
+        basic_info_table = Table(basic_info_data, colWidths=[doc.width/8, doc.width/8, doc.width/8, doc.width/8, doc.width/8, doc.width/8, doc.width/8, doc.width/8])
+        basic_info_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 0), (-1, -1), 1),
+            ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+        ]))
+        elements.append(basic_info_table)
+        
+        # 添加单横线
+        elements.append(Paragraph("-" * 100, styles['Normal']))
+        
+        test_results_list = []
+        
+        # 凝视性眼震
+        
+        ## check if gaze data exists
+        
+        gaze_data = data.get("凝视性眼震", {})
+
+        has_gaze_data = any([
+            gaze_data.get("凝视性眼震模式（右）"),
+            gaze_data.get("凝视性眼震速度（右）"),
+            gaze_data.get("凝视性眼震模式（左）"),
+            gaze_data.get("凝视性眼震速度（左）"),
+            gaze_data.get("凝视性眼震模式（上）"),
+            gaze_data.get("凝视性眼震速度（上）"),
+            gaze_data.get("凝视性眼震模式（下）"),
+            gaze_data.get("凝视性眼震速度（下）"),
+            gaze_data.get("凝视性眼震检查结果")
+        ])
+
+        if has_gaze_data:
             
-            if table_data:
-                t = Table(table_data, colWidths=[doc.width/2.5, doc.width/2.5])
-                t.setStyle(TableStyle([
-                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            gaze_data_title = Paragraph("凝视试验 (gaze test):", styles['Heading2'])
+            elements.append(gaze_data_title)
+            elements.append(Spacer(1, 6))
+
+            # 创建一个表格来呈现凝视眼震的结果
+            gaze_table_data = [
+                ["方向", "凝视性眼震模式", "凝视性眼震速度 (°/s)"],
+                ["右凝视", gaze_data.get("凝视性眼震模式（右）", ""), gaze_data.get("凝视性眼震速度（右）", "")],
+                ["左凝视", gaze_data.get("凝视性眼震模式（左）", ""), gaze_data.get("凝视性眼震速度（左）", "")],
+                ["上凝视", gaze_data.get("凝视性眼震模式（上）", ""), gaze_data.get("凝视性眼震速度（上）", "")],
+                ["下凝视", gaze_data.get("凝视性眼震模式（下）", ""), gaze_data.get("凝视性眼震速度（下）", "")]
+            ]
+
+            gaze_table = Table(gaze_table_data, colWidths=[doc.width/8, doc.width/3, doc.width/5])
+            gaze_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(gaze_table)
+            elements.append(Spacer(1, 6))
+
+            gaze_result = Paragraph(f"凝视性眼震检查结果: {gaze_data.get('凝视性眼震检查结果', '')}", styles['Normal'])
+            test_results_list.append(gaze_result)
+            elements.append(gaze_result)
+            elements.append(Spacer(1, 6))
+            
+        # 自发性眼震
+        spontaneous_data = data.get("自发性眼震", {})
+
+        # 检查是否有任何自发性眼震的具体数据
+        has_spontaneous_data = any([
+            spontaneous_data.get("自发性眼震模式"),
+            spontaneous_data.get("自发性眼震速度"),
+            spontaneous_data.get("自发性眼震检查结果")
+        ])
+
+        if has_spontaneous_data:
+            spontaneous_title = Paragraph("自发性眼震 (spontaneous nystagmus):", styles['Heading2'])
+            spontaneous_title.alignment = 0  # 左对齐
+            elements.append(spontaneous_title)
+            elements.append(Spacer(1, 6))
+
+            # 创建一个表格来呈现自发性眼震的结果
+            spontaneous_table_data = [
+                ["模式:", spontaneous_data.get("自发性眼震模式", ""), "速度（度/s）:", spontaneous_data.get("自发性眼震速度", ""), "结果:", spontaneous_data.get("自发性眼震检查结果", "")],
+            ]
+
+            # 创建表格
+            spontaneous_table = Table(spontaneous_table_data, colWidths=[doc.width/6, doc.width/6, doc.width/6])
+            spontaneous_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
+                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), self.font_name),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('TOPPADDING', (0, 0), (-1, -1), 1),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
+                ('RIGHTPADDING', (0, 0), (0, -1), 20),  # 在标签和值之间添加更多空间
+            ]))
+            elements.append(spontaneous_table)
+            elements.append(Spacer(1, 6))
+            
+            # 温度试验
+            caloric_data = data.get("温度试验", {})
+
+            if caloric_data:
+                caloric_title = Paragraph("温度试验 (caloric test):", styles['Heading2'])
+                elements.append(caloric_title)
+                elements.append(Spacer(1, 6))
+
+                caloric_table_data = [
+                    ["项目", "结果"],
+                    ["单侧减弱侧别 (UW)", caloric_data.get("单侧减弱侧别 (UW)", "")],
+                    ["单侧减弱数值 (UW, %)", caloric_data.get("单侧减弱数值 (UW, %)", "")],
+                    ["优势偏向侧别 (DP)", caloric_data.get("优势偏向侧别 (DP)", "")],
+                    ["优势偏向数值 (DP, 度/秒)", caloric_data.get("优势偏向数值 (DP, 度/秒)", "")],
+                    ["最大慢相速度总和（右耳, 度/秒）", caloric_data.get("最大慢相速度总和（右耳, 度/秒）", "")],
+                    ["最大慢相速度总和（左耳, 度/秒）", caloric_data.get("最大慢相速度总和（左耳, 度/秒）", "")],
+                    ["固视抑制指数 (FI, %)", caloric_data.get("固视抑制指数 (FI, %)", "")]
+                ]
+
+                caloric_table = Table(caloric_table_data, colWidths=[doc.width/3, doc.width/4])
+                caloric_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                     ('FONTNAME', (0, 0), (-1, -1), self.font_name),
                     ('FONTSIZE', (0, 0), (-1, -1), 10),
-                    ('TOPPADDING', (0, 0), (-1, -1), 3),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black)
                 ]))
-                return t
-            return None
+                elements.append(caloric_table)
+                elements.append(Spacer(1, 6))
 
-        for test_name, test_data in data.items():
-            elements.append(Paragraph(test_name, styles['Heading2']))
-            elements.append(Spacer(1, 6))
-            if isinstance(test_data, dict):
-                table = add_table(test_data)
-                if table:
-                    elements.append(table)
-            elements.append(Spacer(1, 12))
+                caloric_result = Paragraph(f"温度试验检查结果: {caloric_data.get('检查结果', '')}", styles['Normal'])
+                elements.append(caloric_result)
+                elements.append(Spacer(1, 12))
+            
+        
+        # all test results
+        # for result in test_results_list:
+        #     elements.append(result)
+        #     elements.append(Spacer(1, 6))
 
+        # # 检查者
+        # examiner = Paragraph(f"检查者: {basic_info.get('检查医生', '_________________')}", styles['Normal'])
+        # examiner.alignment = 2  # 右对齐
+        # elements.append(examiner)
+
+        # 生成PDF
         doc.build(elements)
 
+        # 打开生成的PDF
         if platform.system() == "Windows":
             os.startfile(pdf_path)
         elif platform.system() == "Darwin":  # macOS
@@ -220,3 +397,6 @@ class DatabasePage(ttk.Frame):
     
     def get_data(self):
         return {}
+
+
+
