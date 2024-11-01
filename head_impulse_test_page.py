@@ -220,7 +220,7 @@ class HeadImpulseTestPage(ttk.Frame):
         canals = [
             ("左外半规管", "vor_left_lateral", "pr_left_lateral"),
             ("右外半规管", "vor_right_lateral", "pr_right_lateral"),
-            ("左前半管", "vor_left_anterior", "pr_left_anterior"),
+            ("左前半规管", "vor_left_anterior", "pr_left_anterior"),
             ("右后半规管", "vor_right_posterior", "pr_right_posterior"),
             ("左后半规管", "vor_left_posterior", "pr_left_posterior"),
             ("右前半规管", "vor_right_anterior", "pr_right_anterior")

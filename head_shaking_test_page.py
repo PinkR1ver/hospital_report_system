@@ -30,15 +30,20 @@ class HeadShakingTestPage(ttk.Frame):
         ttk.Label(main_frame, text="眼震速度（摇头试验，度/秒）:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
         self.nystagmus_speed = ttk.Entry(main_frame, width=20)
         self.nystagmus_speed.grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
+        
+        # 摇头方向
+        ttk.Label(main_frame, text="摇头方向:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
+        self.nystagmus_direction = ttk.Combobox(main_frame, values=["", "左", "右", "上", "下"], width=20)
+        self.nystagmus_direction.grid(row=2, column=1, sticky=tk.W, padx=5, pady=5)
 
         # 摇头试验检查结果
-        ttk.Label(main_frame, text="摇头试验检查结果:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
+        ttk.Label(main_frame, text="摇头试验检查结果:").grid(row=3, column=0, sticky=tk.E, padx=5, pady=5)
         self.test_result = ttk.Combobox(main_frame, values=["", "正常", "异常", "配合欠佳"], width=20)
-        self.test_result.grid(row=2, column=1, sticky=tk.W, padx=5, pady=5)
+        self.test_result.grid(row=3, column=1, sticky=tk.W, padx=5, pady=5)
 
         # 视频导入
         video_frame = ttk.Frame(main_frame)
-        video_frame.grid(row=3, column=0, columnspan=2, pady=10)
+        video_frame.grid(row=4, column=0, columnspan=2, pady=10)
 
         self.video_button = ttk.Button(video_frame, text="导入视频", command=self.import_video)
         self.video_button.grid(row=0, column=0, padx=5)
@@ -89,6 +94,7 @@ class HeadShakingTestPage(ttk.Frame):
             "摇头试验": {
                 "眼震模式": self.nystagmus_mode.get(),
                 "眼震速度": self.nystagmus_speed.get(),
+                "摇头方向": self.nystagmus_direction.get(),
                 "检查结果": self.test_result.get(),
                 "视频": self.video_path
             }
@@ -98,6 +104,7 @@ class HeadShakingTestPage(ttk.Frame):
         self.nystagmus_mode.set(data.get("眼震模式", ""))
         self.nystagmus_speed.delete(0, tk.END)
         self.nystagmus_speed.insert(0, data.get("眼震速度", ""))
+        self.nystagmus_direction.set(data.get("摇头方向", ""))
         self.test_result.set(data.get("检查结果", ""))
         self.video_path = data.get("视频", "")
         if self.video_path:

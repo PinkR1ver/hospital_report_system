@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前庭功能检查报告</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid #000;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            width: 100px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .form-group input {
+            flex: 1;
+            padding: 5px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+        }
+        .result {
+            margin-bottom: 20px;
+        }
+        .image-placeholder {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">浙江省人民医院神经电生理科前庭功能检查报告</div>
+        <div class="form-group">
+            <label for="id">ID</label>
+            <input type="text" id="id">
+        </div>
+        <div class="form-group">
+            <label for="name">姓名</label>
+            <input type="text" id="name">
+        </div>
+        <div class="form-group">
+            <label for="gender">性别</label>
+            <input type="text" id="gender">
+        </div>
+        <div class="form-group">
+            <label for="birthdate">出生日期</label>
+            <input type="text" id="birthdate">
+        </div>
+        <div class="form-group">
+            <label for="checkdate">检查日期</label>
+            <input type="text" id="checkdate">
+        </div>
+        <div class="form-group">
+            <label for="equipment">检查设备</label>
+            <input type="text" id="equipment">
+        </div>
+        <div class="form-group">
+            <label for="doctor">检查医生</label>
+            <input type="text" id="doctor">
+        </div>
+
+        <div class="section">
+            <div class="section-title">自发性眼震 (spontaneous nystagmus)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>模式</th>
+                        <th>速度（度/秒）</th>
+                        <th>固视抑制</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td>水平</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">摇头试验</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>模式</th>
+                        <th>方向</th>
+                        <th>速度（度/秒）</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td>水平</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">凝视性眼震 (gaze-evoked nystagmus)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>凝视方向</th>
+                        <th>模式</th>
+                        <th>速度（度/秒）</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td>左</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>右</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>上</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>下</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">头脉冲试验 (head impulse test)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>侧别</th>
+                        <th>增益</th>
+                        <th>扫视波</th>
+                        <th>PR分数</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td>左外</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>右外</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>左前</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>右前</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>左后</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>右后</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">头脉冲抑制试验 (head impulse suppression test)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>侧别</th>
+                        <th>增益</th>
+                        <th>扫视波</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td>左外半规管</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>右外半规管</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">眼位反向偏斜 (skew deviation)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>HR（度）</th>
+                        <th>VR（度）</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">视觉增强前庭-眼反射试验 (VOR)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">前庭-眼反射抑制试验 (VOR suppression)</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">扫视</div>
+            <div class="table">
+                <table>
+                    <tr>
+                        <th>视靶方向</th>
+                        <th>延迟时间（毫秒）</th>
+                        <th>峰速度（度/秒）</th>
+                        <th>精确度（%）</th>
+                        <th>检查结果</th>
+                    </tr>
+                    <tr>
+                        <td>左</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>右</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </

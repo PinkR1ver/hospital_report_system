@@ -35,8 +35,8 @@ class SupineRollTestPage(ttk.Frame):
             ], width=25))
             getattr(self, f"{side_prefix}_nystagmus_mode").grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
-            # 出现眼震/头晕
-            ttk.Label(side_frame, text="出现眼震/头晕:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
+            # 出现眩晕/头晕
+            ttk.Label(side_frame, text="出现眩晕/头晕:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
             setattr(self, f"{side_prefix}_nystagmus_dizziness", ttk.Combobox(side_frame, values=["是", "否", "配合欠佳"], width=25))
             getattr(self, f"{side_prefix}_nystagmus_dizziness").grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
@@ -120,12 +120,12 @@ class SupineRollTestPage(ttk.Frame):
         data = {
             "位置试验 (仰卧滚转试验)": {
                 "右侧眼震模式": self.right_nystagmus_mode.get(),
-                "右侧出现眼震/头晕": self.right_nystagmus_dizziness.get(),
+                "右侧出现眩晕/头晕": self.right_nystagmus_dizziness.get(),
                 "右侧眼震潜伏期 (秒)": self.right_latency.get(),
                 "右侧眼震持续时长 (秒)": self.right_duration.get(),
                 "右侧眼震最大速度 (度/秒)": self.right_max_speed.get(),
                 "左侧眼震模式": self.left_nystagmus_mode.get(),
-                "左侧出现眼震/头晕": self.left_nystagmus_dizziness.get(),
+                "左侧出现眩晕/头晕": self.left_nystagmus_dizziness.get(),
                 "左侧眼震潜伏期 (秒)": self.left_latency.get(),
                 "左侧眼震持续时长 (秒)": self.left_duration.get(),
                 "左侧眼震最大速度 (度/秒)": self.left_max_speed.get(),
@@ -139,7 +139,7 @@ class SupineRollTestPage(ttk.Frame):
         sides = [('right', '右侧'), ('left', '左侧')]
         for side_prefix, side_name in sides:
             getattr(self, f"{side_prefix}_nystagmus_mode").set(data.get(f"{side_name}眼震模式", ""))
-            getattr(self, f"{side_prefix}_nystagmus_dizziness").set(data.get(f"{side_name}出现眼震/头晕", ""))
+            getattr(self, f"{side_prefix}_nystagmus_dizziness").set(data.get(f"{side_name}出现眩晕/头晕", ""))
             getattr(self, f"{side_prefix}_latency").delete(0, tk.END)
             getattr(self, f"{side_prefix}_latency").insert(0, data.get(f"{side_name}眼震潜伏期 (秒)", ""))
             getattr(self, f"{side_prefix}_duration").delete(0, tk.END)

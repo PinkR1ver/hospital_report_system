@@ -33,12 +33,12 @@ class SpontaneousNystagmusPage(ttk.Frame):
         self.nystagmus_speed.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
         
         # 自发性眼震固视抑制
-        ttk.Label(main_frame, text="自发性眼震固视抑制:").grid(row=3, column=0, sticky=tk.E, padx=5, pady=5)
+        ttk.Label(main_frame, text="自发性眼震固视抑制:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
         self.fixation_suppression = ttk.Combobox(main_frame, values=["", "固视抑制", "固视不抑制", "配合欠佳"], width=30)
         self.fixation_suppression.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 自发性眼震检查结果
-        ttk.Label(main_frame, text="自发性眼震检查结果:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
+        ttk.Label(main_frame, text="自发性眼震检查结果:").grid(row=3, column=0, sticky=tk.E, padx=5, pady=5)
         self.exam_result = ttk.Combobox(main_frame, values=["", "正常", "异常", "配合欠佳"], width=30)
         self.exam_result.grid(row=3, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 

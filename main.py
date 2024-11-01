@@ -36,10 +36,16 @@ from database_page import DatabasePage
 class VestibularFunctionReport:
     def __init__(self, master):
         self.master = master
-        self.master.title("前庭功能检查报告系统")
-        self.master.geometry("1000x700")  # 增加窗口宽度以适应侧边栏
-        
         self.config_file = "config.json"
+        
+        # 在创建主界面之前先检查密码
+        if not self.check_password():
+            self.master.quit()
+            return
+            
+        self.master.title("前庭功能检查报告系统")
+        self.master.geometry("1000x700")
+        
         self.load_config()
         
         self.create_menu()
@@ -210,15 +216,30 @@ class VestibularFunctionReport:
         try:
             with open(self.config_file, 'r') as f:
                 config = json.load(f)
-        except FileNotFoundError:
-            # create empty config file
-            with open(self.config_file, 'w') as f:
-                json.dump({}, f)
                 
+            # 检查是否存在密码配置
+            if 'password' not in config:
+                # 如果没有密码，则设置密码
+                self.set_initial_password()
+                # 重新加载配置
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                    
+        except FileNotFoundError:
+            # 如果配置文件不存在，创建新的配置文件并设置密码
+            config = {}
+            self.set_initial_password()
+            # 重新加载配置
+            with open(self.config_file, 'r') as f:
+                config = json.load(f)
+                
+        # 加载其他配置
         self.load_database_path()
         self.load_fonts()
-        self.save_config()
         
+        # 保存完整配置
+        self.save_config()
+
     def load_database_path(self):
         config = json.load(open(self.config_file, 'r'))
         try:
@@ -263,7 +284,25 @@ class VestibularFunctionReport:
                 self.font_path = None
 
     def save_config(self):
-        config = {'db_path': self.db_path, 'font_name': self.font_name, 'font_path': self.font_path}
+        try:
+            # 读取现有配置
+            with open(self.config_file, 'r') as f:
+                config = json.load(f)
+        except FileNotFoundError:
+            config = {}
+        
+        # 更新配置
+        config.update({
+            'db_path': self.db_path,
+            'font_name': self.font_name,
+            'font_path': self.font_path
+        })
+        
+        # 确保保留密码配置
+        if 'password' not in config:
+            config['password'] = ''  # 或者可以在这里触发密码设置
+        
+        # 保存配置
         with open(self.config_file, 'w') as f:
             json.dump(config, f)
 
@@ -401,6 +440,101 @@ class VestibularFunctionReport:
         Email: pinkr1veroops@gmail.com
         """
         messagebox.showinfo("关于", about_text)
+
+    def set_initial_password(self):
+        """设置初始密码"""
+        password_window = tk.Toplevel(self.master)
+        password_window.title("设置密码")
+        password_window.geometry("300x300")  # 增加窗口高度以容纳按钮
+        password_window.transient(self.master)
+        
+        # 创建主框架来组织控件
+        main_frame = ttk.Frame(password_window, padding="20")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # 密码输入区域
+        ttk.Label(main_frame, text="请设置系统密码:").pack(pady=5)
+        password_var = tk.StringVar()
+        password_entry = ttk.Entry(main_frame, show="*", textvariable=password_var)
+        password_entry.pack(pady=5)
+        
+        # 确认密码区域
+        ttk.Label(main_frame, text="请确认密码:").pack(pady=5)
+        confirm_var = tk.StringVar()
+        confirm_entry = ttk.Entry(main_frame, show="*", textvariable=confirm_var)
+        confirm_entry.pack(pady=5)
+        
+        # 按钮区域
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(pady=20)
+        
+        def save_password():
+            if not password_var.get():
+                messagebox.showerror("错误", "密码不能为空！")
+                return
+            
+            if password_var.get() == confirm_var.get():
+                config = {'password': password_var.get()}
+                with open(self.config_file, 'w') as f:
+                    json.dump(config, f)
+                password_window.destroy()
+            else:
+                messagebox.showerror("错误", "两次输入的密码不一致！")
+        
+        def cancel():
+            password_window.destroy()
+            self.master.quit()
+        
+        # 添加确认和取消按钮
+        ttk.Button(button_frame, text="确定", command=save_password, width=10).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="取消", command=cancel, width=10).pack(side=tk.LEFT, padx=5)
+        
+        # 设置回车键绑定
+        password_entry.bind('<Return>', lambda e: confirm_entry.focus())
+        confirm_entry.bind('<Return>', lambda e: save_password())
+        
+        # 设置初始焦点
+        password_entry.focus()
+        
+        password_window.grab_set()  # 模态窗口
+        password_window.protocol("WM_DELETE_WINDOW", cancel)  # 处理窗口关闭按钮
+        self.master.wait_window(password_window)
+
+    def check_password(self):
+        """检查密码"""
+        try:
+            with open(self.config_file, 'r') as f:
+                config = json.load(f)
+                stored_password = config.get('password')
+        except FileNotFoundError:
+            return True  # 首次运行时返回True
+            
+        password_window = tk.Toplevel(self.master)
+        password_window.title("密码验证")
+        password_window.geometry("300x120")
+        password_window.transient(self.master)
+        
+        ttk.Label(password_window, text="请输入系统密码:").pack(pady=10)
+        password_var = tk.StringVar()
+        password_entry = ttk.Entry(password_window, show="*", textvariable=password_var)
+        password_entry.pack(pady=5)
+        
+        result = [False]  # 使用列表存储结果，以便在内部函数中修改
+        
+        def verify_password():
+            if password_var.get() == stored_password:
+                result[0] = True
+                password_window.destroy()
+            else:
+                messagebox.showerror("错误", "密码错误！")
+                result[0] = False
+        
+        ttk.Button(password_window, text="确定", command=verify_password).pack(pady=10)
+        
+        password_window.grab_set()  # 模态窗口
+        self.master.wait_window(password_window)
+        
+        return result[0]
 
 if __name__ == "__main__":
     root = tk.Tk()
