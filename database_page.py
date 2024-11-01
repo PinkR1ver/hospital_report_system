@@ -21,6 +21,16 @@ import io
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side
 
+def is_dict_empty(d):
+    """
+    检查字典中的所有值是否为空
+    空的定义: None, "", [], {}, 0, "0", "未知", "无"
+    返回: True 如果所有值都为空，False 如果存在非空值
+    """
+    empty_values = [None, "", [], {}, 0, "0", "未知", "无"]
+    return all(value in empty_values or (isinstance(value, str) and value.strip() == "") 
+              for value in d.values())
+
 class MyDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
         BaseDocTemplate.__init__(self, filename, **kw)
@@ -142,20 +152,87 @@ class DatabasePage(ttk.Frame):
         file_path = self.report_tree.item(selected_item)['tags'][0]
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+            
+        base_path = os.path.dirname(__file__)
 
         # 加载Excel模板
-        template_path = os.path.join(self.db_path, "template", "report_template.xlsx")
+        template_path = os.path.join(base_path, "template", "report_template.xlsx")
         wb = openpyxl.load_workbook(template_path)
         ws = wb.active
 
         # 填充基本信息
         basic_info = data.get("基本信息", {})
-        ws['B2'] = basic_info.get("ID", "")
-        ws['D2'] = basic_info.get("姓名", "")
-        # ... 填充其他基本信息
+        ws['B3'] = basic_info.get("ID", "")
+        ws['E3'] = basic_info.get("姓名", "")
+        ws['H3'] = basic_info.get("性别", "")
+        ws['K3'] = basic_info.get("出生日期", "")
+        ws['N3'] = basic_info.get("检查时间", "")
+        ws['Q3'] = basic_info.get("检查设备", "")
+        ws['T3'] = basic_info.get("检查医生", "")
+
+        # 填充自发性眼震动(spontaneous nystagmus)
+        spontaneous_nystagmus = data.get("自发性眼震", {})
+        if not is_dict_empty(spontaneous_nystagmus):
+            ws.merge_cells('A7:C7')
+            ws.merge_cells('D7:F7')
+            ws.merge_cells('G7:I7')
+            ws.merge_cells('K7:M7')
+            
+            ws['A7'] = spontaneous_nystagmus.get("自发性眼震模式", "")
+            ws['D7'] = spontaneous_nystagmus.get("自发性眼震速度", "")
+            ws['G7'] = spontaneous_nystagmus.get("自发性眼震固视抑制", "")
+            ws['K7'] = spontaneous_nystagmus.get("自发性眼震检查结果", "")
+        else:
+            pass
         
-        # 填充检查结果
-        # ... 根据具体模板格式填充各项检查数据
+        # 摇头试验
+        head_shake_test = data.get("摇头试验", {})
+        if not is_dict_empty(head_shake_test):
+            
+            ws.merge_cells('A11:C11')
+            ws.merge_cells('D11:E11')
+            ws.merge_cells('F11:G11')
+            ws.merge_cells('I11:M11')
+            
+            ws['A11'] = head_shake_test.get("眼震模式", "")
+            ws['D11'] = head_shake_test.get("摇头方向", "")
+            ws['F11'] = head_shake_test.get("眼震速度", "")
+            ws['I11'] = head_shake_test.get("检查结果", "")
+            
+        else:
+            pass
+        
+        
+        # 凝视性眼震
+        gaze_nystagmus = data.get("凝视性眼震", {})
+        if not is_dict_empty(gaze_nystagmus):
+            
+            ws.merge_cells('C15:D15')
+            ws.merge_cells('E15:F15')
+            ws.merge_cells('G15:H15')
+            ws.merge_cells('I15:J15')
+            
+            ws.merge_cells('C16:D16')
+            ws.merge_cells('E16:F16')
+            ws.merge_cells('G16:H16')
+            ws.merge_cells('I16:J16')
+            
+            ws.merge_cells('L15:M16')
+            
+            ws['C15'] = gaze_nystagmus.get("凝视性眼震模式（左）", "")
+            ws['E15'] = gaze_nystagmus.get("凝视性眼震模式（右）", "")
+            ws['G15'] = gaze_nystagmus.get("凝视性眼震模式（上）", "")
+            ws['I15'] = gaze_nystagmus.get("凝视性眼震模式（下）", "")
+            
+            ws['C16'] = gaze_nystagmus.get("凝视性眼震速度（左）", "")
+            ws['E16'] = gaze_nystagmus.get("凝视性眼震速度（右）", "")
+            ws['G16'] = gaze_nystagmus.get("凝视性眼震速度（上）", "")
+            ws['I16'] = gaze_nystagmus.get("凝视性眼震速度（下）", "")
+            
+            ws['L15'] = gaze_nystagmus.get("凝视性眼震检查结果", "")
+            
+        else:
+            pass
         
         # 保存生成的报告
         output_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}.xlsx")
