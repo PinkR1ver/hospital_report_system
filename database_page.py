@@ -234,6 +234,406 @@ class DatabasePage(ttk.Frame):
         else:
             pass
         
+        
+        # 头脉冲试验
+        head_impulse = data.get("头脉冲试验", "")
+        if not is_dict_empty(head_impulse):
+            
+            ws.merge_cells('J20:M22')
+            ws.merge_cells('C22:H22')
+            
+            ws['C20'] = head_impulse.get("VOR增益 (左外半规管)", "")
+            ws['D20'] = head_impulse.get("VOR增益 (右外半规管)", "")
+            ws['E20'] = head_impulse.get("VOR增益 (左前半规管)", "")
+            ws['F20'] = head_impulse.get("VOR增益 (右后半规管)", "")
+            ws['G20'] = head_impulse.get("VOR增益 (左后半规管)", "")
+            ws['H20'] = head_impulse.get("VOR增益 (右前半规管)", "")
+            
+            ws['C21'] = head_impulse.get("PR分数 (左外半规管)", "")
+            ws['D21'] = head_impulse.get("PR分数 (右外半规管)", "")
+            ws['E21'] = head_impulse.get("PR分数 (左前半规管)", "")
+            ws['F21'] = head_impulse.get("PR分数 (右后半规管)", "")
+            ws['G21'] = head_impulse.get("PR分数 (左后半规管)", "")
+            ws['H21'] = head_impulse.get("PR分数 (右前半规管)", "")
+            
+            ws['C22'] = head_impulse.get("头脉冲试验扫视波", "")
+            ws['J20'] = head_impulse.get("头脉冲试验检查结果", "")
+            
+            if head_impulse.get("头脉冲试验示意图") != "":
+                pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
+                if os.path.exists(pic_path):
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'O8'
+                    
+                    cell_width = 6
+                    cell_height = 21
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+            
+        else:
+            pass
+        
+        # 头脉冲抑制试验
+        head_suppression = data.get("头脉冲抑制试验", "")
+        if not is_dict_empty(head_suppression):
+            
+            ws.merge_cells('C26:D26')
+            ws.merge_cells('C27:D27')
+            ws.merge_cells('E26:F27')
+            ws.merge_cells('H26:M27')
+            
+            ws['C26'] = head_suppression.get("头脉冲抑制试验增益 (左外半规管)", "")
+            ws['C27'] = head_suppression.get("头脉冲抑制试验增益 (右外半规管)", "")
+            
+            ws['E26'] = head_suppression.get("头脉冲抑制试验补偿性扫视波", "")
+            ws['H26'] = head_suppression.get("头脉冲抑制试验检查结果", "")
+            
+            if head_suppression.get("头脉冲抑制试验示意图") != "":
+                pic_path = os.path.join(self.db_path, head_suppression.get("头脉冲抑制试验示意图"))
+                if os.path.exists(pic_path):
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'O32'
+                    
+                    cell_width = 6
+                    cell_height = 21
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+        else:
+            pass
+        
+        # 眼位反向偏斜（skew deviation）
+        skew_deviation = data.get("眼位反向偏斜", "")
+        if not is_dict_empty(skew_deviation):
+            
+            ws.merge_cells('A31:C31')
+            ws.merge_cells('D31:F31')
+            ws.merge_cells('H31:M31')
+            
+            ws['A31'] = skew_deviation.get("眼位反向偏斜 (HR, 度)", "")
+            ws['D31'] = skew_deviation.get("眼位反向偏斜 (VR, 度)", "")
+            ws['H31'] = skew_deviation.get("眼位反向偏斜检查结果", "")
+            
+        else:
+            pass
+        
+        # 视觉增强前庭-眼反射试验 (VVOR)
+        vvor = data.get("视觉增强前庭-眼反射试验", "")
+        if not is_dict_empty(vvor):
+            
+            ws.merge_cells('C34:F34')
+            ws['C34'] = vvor.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 前庭-眼反射抑制试验（VOR suppression）
+        vor_suppression = data.get("前庭-眼反射抑制试验", "")
+        if not is_dict_empty(vor_suppression):
+            
+            ws.merge_cells('J34:M34')
+            ws['J34'] = vor_suppression.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 扫视检查
+        pursuit_test = data.get("扫视检查", "")
+        if not is_dict_empty(pursuit_test):
+            
+            ws.merge_cells('B38:C38')
+            ws.merge_cells('D38:E38')
+            ws.merge_cells('F38:G38')
+            ws.merge_cells('B39:C39')
+            ws.merge_cells('D39:E39')
+            ws.merge_cells('F39:G39')
+            ws.merge_cells('I38:M39')
+            
+            ws['B38'] = pursuit_test.get("扫视延迟时间 (左向, 毫秒)", "")
+            ws['B39'] = pursuit_test.get("扫视延迟时间 (右向, 毫秒)", "")
+            ws['D38'] = pursuit_test.get("扫视峰速度 (左向, 度/秒)", "")
+            ws['D39'] = pursuit_test.get("扫视峰速度 (右向, 度/秒)", "")
+            ws['F38'] = pursuit_test.get("扫视精确度 (左向, %)", "")
+            ws['F39'] = pursuit_test.get("扫视精确度 (右向, %)", "")
+            
+            ws['I38'] = pursuit_test.get("扫视检查结果", "")
+            
+        else:
+            pass
+        
+        # Dix-Hallpike试验
+        dix_hallpike = data.get("位置试验 (Dix-Hallpike试验)", "")
+        if not is_dict_empty(dix_hallpike):
+            
+            ws.merge_cells('B43:C43')
+            ws.merge_cells('D43:E43')
+            ws.merge_cells('F43:G43')
+            ws.merge_cells('J43:K43')
+            ws.merge_cells('L43:M43')
+            
+            ws.merge_cells('B44:C44')
+            ws.merge_cells('D44:E44')
+            ws.merge_cells('F44:G44')
+            ws.merge_cells('J44:K44')
+            ws.merge_cells('L44:M44')
+            
+            ws.merge_cells('C46:M46')
+            
+            ws['B43'] = dix_hallpike.get("左侧眼震模式", "")
+            ws['D43'] = dix_hallpike.get("左侧坐起眼震模式", "")
+            ws['F43'] = dix_hallpike.get("左侧出现眩晕/头晕", "")
+            ws['H43'] = dix_hallpike.get("左侧眼震潜伏期 (秒)", "")
+            ws['I43'] = dix_hallpike.get("左侧眼震持续时长 (秒)", "")
+            ws['J43'] = dix_hallpike.get("左侧眼震最大速度 (度/秒)", "")
+            ws['L43'] = dix_hallpike.get("左侧眼震疲劳性", "")
+            
+            ws['B44'] = dix_hallpike.get("右侧眼震模式", "")
+            ws['D44'] = dix_hallpike.get("右侧坐起眼震模式", "")
+            ws['F44'] = dix_hallpike.get("右侧出现眩晕/头晕", "")
+            ws['H44'] = dix_hallpike.get("右侧眼震潜伏期 (秒)", "")
+            ws['I44'] = dix_hallpike.get("右侧眼震持续时长 (秒)", "")
+            ws['J44'] = dix_hallpike.get("右侧眼震最大速度 (度/秒)", "")
+            ws['L44'] = dix_hallpike.get("右侧眼震疲劳性", "")
+            
+            ws['C46'] = dix_hallpike.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 仰卧滚转试验
+        supine_roll = data.get("位置试验 (仰卧滚转试验)", "")
+        if not is_dict_empty(supine_roll):
+            
+            ws.merge_cells('B50:C50')
+            ws.merge_cells('D50:E50')
+            ws.merge_cells('H50:I50')
+            
+            ws.merge_cells('B51:C51')
+            ws.merge_cells('D51:E51')
+            ws.merge_cells('H51:I51')
+            
+            ws.merge_cells('K50:M51')
+            
+            ws['B50'] = supine_roll.get("左侧眼震模式", "")
+            ws['D50'] = supine_roll.get("左侧出现眩晕/头晕", "")
+            ws['F50'] = supine_roll.get("左侧眼震潜伏期 (秒)", "")
+            ws['G50'] = supine_roll.get("左侧眼震持续时长 (秒)", "")
+            ws['H50'] = supine_roll.get("左侧眼震最大速度 (度/秒)", "")
+            
+            ws['B51'] = supine_roll.get("右侧眼震模式", "")
+            ws['D51'] = supine_roll.get("右侧出现眩晕/头晕", "")
+            ws['F51'] = supine_roll.get("右侧眼震潜伏期 (秒)", "")
+            ws['G51'] = supine_roll.get("右侧眼震持续时长 (秒)", "")
+            ws['H51'] = supine_roll.get("右侧眼震最大速度 (度/秒)", "")
+            
+            ws['K50'] = supine_roll.get("检查结果", "")
+            
+        else:
+            pass
+        
+        
+        # 位置试验（其他）
+        other_position_test = data.get("位置试验(其他)", "")
+        if not is_dict_empty(other_position_test):
+            
+            ws.merge_cells('A57:C57')
+            ws.merge_cells('D57:F57')
+            ws.merge_cells('G57:I57')
+            ws.merge_cells('J57:M57')
+            
+            ws.merge_cells('C59:M59')
+            
+            ws['A57'] = other_position_test.get("坐位-平卧试验", "")
+            ws['D57'] = other_position_test.get("坐位-低头试验", "")
+            ws['G57'] = other_position_test.get("坐位-仰头试验", "")
+            ws['J57'] = other_position_test.get("零平面", "")
+            
+            ws['C59'] = other_position_test.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 视跟踪
+        visual_tracking = data.get("视跟踪", "")
+        if not is_dict_empty(visual_tracking):
+            
+            ws.merge_cells('A63:B63')
+            ws.merge_cells('C63:D63')
+            
+            ws.merge_cells('F63:M63')
+            
+            ws['A63'] = visual_tracking.get("视跟踪曲线分型", "")
+            ws['C63'] = visual_tracking.get("视跟踪增益", "")
+            ws['F63'] = visual_tracking.get("视跟踪检查结果", "")
+            
+        else:
+            pass
+        
+        # 视动性眼震
+        spontaneous_nystagmus = data.get("视动性眼震", "")
+        if not is_dict_empty(spontaneous_nystagmus):
+            
+            ws.merge_cells('L67:M67')
+            
+            ws['B67'] = spontaneous_nystagmus.get("向左视标增益", "")
+            ws['C67'] = spontaneous_nystagmus.get("向右视标增益", "")
+            
+            ws['I67'] = spontaneous_nystagmus.get("不对称性（%）", "")
+            
+            ws['L67'] = spontaneous_nystagmus.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 瘘管试验
+        laceration_test = data.get("瘘管试验", "")
+        if not is_dict_empty(laceration_test):
+            
+            ws.merge_cells('E71:M72')
+            
+            ws['E71'] = laceration_test.get("结果", "")
+            
+        else:
+            pass
+        
+        # 温度试验
+        temperature_test = data.get("温度试验", "")
+        if not is_dict_empty(temperature_test):
+            
+            ws.merge_cells('D75:E75')
+            ws.merge_cells('J75:K75')
+            ws.merge_cells('Q75:R75')
+            ws.merge_cells('D76:E76')
+            ws.merge_cells('J76:K76')
+            ws.merge_cells('Q76:R76')
+            
+            ws.merge_cells('D78:E78')
+            ws.merge_cells('J78:R78')
+            
+            ws['D75'] = temperature_test.get("单侧减弱侧别 (UW)", "")
+            ws['D76'] = temperature_test.get("单侧减弱数值 (UW, %)", "")
+            ws['J75'] = temperature_test.get("优势偏向侧别 (DP)", "")
+            ws['J76'] = temperature_test.get("优势偏向数值 (DP, 度/秒)", "")
+            ws['Q75'] = temperature_test.get("最大慢相速度总和（右耳, 度/秒）", "")
+            ws['Q76'] = temperature_test.get("最大慢相速度总和（左耳, 度/秒）", "")
+            ws['D78'] = temperature_test.get("固视抑制指数 (FI, %)", "")
+            ws['J78'] = temperature_test.get("检查结果", "")
+            
+            
+        else:
+            pass
+        
+        # 颈肌前庭诱发肌源性电位
+        cervical_evoked_myogenic_potential = data.get("颈肌前庭诱发肌源性电位 (cVEMP)", "")
+        if not is_dict_empty(cervical_evoked_myogenic_potential):
+            
+            ws.merge_cells('B82:C82')
+            ws.merge_cells('D82:E82')
+            ws.merge_cells('F82:G82')
+            ws.merge_cells('H82:J82')
+            ws.merge_cells('K82:M82')
+            ws.merge_cells('N82:O82')
+            ws.merge_cells('P82:R82')
+            
+            ws.merge_cells('B83:C83')
+            ws.merge_cells('D83:E83')
+            ws.merge_cells('F83:G83')
+            ws.merge_cells('H83:J83')
+            ws.merge_cells('K83:M83')
+            ws.merge_cells('N83:O83')
+            ws.merge_cells('P83:R83')
+            
+            ws.merge_cells('A86:C86')
+            ws.merge_cells('E86:R86')
+            
+            ws['B82'] = cervical_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", "")
+            ws['D82'] = cervical_evoked_myogenic_potential.get("左耳P13波潜伏期 (毫秒)", "")
+            ws['F82'] = cervical_evoked_myogenic_potential.get("左耳N23波潜伏期 (毫秒)", "")
+            ws['H82'] = cervical_evoked_myogenic_potential.get("左耳P13-N23波间期 (毫秒)", "")
+            ws['K82'] = cervical_evoked_myogenic_potential.get("左耳P13波振幅 (微伏)", "")
+            ws['N82'] = cervical_evoked_myogenic_potential.get("左耳N23波振幅 (微伏)", "")
+            ws['P82'] = cervical_evoked_myogenic_potential.get("左耳P13-N23波振幅 (微伏)", "")
+            
+            ws['B83'] = cervical_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", "")
+            ws['D83'] = cervical_evoked_myogenic_potential.get("右耳P13波潜伏期 (毫秒)", "")
+            ws['F83'] = cervical_evoked_myogenic_potential.get("右耳N23波潜伏期 (毫秒)", "")
+            ws['H83'] = cervical_evoked_myogenic_potential.get("右耳P13-N23波间期 (毫秒)", "")
+            ws['K83'] = cervical_evoked_myogenic_potential.get("右耳P13波振幅 (微伏)", "")
+            ws['N83'] = cervical_evoked_myogenic_potential.get("右耳N23波振幅 (微伏)", "")
+            ws['P83'] = cervical_evoked_myogenic_potential.get("右耳P13-N23波振幅 (微伏)", "")
+            
+            
+            ws['A86'] = cervical_evoked_myogenic_potential.get("cVEMP耳间不对称性 (%)", "")
+            ws['E86'] = cervical_evoked_myogenic_potential.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 眼肌前庭诱发肌源性电位 (oVEMP)
+        ocular_evoked_myogenic_potential = data.get("眼肌前庭诱发肌源性电位 (oVEMP)", "")
+        if not is_dict_empty(ocular_evoked_myogenic_potential):
+            
+            ws.merge_cells('B90:C90')
+            ws.merge_cells('D90:E90')
+            ws.merge_cells('F90:G90')
+            ws.merge_cells('H90:J90')
+            ws.merge_cells('K90:M90')
+            ws.merge_cells('N90:O90')
+            ws.merge_cells('P90:R90')
+            
+            ws.merge_cells('B91:C91')
+            ws.merge_cells('D91:E91')
+            ws.merge_cells('F91:G91')
+            ws.merge_cells('H91:J91')
+            ws.merge_cells('K91:M91')
+            ws.merge_cells('N91:O91')
+            ws.merge_cells('P91:R91')
+            
+            ws.merge_cells('A94:C94')
+            ws.merge_cells('E94:R94')
+            
+            ws['B90'] = ocular_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", "")
+            ws['D90'] = ocular_evoked_myogenic_potential.get("左耳N10波潜伏期 (毫秒)", "")
+            ws['F90'] = ocular_evoked_myogenic_potential.get("左耳P15波潜伏期 (毫秒)", "")
+            ws['H90'] = ocular_evoked_myogenic_potential.get("左耳N10-P15波间期 (毫秒)", "")
+            ws['K90'] = ocular_evoked_myogenic_potential.get("左耳N10波振幅 (微伏)", "")
+            ws['N90'] = ocular_evoked_myogenic_potential.get("左耳P15波振幅 (微伏)", "")
+            ws['P90'] = ocular_evoked_myogenic_potential.get("左耳N10-P15波振幅 (微伏)", "")
+            
+            ws['B91'] = ocular_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", "")
+            ws['D91'] = ocular_evoked_myogenic_potential.get("右耳N10波潜伏期 (毫秒)", "")
+            ws['F91'] = ocular_evoked_myogenic_potential.get("右耳P15波潜伏期 (毫秒)", "")
+            ws['H91'] = ocular_evoked_myogenic_potential.get("右耳N10-P15波间期 (毫秒)", "")
+            ws['K91'] = ocular_evoked_myogenic_potential.get("右耳N10波振幅 (微伏)", "")
+            ws['N91'] = ocular_evoked_myogenic_potential.get("右耳P15波振幅 (微伏)", "")
+            ws['P91'] = ocular_evoked_myogenic_potential.get("右耳N10-P15波振幅 (微伏)", "")
+            
+            ws['A94'] = ocular_evoked_myogenic_potential.get("oVEMP耳间不对称性 (%)", "")
+            ws['E94'] = ocular_evoked_myogenic_potential.get("检查结果", "")
+            
+        else:
+            pass
+        
+        # 主观视觉垂直线
+        subjective_visual_vertical_line = data.get("主观视觉垂直线 (SVV)", "")
+        if not is_dict_empty(subjective_visual_vertical_line):
+        
+            ws.merge_cells('A98:B98')
+            ws.merge_cells('C98:D98')
+            ws.merge_cells('F98:M98')
+            
+            ws['A98'] = subjective_visual_vertical_line.get("偏斜方向", "")
+            ws['C98'] = subjective_visual_vertical_line.get("偏斜角度 (度)", "")
+            ws['F98'] = subjective_visual_vertical_line.get("检查结果", "")
+            
+        else:
+            pass
+        
         # 保存生成的报告
         output_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}.xlsx")
         wb.save(output_path)
