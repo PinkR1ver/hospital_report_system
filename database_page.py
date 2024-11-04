@@ -20,6 +20,7 @@ from PIL import Image as PILImage
 import io
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side
+import uuid
 
 def is_dict_empty(d):
     """
@@ -240,7 +241,6 @@ class DatabasePage(ttk.Frame):
         if not is_dict_empty(head_impulse):
             
             ws.merge_cells('J20:M22')
-            ws.merge_cells('C22:H22')
             
             ws['C20'] = head_impulse.get("VOR增益 (左外半规管)", "")
             ws['D20'] = head_impulse.get("VOR增益 (右外半规管)", "")
@@ -255,9 +255,32 @@ class DatabasePage(ttk.Frame):
             ws['F21'] = head_impulse.get("PR分数 (右后半规管)", "")
             ws['G21'] = head_impulse.get("PR分数 (左后半规管)", "")
             ws['H21'] = head_impulse.get("PR分数 (右前半规管)", "")
-            
-            ws['C22'] = head_impulse.get("头脉冲试验扫视波", "")
+        
             ws['J20'] = head_impulse.get("头脉冲试验检查结果", "")
+            
+            sccade_wave = head_impulse.get("头脉冲试验扫视波", [])
+            if '阴性' in sccade_wave or '配合欠佳' in sccade_wave:
+                ws.merge_cells('C22:H22')
+                
+                if '配合欠佳' in sccade_wave:
+                    ws['C22'] = '配合欠佳'
+                else:
+                    ws['C22'] = '阴性'
+                
+            else:
+                for i, option in enumerate(sccade_wave):
+                    if option == "左外半规管":
+                        ws['C22'] = '√'
+                    elif option == "右外半规管":
+                        ws['D22'] = '√'
+                    elif option == "左前半规管":
+                        ws['E22'] = '√'
+                    elif option == "右后半规管":
+                        ws['F22'] = '√'
+                    elif option == "左后半规管":
+                        ws['G22'] = '√'
+                    elif option == "右前半规管":
+                        ws['H22'] = '√'
             
             if head_impulse.get("头脉冲试验示意图") != "":
                 pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
@@ -494,7 +517,41 @@ class DatabasePage(ttk.Frame):
         laceration_test = data.get("瘘管试验", "")
         if not is_dict_empty(laceration_test):
             
-            ws.merge_cells('E71:M72')
+            positive_options = laceration_test.get("瘘管试验", [])
+            
+            if '配合欠佳' in positive_options:
+                
+                ws.merge_cells('B71:C72')
+                ws['B71'] = '配合欠佳'
+                
+            elif '阴性' in positive_options:
+                
+                ws['B71'] = '阴性'
+                ws['B72'] = '阴性'
+                    
+            elif '双耳阳性' in positive_options:
+                ws['B71'] = "阳性"
+                ws['B72'] = "阳性"
+                
+            elif '双耳弱阳性' in positive_options:
+                ws['B71'] = "弱阳性"
+                ws['B72'] = "弱阳性"
+            
+            elif '右耳阳性' in positive_options:
+                ws['B72'] = "阳性"
+                ws['B71'] = "阴性"
+                
+            elif '左耳阳性' in positive_options:
+                ws['B72'] = "阴性"
+                ws['B71'] = "阳性"
+                
+            elif '右耳弱阳性' in positive_options:
+                ws['B72'] = "弱阳性"
+                ws['B71'] = "阴性"
+                
+            elif '左耳弱阳性' in positive_options:
+                ws['B72'] = "阴性"
+                ws['B71'] = "弱阳性"
             
             ws['E71'] = laceration_test.get("结果", "")
             
@@ -635,16 +692,90 @@ class DatabasePage(ttk.Frame):
             pass
         
         # 保存生成的报告
-        output_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}.xlsx")
-        wb.save(output_path)
+        random_id = str(uuid.uuid4())
+        excel_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}_{random_id}.xlsx")
         
-        # 打开生成的报告
-        if platform.system() == "Windows":
-            os.startfile(output_path)
-        elif platform.system() == "Darwin":  # macOS
-            subprocess.call(["open", output_path])
-        else:  # Linux
-            subprocess.call(["xdg-open", output_path])
+        # 设置页面布局
+        ws.page_setup.paperSize = 9  # A4纸
+        ws.page_setup.orientation = 'landscape'  # 横向
+        ws.page_setup.fitToWidth = 1  # 调整为1页宽
+        ws.page_setup.fitToHeight = 1  # 调整为1页高
+        
+        # 设置打印区域边距（单位：英寸）
+        ws.page_margins.left = 0.5
+        ws.page_margins.right = 0.5
+        ws.page_margins.top = 0.5
+        ws.page_margins.bottom = 0.5
+        
+        wb.save(excel_path)
+        
+        # 将Excel转换为PDF
+        pdf_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}_{random_id}.pdf")
+        
+        try:
+            # 使用win32com将Excel转换为PDF (Windows系统)
+            if platform.system() == "Windows":
+                import win32com.client
+                excel = win32com.client.Dispatch("Excel.Application")
+                excel.Visible = False
+                wb = excel.Workbooks.Open(excel_path)
+                
+                # 设置页面布局
+                for ws in wb.Worksheets:
+                    ws.PageSetup.PaperSize = 9  # A4纸
+                    ws.PageSetup.Orientation = 1  # xlLandscape
+                    ws.PageSetup.Zoom = False  # 禁用缩放
+                    ws.PageSetup.FitToPagesWide = 1  # 调整为1页宽
+                    ws.PageSetup.FitToPagesTall = 1  # 调整为1页高
+                    
+                    # 设置页边距（单位：点，72点=1英寸）
+                    ws.PageSetup.LeftMargin = 36  # 0.5英寸
+                    ws.PageSetup.RightMargin = 36
+                    ws.PageSetup.TopMargin = 36
+                    ws.PageSetup.BottomMargin = 36
+                
+                wb.ExportAsFixedFormat(0, pdf_path)  # 0 表示PDF格式
+                wb.Close()
+                excel.Quit()
+                os.remove(excel_path)  # 删除临时Excel文件
+            
+            # 使用其他方法转换PDF (Mac/Linux系统)
+            else:
+                try:
+                    import subprocess
+                    libreoffice_cmd = "soffice"
+                    # 添加页面大小和方向参数
+                    subprocess.run([
+                        libreoffice_cmd,
+                        '--headless',
+                        '--convert-to', 
+                        'pdf:writer_pdf_Export',
+                        '--outdir', 
+                        os.path.dirname(pdf_path),
+                        excel_path
+                    ])
+                    os.remove(excel_path)
+                except Exception as e:
+                    messagebox.showwarning("警告", f"PDF转换失败，将打开Excel文件。错误信息: {str(e)}")
+                    pdf_path = excel_path
+
+            # 打开生成的PDF文件
+            if platform.system() == "Windows":
+                os.startfile(pdf_path)
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.call(["open", pdf_path])
+            else:  # Linux
+                subprocess.call(["xdg-open", pdf_path])
+                
+        except Exception as e:
+            messagebox.showwarning("警告", f"PDF转换失败，将打开Excel文件。错误信息: {str(e)}")
+            # 如果PDF转换失败，打开Excel文件
+            if platform.system() == "Windows":
+                os.startfile(excel_path)
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.call(["open", excel_path])
+            else:  # Linux
+                subprocess.call(["xdg-open", excel_path])
 
     def edit_report(self):
         selected_item = self.report_tree.selection()

@@ -16,16 +16,31 @@ class FistulaTestPage(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        # 瘘管试验结果
-        ttk.Label(main_frame, text="瘘管试验结果:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
+        # 瘘管试验
+        fistula_frame = ttk.LabelFrame(main_frame, text="瘘管试验", padding="10 10 10 10")
+        fistula_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # 使用字典存储每个选项的变量
+        self.fistula_vars = {}
+        options = ["右耳阳性", "左耳阳性", "右耳弱阳性", "左耳弱阳性", "双耳阳性", "双耳弱阳性", "阴性", "配合欠佳"]
+        
+        # 创建两行选项
+        for i, option in enumerate(options):
+            var = tk.BooleanVar()
+            self.fistula_vars[option] = var
+            chk = ttk.Checkbutton(fistula_frame, text=option, variable=var)
+            chk.grid(row=i//4, column=i%4, sticky=tk.W, padx=5, pady=2)
+
+        # 瘘管试验检查结果
+        ttk.Label(main_frame, text="瘘管试验检查结果:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
         self.result_var = tk.StringVar()
         result_combobox = ttk.Combobox(main_frame, textvariable=self.result_var, width=30)
-        result_combobox['values'] = ["", "阴性", "右侧阳性", "左侧阳性", "双侧阳性", "配合欠佳"]
-        result_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        result_combobox['values'] = ["", "正常", "异常", "配合欠佳"]
+        result_combobox.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 视频导入部分
         video_frame = ttk.Frame(main_frame)
-        video_frame.grid(row=1, column=0, columnspan=2, pady=10)
+        video_frame.grid(row=2, column=0, columnspan=2, pady=10)
 
         self.video_button = ttk.Button(video_frame, text="导入视频", command=self.import_video)
         self.video_button.grid(row=0, column=0, padx=5)
@@ -68,15 +83,27 @@ class FistulaTestPage(ttk.Frame):
                 self.cancel_video_button.config(state=tk.DISABLED)
 
     def get_data(self):
+        # 获取选中的瘘管试验选项
+        selected_fistula = [option for option, var in self.fistula_vars.items() 
+                           if var.get()]
+        
         return {
             "瘘管试验": {
-                "结果": self.result_var.get(),
+                "瘘管试验": selected_fistula,
+                "检查结果": self.result_var.get(),
                 "视频": self.video_path
             }
         }
-    
+
     def set_data(self, data):
-        self.result_var.set(data.get("结果", ""))
+        # 设置瘘管试验选项
+        selected_fistula = data.get("瘘管试验", [])
+        for option, var in self.fistula_vars.items():
+            var.set(option in selected_fistula)
+        
+        self.result_var.set(data.get("检查结果", ""))
+        
+        # 视频相关设置保持不变
         self.video_path = data.get("视频", "")
         if self.video_path:
             self.video_label.config(text=f"已选择视频: {os.path.basename(self.video_path)}")

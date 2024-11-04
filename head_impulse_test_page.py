@@ -114,10 +114,17 @@ class HeadImpulseTestPage(ttk.Frame):
         compensatory_saccade_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
         compensatory_saccade_frame.columnconfigure(0, weight=1)
 
-        self.hit_compensatory_saccade_var = tk.StringVar()
-        self.hit_compensatory_saccade_combobox = ttk.Combobox(compensatory_saccade_frame, textvariable=self.hit_compensatory_saccade_var, 
-                                             values=["", "左外半规管", "右外半规管", "左前半规管", "右前半规管", "左后半规管", "右后半规管", "阴", "配合欠佳"])
-        self.hit_compensatory_saccade_combobox.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
+        # 使用字典存储每个选项的变量
+        self.hit_compensatory_saccade_vars = {}
+        options = ["左外半规管", "右外半规管", "左前半规管", "右前半规管", 
+                  "左后半规管", "右后半规管", "阴性", "配合欠佳"]
+        
+        # 创建两行选项
+        for i, option in enumerate(options):
+            var = tk.BooleanVar()
+            self.hit_compensatory_saccade_vars[option] = var
+            chk = ttk.Checkbutton(compensatory_saccade_frame, text=option, variable=var)
+            chk.grid(row=i//4, column=i%4, sticky=tk.W, padx=5, pady=2)
 
         # 头脉冲试验示意图
         image_frame = ttk.LabelFrame(main_frame, text="头脉冲试验示意图", padding="10 10 10 10")
@@ -196,6 +203,10 @@ class HeadImpulseTestPage(ttk.Frame):
             self.screenshot.save(self.image_path)
 
     def get_data(self):
+        # 获取选中的扫视波选项
+        selected_saccades = [option for option, var in self.hit_compensatory_saccade_vars.items() 
+                           if var.get()]
+        
         return {
             "头脉冲试验": {
                 "VOR增益 (左外半规管)": self.vor_left_lateral.get(),
@@ -210,7 +221,7 @@ class HeadImpulseTestPage(ttk.Frame):
                 "PR分数 (左后半规管)": self.pr_left_posterior.get(),
                 "VOR增益 (右前半规管)": self.vor_right_anterior.get(),
                 "PR分数 (右前半规管)": self.pr_right_anterior.get(),
-                "头脉冲试验扫视波": self.hit_compensatory_saccade_var.get(),
+                "头脉冲试验扫视波": selected_saccades,  # 现在返回选中项的列表
                 "头脉冲试验示意图": self.image_path,
                 "头脉冲试验检查结果": self.hit_result_var.get()
             }
@@ -232,7 +243,10 @@ class HeadImpulseTestPage(ttk.Frame):
             getattr(self, pr_attr).delete(0, tk.END)
             getattr(self, pr_attr).insert(0, data.get(f"PR分数 ({canal_name})", ""))
         
-        self.hit_compensatory_saccade_var.set(data.get("头脉冲试验扫视波", ""))
+        # 设置扫视波选项
+        selected_saccades = data.get("头脉冲试验扫视波", [])
+        for option, var in self.hit_compensatory_saccade_vars.items():
+            var.set(option in selected_saccades)
         
         if data.get("头脉冲试验示意图"):
             self.image_path = data.get("头脉冲试验示意图")
