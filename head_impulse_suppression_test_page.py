@@ -95,11 +95,20 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         self.right_gain = ttk.Entry(main_frame)
         self.right_gain.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
-        # 补偿性扫视波
+        # 补偿性扫视波部分的修改
         ttk.Label(main_frame, text="头脉冲抑制试验补偿性扫视波:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
-        self.compensatory_saccade = ttk.Combobox(main_frame, 
-                                                 values=["", "左外半规管", "右外半规管", "阴性", "配合欠佳"])
-        self.compensatory_saccade.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.compensatory_saccade_frame = ttk.Frame(main_frame)
+        self.compensatory_saccade_frame.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+
+        self.compensatory_saccade_vars = {
+            "左外半规管": tk.BooleanVar(),
+            "右外半规管": tk.BooleanVar(),
+            "阴性": tk.BooleanVar(),
+            "配合欠佳": tk.BooleanVar()
+        }
+
+        for i, (text, var) in enumerate(self.compensatory_saccade_vars.items()):
+            ttk.Checkbutton(self.compensatory_saccade_frame, text=text, variable=var).grid(row=0, column=i, padx=5)
 
         # 示意图
         image_frame = ttk.LabelFrame(main_frame, text="头脉冲抑制试验示意图", padding="10 10 10 10")
@@ -167,17 +176,21 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
             # 生成文件名
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"head_impulse_suppression_test_{timestamp}.png"
-            self.image_path = os.path.join(save_dir, filename)
             
-            # 保存截图
-            self.screenshot.save(self.image_path)
+            # 保��为相对路径
+            self.image_path = os.path.join("screenshots", filename)  # 只保存相对路径
+            
+            # 使用完整路径保存文件
+            full_path = os.path.join(os.path.dirname(__file__), self.image_path)
+            self.screenshot.save(full_path)
 
     def get_data(self):
+        selected_options = [k for k, v in self.compensatory_saccade_vars.items() if v.get()]
         return {
             "头脉冲抑制试验": {
                 "头脉冲抑制试验增益 (左外半规管)": self.left_gain.get(),
                 "头脉冲抑制试验增益 (右外半规管)": self.right_gain.get(),
-                "头脉冲抑制试验补偿性扫视波": self.compensatory_saccade.get(),
+                "头脉冲抑制试验补偿性扫视波": selected_options,  # 现在返回选中项的列表
                 "头脉冲抑制试验示意图": self.image_path,
                 "头脉冲抑制试验检查结果": self.test_result.get()
             }
@@ -190,17 +203,39 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         self.right_gain.delete(0, tk.END)
         self.right_gain.insert(0, data.get("头脉冲抑制试验增益 (右外半规管)", ""))
         
-        self.compensatory_saccade.set(data.get("头脉冲抑制试验补偿性扫视波", ""))
+        # 重置所有复选框
+        for var in self.compensatory_saccade_vars.values():
+            var.set(False)
         
-        if data.get("头脉冲抑制试验示意图"):
-            self.image_path = data.get("头脉冲抑制试验示意图")
+        # 设置已选中的选项
+        selected_options = data.get("头脉冲抑制试验补偿性扫视波", [])
+        if isinstance(selected_options, str):  # 处理旧数据兼容性
+            selected_options = [selected_options] if selected_options else []
+        for option in selected_options:
+            if option in self.compensatory_saccade_vars:
+                self.compensatory_saccade_vars[option].set(True)
+
+        # 设置图片路径和显示
+        self.image_path = data.get("头脉冲抑制试验示意图", "")
+        if self.image_path:
             self.image_button.config(text="重新截图")
-            self.load_image()
+            # 如果需要显示图片，使用完整路径加载
+            full_path = os.path.join(os.path.dirname(__file__), self.image_path)
+            if os.path.exists(full_path):
+                image = Image.open(full_path)
+                # 调整图片大小
+                width = 300
+                ratio = width / image.width
+                height = int(image.height * ratio)
+                resized_image = image.resize((width, height), Image.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)
+                self.image_label.config(image=photo)
+                self.image_label.image = photo
         else:
-            self.image_path = ""
             self.image_button.config(text="截取图片")
             self.image_label.config(image="")
         
+        # 设置检查结果
         self.test_result.set(data.get("头脉冲抑制试验检查结果", ""))
 
     def load_image(self):

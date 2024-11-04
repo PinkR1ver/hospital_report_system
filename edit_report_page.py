@@ -159,7 +159,7 @@ class EditReportPage(tk.Toplevel):
             archive_data = json.load(f)
             
         # 处理图片
-        for test_name in ['头脉冲试验', '头脉冲抑制试验']:
+        for test_name in ['头脉冲试验', '头脉冲抑制试验', '温度试验']:
             if test_name in archive_data and (test_name + '示意图') in archive_data[test_name]:
                 old_path = archive_data[test_name][test_name + '示意图']
                 if old_path and os.path.exists(os.path.join(db_path, old_path)):
@@ -219,8 +219,8 @@ class EditReportPage(tk.Toplevel):
             # 更新数据中的文件路径（保持相对路径不变）
             data_dict[key] = old_path
         else:
-            # 如果新文件不存在，则从数据字典中删除该键
-            data_dict.pop(key, None)
+            # 如果新文件不存在，则将该键值置为空字符串
+            data_dict[key] = ""
             
             
     def translate_test_name(self, test_name):
@@ -234,7 +234,8 @@ class EditReportPage(tk.Toplevel):
             "视动性眼震": "optokinetic_nystagmus",
             "摇头试验": "head_shaking_test",
             "凝视性眼震": "gaze_nystagmus",
-            "瘘管试验": "fistula_test"
+            "瘘管试验": "fistula_test",
+            "温度试验": "caloric_test"
         }
         return translation.get(test_name, test_name.lower().replace(' ', '_'))
 

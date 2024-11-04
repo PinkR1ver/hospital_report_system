@@ -50,6 +50,20 @@ class VestibularFunctionReport:
         
         self.create_menu()
         
+        # create database date folder
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        self.db_date_path = os.path.join(self.db_path, "report", current_date)
+        if not os.path.exists(self.db_date_path):
+            os.makedirs(self.db_date_path)
+        
+        self.db_pic_path = os.path.join(self.db_path, "pic", current_date)
+        if not os.path.exists(self.db_pic_path):
+            os.makedirs(self.db_pic_path)
+        
+        self.db_video_path = os.path.join(self.db_path, "video", current_date)
+        if not os.path.exists(self.db_video_path):
+            os.makedirs(self.db_video_path)
+        
         # 创建主框架
         self.main_frame = ttk.Frame(self.master)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
@@ -375,6 +389,9 @@ class VestibularFunctionReport:
         # 处理头脉冲抑制试验图片
         self.process_image(data, "头脉冲抑制试验", "头脉冲抑制试验示意图", pic_date_folder)
         
+        # 处理温度试验图片
+        self.process_image(data, "温度试验", "温度试验示意图", pic_date_folder)
+        
         # 处理视频
         video_tests = [
             '位置试验 (Dix-Hallpike试验)', '仰卧滚转试验', '自发性眼震', '位置试验(其他)', 
@@ -393,6 +410,7 @@ class VestibularFunctionReport:
         translation = {
             "头脉冲试验": "head_impulse_test",
             "头脉冲抑制试验": "head_impulse_suppression_test",
+            "温度试验": "caloric_test",
             "位置试验 (Dix-Hallpike试验)": "dix_hallpike_test",
             "仰卧滚转试验": "supine_roll_test",
             "自发性眼震": "spontaneous_nystagmus",

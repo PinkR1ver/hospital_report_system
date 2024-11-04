@@ -286,10 +286,10 @@ class DatabasePage(ttk.Frame):
                 pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
                 if os.path.exists(pic_path):
                     img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'O8'
+                    img.anchor = 'O7'
                     
                     cell_width = 6
-                    cell_height = 21
+                    cell_height = 9
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
@@ -305,23 +305,37 @@ class DatabasePage(ttk.Frame):
             
             ws.merge_cells('C26:D26')
             ws.merge_cells('C27:D27')
-            ws.merge_cells('E26:F27')
+            ws.merge_cells('E26:F26')
+            ws.merge_cells('E27:F27')
             ws.merge_cells('H26:M27')
             
             ws['C26'] = head_suppression.get("头脉冲抑制试验增益 (左外半规管)", "")
             ws['C27'] = head_suppression.get("头脉冲抑制试验增益 (右外半规管)", "")
             
-            ws['E26'] = head_suppression.get("头脉冲抑制试验补偿性扫视波", "")
+            sccade_wave = head_suppression.get("头脉冲抑制试验补偿性扫视波", [])
+            if '阴性' in sccade_wave:
+                ws['E26'] = '阴性'
+                ws['E27'] = '阴性'
+            elif '配合欠佳' in sccade_wave:
+                ws['E26'] = '配合欠佳'
+                ws['E27'] = '配合欠佳'
+            
+            else:
+                if '左外半规管' in sccade_wave:
+                    ws['E26'] = '√'
+                if '右外半规管' in sccade_wave:
+                    ws['E27'] = '√'
+            
             ws['H26'] = head_suppression.get("头脉冲抑制试验检查结果", "")
             
             if head_suppression.get("头脉冲抑制试验示意图") != "":
                 pic_path = os.path.join(self.db_path, head_suppression.get("头脉冲抑制试验示意图"))
                 if os.path.exists(pic_path):
                     img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'O32'
+                    img.anchor = 'O18'
                     
                     cell_width = 6
-                    cell_height = 21
+                    cell_height = 9
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
@@ -505,8 +519,11 @@ class DatabasePage(ttk.Frame):
             
             ws['B67'] = spontaneous_nystagmus.get("向左视标增益", "")
             ws['C67'] = spontaneous_nystagmus.get("向右视标增益", "")
+            ws['D67'] = spontaneous_nystagmus.get("向上视标增益", "")
+            ws['E67'] = spontaneous_nystagmus.get("向下视标增益", "")
             
-            ws['I67'] = spontaneous_nystagmus.get("不对称性（%）", "")
+            ws['I67'] = spontaneous_nystagmus.get("水平视标不对称性（%）", "")
+            ws['J67'] = spontaneous_nystagmus.get("垂直视标不对称性（%）", "")
             
             ws['L67'] = spontaneous_nystagmus.get("检查结果", "")
             
@@ -553,7 +570,7 @@ class DatabasePage(ttk.Frame):
                 ws['B72'] = "阴性"
                 ws['B71'] = "弱阳性"
             
-            ws['E71'] = laceration_test.get("结果", "")
+            ws['E71'] = laceration_test.get("检查结果", "")
             
         else:
             pass
@@ -572,6 +589,8 @@ class DatabasePage(ttk.Frame):
             ws.merge_cells('D78:E78')
             ws.merge_cells('J78:R78')
             
+            ws.merge_cells('O57:T72')
+            
             ws['D75'] = temperature_test.get("单侧减弱侧别 (UW)", "")
             ws['D76'] = temperature_test.get("单侧减弱数值 (UW, %)", "")
             ws['J75'] = temperature_test.get("优势偏向侧别 (DP)", "")
@@ -580,6 +599,22 @@ class DatabasePage(ttk.Frame):
             ws['Q76'] = temperature_test.get("最大慢相速度总和（左耳, 度/秒）", "")
             ws['D78'] = temperature_test.get("固视抑制指数 (FI, %)", "")
             ws['J78'] = temperature_test.get("检查结果", "")
+            
+            pic_path = temperature_test.get("温度试验示意图", "")
+            if pic_path != '':
+                pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
+                if os.path.exists(pic_path):
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'O58'
+                    
+                    cell_width = 6
+                    cell_height = 16
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+            
             
             
         else:
@@ -685,7 +720,7 @@ class DatabasePage(ttk.Frame):
             ws.merge_cells('F98:M98')
             
             ws['A98'] = subjective_visual_vertical_line.get("偏斜方向", "")
-            ws['C98'] = subjective_visual_vertical_line.get("偏斜角度 (度)", "")
+            ws['C98'] = subjective_visual_vertical_line.get("偏斜角度（度）", "")
             ws['F98'] = subjective_visual_vertical_line.get("检查结果", "")
             
         else:

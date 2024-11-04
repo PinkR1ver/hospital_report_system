@@ -1,7 +1,7 @@
 /arch
 /build
 /dist
-*.xlsx
+前庭功能检查报告电子报告系统 初步设计 计量单位汉化修正版.xlsx
 /__pycache__
 config.json
 /vest_database
