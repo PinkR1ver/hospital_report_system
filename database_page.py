@@ -335,7 +335,7 @@ class DatabasePage(ttk.Frame):
                     img.anchor = 'O18'
                     
                     cell_width = 6
-                    cell_height = 9
+                    cell_height = 20
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
@@ -608,7 +608,7 @@ class DatabasePage(ttk.Frame):
                     img.anchor = 'O58'
                     
                     cell_width = 6
-                    cell_height = 16
+                    cell_height = 22
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
