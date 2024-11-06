@@ -32,7 +32,7 @@ class HeadShakingTestPage(ttk.Frame):
         self.nystagmus_speed.grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
         
         # 摇头方向
-        ttk.Label(main_frame, text="摇头方向:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
+        ttk.Label(main_frame, text="摇头诱发眼震方向:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
         self.nystagmus_direction = ttk.Combobox(main_frame, values=["", "左", "右", "上", "下"], width=20)
         self.nystagmus_direction.grid(row=2, column=1, sticky=tk.W, padx=5, pady=5)
 

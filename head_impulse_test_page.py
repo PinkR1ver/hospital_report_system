@@ -124,7 +124,7 @@ class HeadImpulseTestPage(ttk.Frame):
             var = tk.BooleanVar()
             self.hit_compensatory_saccade_vars[option] = var
             chk = ttk.Checkbutton(compensatory_saccade_frame, text=option, variable=var)
-            chk.grid(row=i//4, column=i%4, sticky=tk.W, padx=5, pady=2)
+            chk.grid(row=i//4, column=i%4, sticky=tk.W, padx=3, pady=2)
 
         # 头脉冲试验示意图
         image_frame = ttk.LabelFrame(main_frame, text="头脉冲试验示意图", padding="10 10 10 10")
@@ -146,11 +146,25 @@ class HeadImpulseTestPage(ttk.Frame):
         result_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
         result_frame.columnconfigure(0, weight=1)
 
-        self.hit_result_var = tk.StringVar()
-        self.hit_result_combobox = ttk.Combobox(result_frame, textvariable=self.hit_result_var, 
-                                                values=["", "左外半规管功能低下", "右外半规管功能低下", "左前半规管功能低下", "右前半规管功能低下", 
-                                                        "左后半规管功能低下", "右后半规管功能低下", "半规管功能正常", "配合欠佳"])
-        self.hit_result_combobox.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
+        # 使用字典存储检查结果的选项变量
+        self.hit_result_vars = {}
+        result_options = [
+            "左外半规管功能低下",
+            "右外半规管功能低下", 
+            "左前半规管功能低下", 
+            "右前半规管功能低下",
+            "左后半规管功能低下", 
+            "右后半规管功能低下", 
+            "半规管功能正常",
+            "配合欠佳"
+        ]
+        
+        # 创建两行选项
+        for i, option in enumerate(result_options):
+            var = tk.BooleanVar()
+            self.hit_result_vars[option] = var
+            chk = ttk.Checkbutton(result_frame, text=option, variable=var)
+            chk.grid(row=i//4, column=i%4, sticky=tk.W, padx=5, pady=2)
 
     def select_image(self):
         root = self.winfo_toplevel()  # 获取顶层窗口
@@ -207,6 +221,10 @@ class HeadImpulseTestPage(ttk.Frame):
         selected_saccades = [option for option, var in self.hit_compensatory_saccade_vars.items() 
                            if var.get()]
         
+        # 获取选中的检查结果选项
+        selected_results = [option for option, var in self.hit_result_vars.items() 
+                          if var.get()]
+        
         return {
             "头脉冲试验": {
                 "VOR增益 (左外半规管)": self.vor_left_lateral.get(),
@@ -221,9 +239,9 @@ class HeadImpulseTestPage(ttk.Frame):
                 "PR分数 (左后半规管)": self.pr_left_posterior.get(),
                 "VOR增益 (右前半规管)": self.vor_right_anterior.get(),
                 "PR分数 (右前半规管)": self.pr_right_anterior.get(),
-                "头脉冲试验扫视波": selected_saccades,  # 现在返回选中项的列表
+                "头脉冲试验扫视波": selected_saccades,
                 "头脉冲试验示意图": self.image_path,
-                "头脉冲试验检查结果": self.hit_result_var.get()
+                "头脉冲试验检查结果": selected_results
             }
         }
 
@@ -255,7 +273,10 @@ class HeadImpulseTestPage(ttk.Frame):
             self.image_path = ""
             self.image_button.config(text="选择图片")
         
-        self.hit_result_var.set(data.get("头脉冲试验检查结果", ""))
+        # 设置检查结果选项
+        selected_results = data.get("头脉冲试验检查结果", [])
+        for option, var in self.hit_result_vars.items():
+            var.set(option in selected_results)
 
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")

@@ -107,7 +107,77 @@ class EditReportPage(tk.Toplevel):
         for key, page in self.pages.items():
             page.set_data(data.get(key, {}))
 
+    def show_conclusion_dialog(self, current_conclusions=None):
+        # 创建一个新的顶层窗口
+        dialog = tk.Toplevel(self)
+        dialog.title("修改检查结论")
+        dialog.geometry("400x250")
+        dialog.transient(self)  # 设置为主窗口的临时窗口
+        dialog.grab_set()  # 模态窗口
+        
+        # 创建一个框架来容纳选项
+        frame = ttk.LabelFrame(dialog, text="请选择检查结论", padding="10 10 10 10")
+        frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # 创建变量字典存储选择状态
+        conclusion_vars = {}
+        conclusions = [
+            "未见明显异常",
+            "左侧前庭功能低下",
+            "右侧前庭功能低下",
+            "双侧前庭功能低下"
+        ]
+        
+        # 创建复选框
+        for i, conclusion in enumerate(conclusions):
+            var = tk.BooleanVar(value=conclusion in (current_conclusions or []))
+            conclusion_vars[conclusion] = var
+            chk = ttk.Checkbutton(frame, text=conclusion, variable=var)
+            chk.grid(row=i, column=0, sticky=tk.W, padx=5, pady=5)
+        
+        # 结果变量
+        result = {"selected": None}
+        
+        def on_ok():
+            # 获取选中的结论
+            selected = [c for c, v in conclusion_vars.items() if v.get()]
+            result["selected"] = selected
+            dialog.destroy()
+        
+        def on_cancel():
+            result["selected"] = None
+            dialog.destroy()
+        
+        # 创建按钮框架
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        # 添加确定和取消按钮
+        ok_button = ttk.Button(button_frame, text="确定", command=on_ok)
+        ok_button.pack(side=tk.RIGHT, padx=5)
+        
+        cancel_button = ttk.Button(button_frame, text="取消", command=on_cancel)
+        cancel_button.pack(side=tk.RIGHT, padx=5)
+        
+        # 等待窗口关闭
+        dialog.wait_window()
+        
+        return result["selected"]
+
     def save_data(self):
+        # 读取当前的数据以获取现有的结论
+        with open(self.file_path, 'r', encoding='utf-8') as f:
+            current_data = json.load(f)
+        current_conclusions = current_data.get("检查结论", [])
+        
+        # 弹出结论选择窗口，并传入当前的结论
+        conclusions = self.show_conclusion_dialog(current_conclusions)
+        if conclusions is None:  # 用户取消了操作
+            return
+        if not conclusions:  # 没有选择任何结论
+            messagebox.showerror("错误", "请至少选择一项检查结论。")
+            return
+
         current_file_path = os.path.abspath(self.file_path)
         db_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
         arch_dir = os.path.join(db_path, 'arch', 'modified')
@@ -141,6 +211,9 @@ class EditReportPage(tk.Toplevel):
                 data[key] = page_data[key]
             else:
                 data[key] = page_data
+        
+        # 添加检查结论到数据中
+        data["检查结论"] = conclusions
 
         # 处理图片
         self.process_images(data, pic_arch_dir, video_arch_dir, arch_path)

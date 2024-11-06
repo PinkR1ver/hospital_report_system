@@ -32,6 +32,7 @@ from ovemp_test_page import OVEMPTestPage
 from svv_test_page import SVVTestPage
 
 from database_page import DatabasePage
+from utils import *
 
 class VestibularFunctionReport:
     def __init__(self, master):
@@ -353,6 +354,17 @@ class VestibularFunctionReport:
             messagebox.showerror("错误", f"以下基本信息字段未填写完整:\n{', '.join(missing_fields)}\n请填写完整后再保存。")
             return
         
+        # 弹出结论选择窗口
+        conclusions = self.show_conclusion_dialog()
+        if conclusions is None:  # 用户取消了操作
+            return
+        if not conclusions:  # 没有选择任何结论
+            messagebox.showerror("错误", "请至少选择一项检查结论。")
+            return
+        
+        # 将结论添加到数据中
+        data["检查结论"] = conclusions
+        
         # 使用配置的数据库路径
         if not os.path.exists(self.db_path):
             os.makedirs(self.db_path)
@@ -537,7 +549,7 @@ class VestibularFunctionReport:
         password_entry = ttk.Entry(password_window, show="*", textvariable=password_var)
         password_entry.pack(pady=5)
         
-        result = [False]  # 使用列表存储结果，以便在内部函数中修改
+        result = [False]
         
         def verify_password():
             if password_var.get() == stored_password:
@@ -553,6 +565,63 @@ class VestibularFunctionReport:
         self.master.wait_window(password_window)
         
         return result[0]
+
+    def show_conclusion_dialog(self):
+        # 创建一个新的顶层窗口
+        dialog = tk.Toplevel(self.master)
+        dialog.title("检查结论")
+        dialog.geometry("400x250")
+        dialog.transient(self.master)  # 设置为主窗口的临时窗口
+        dialog.grab_set()  # 模态窗口
+        
+        # 创建一个框架来容纳选项
+        frame = ttk.LabelFrame(dialog, text="请选择检查结论", padding="10 10 10 10")
+        frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # 创建变量字典存储选择状态
+        conclusion_vars = {}
+        conclusions = [
+            "未见明显异常",
+            "左侧前庭功能低下",
+            "右侧前庭功能低下",
+            "双侧前庭功能低下"
+        ]
+        
+        # 创建复选框
+        for i, conclusion in enumerate(conclusions):
+            var = tk.BooleanVar()
+            conclusion_vars[conclusion] = var
+            chk = ttk.Checkbutton(frame, text=conclusion, variable=var)
+            chk.grid(row=i, column=0, sticky=tk.W, padx=5, pady=5)
+        
+        # 结果变量
+        result = {"selected": None}
+        
+        def on_ok():
+            # 获取选中的结论
+            selected = [c for c, v in conclusion_vars.items() if v.get()]
+            result["selected"] = selected
+            dialog.destroy()
+        
+        def on_cancel():
+            result["selected"] = None
+            dialog.destroy()
+        
+        # 创建按钮框架
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        # 添加确定和取消按钮
+        ok_button = ttk.Button(button_frame, text="确定", command=on_ok)
+        ok_button.pack(side=tk.RIGHT, padx=5)
+        
+        cancel_button = ttk.Button(button_frame, text="取消", command=on_cancel)
+        cancel_button.pack(side=tk.RIGHT, padx=5)
+        
+        # 等待窗口关闭
+        dialog.wait_window()
+        
+        return result["selected"]
 
 if __name__ == "__main__":
     root = tk.Tk()
