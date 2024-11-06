@@ -158,8 +158,12 @@ class DatabasePage(ttk.Frame):
 
         # 加载Excel模板
         template_path = os.path.join(base_path, "template", "report_template.xlsx")
-        wb = openpyxl.load_workbook(template_path)
-        ws = wb.active
+        try:
+            wb = openpyxl.load_workbook(template_path)
+            ws = wb.active
+        except Exception as e:
+            messagebox.showerror("错误", f"无法加载Excel模板: {e}")
+            return
 
         # 填充基本信息
         basic_info = data.get("基本信息", {})
@@ -289,7 +293,7 @@ class DatabasePage(ttk.Frame):
                     img.anchor = 'O7'
                     
                     cell_width = 6
-                    cell_height = 9
+                    cell_height = 20
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
@@ -332,10 +336,10 @@ class DatabasePage(ttk.Frame):
                 pic_path = os.path.join(self.db_path, head_suppression.get("头脉冲抑制试验示意图"))
                 if os.path.exists(pic_path):
                     img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'O18'
+                    img.anchor = 'O30'
                     
                     cell_width = 6
-                    cell_height = 20
+                    cell_height = 22
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
@@ -608,7 +612,7 @@ class DatabasePage(ttk.Frame):
                     img.anchor = 'O58'
                     
                     cell_width = 6
-                    cell_height = 22
+                    cell_height = 16
                     
                     img.width = cell_width * 60
                     img.height = cell_height * 18
