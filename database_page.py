@@ -19,8 +19,14 @@ from reportlab.lib.utils import ImageReader
 from PIL import Image as PILImage
 import io
 import openpyxl
-from openpyxl.styles import Font, Alignment, Border, Side
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill, Color
 import uuid
+
+thin_border = Side(border_style="thin", color="000000")  # 细线
+medium_border = Side(border_style="medium", color="000000")  # 中等粗线
+thick_border = Side(border_style="thick", color="000000")  # 粗线
+double_border = Side(border_style="double", color="000000")  # 双线
+dashed_border = Side(border_style="dashed", color="000000")  # 虚线
 
 def is_dict_empty(d):
     """
@@ -31,6 +37,55 @@ def is_dict_empty(d):
     empty_values = [None, "", [], {}, 0, "0", "未知", "无"]
     return all(value in empty_values or (isinstance(value, str) and value.strip() == "") 
               for value in d.values())
+    
+def set_merged_cell_border(ws, range_string, border):
+    if ':' in range_string:
+        rows = ws[range_string]
+        for row in rows:
+            for cell in row:
+                cell.border = border
+    else:
+        ws[range_string].border = border
+            
+
+def set_section_title(ws, cell_anchor, title):
+    
+    range_string = 'A' + cell_anchor + ":" + 'M' +cell_anchor
+    start_cell = 'A' + cell_anchor
+    
+    ws.merge_cells(range_string)
+    ws[start_cell] = title
+    ws[start_cell].alignment = Alignment(horizontal='left')
+
+def set_cell_element(ws, range_string, element, color=None, border=None):
+    
+    '''
+    ws: excel
+    range_strng: 'A1:C1' like
+    element: string or value or something
+    '''
+    
+    if ':' in range_string:
+    
+        ws.merge_cells(range_string)
+        start_cell = range_string.split(':')[0]
+        
+    else:
+        start_cell = range_string
+    
+    if color is not None:
+        if ':' in range_string:
+            cells = ws[range_string]
+            for row in cells:
+                for cell in row:
+                    cell.fill = PatternFill(start_color=color, end_color=color, fill_type='solid')
+        else:
+            ws[start_cell].fill = PatternFill(start_color=color, end_color=color, fill_type='solid')
+                
+    if border is not None:
+        set_merged_cell_border(ws, range_string, border)
+        
+    ws[start_cell] = element
 
 class MyDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
@@ -166,29 +221,58 @@ class DatabasePage(ttk.Frame):
             return
 
         ws = wb.worksheets[0]
+        
+        light_gray = "F0F0F0"
+        
+        border = Border(
+            left=thin_border,
+            right=thin_border,
+            top=thin_border,
+            bottom=thin_border
+        )
 
         # 填充基本信息
         basic_info = data.get("基本信息", {})
-        ws['B3'] = basic_info.get("ID", "")
-        ws['E3'] = basic_info.get("姓名", "")
-        ws['H3'] = basic_info.get("性别", "")
-        ws['K3'] = basic_info.get("出生日期", "")
-        ws['N3'] = basic_info.get("检查时间", "")
-        ws['Q3'] = basic_info.get("检查设备", "")
-        ws['T3'] = basic_info.get("检查医生", "")
+        ws['E3'] = basic_info.get("ID", "")
+        ws['H3'] = basic_info.get("姓名", "")
+        ws['K3'] = basic_info.get("性别", "")
+        ws['E4'] = basic_info.get("出生日期", "")
+        ws['H4'] = basic_info.get("检查时间", "")
+        ws['K4'] = basic_info.get("检查设备", "")
+        examine_doctor = basic_info.get("检查医生", "")
+        
+        cell_anchor = '6'
 
         # 填充自发性眼震动(spontaneous nystagmus)
         spontaneous_nystagmus = data.get("自发性眼震", {})
         if not is_dict_empty(spontaneous_nystagmus):
-            ws.merge_cells('A7:C7')
-            ws.merge_cells('D7:F7')
-            ws.merge_cells('G7:I7')
-            ws.merge_cells('K7:M7')
             
-            ws['A7'] = spontaneous_nystagmus.get("自发性眼震模式", "")
-            ws['D7'] = spontaneous_nystagmus.get("自发性眼震速度", "")
-            ws['G7'] = spontaneous_nystagmus.get("自发性眼震固视抑制", "")
-            ws['K7'] = spontaneous_nystagmus.get("自发性眼震检查结果", "")
+            set_section_title(ws, cell_anchor, '自发性眼震 (spontaneous nystagmus)')
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            element_cell = "A" + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, element_cell, '模式', color=light_gray)
+            element_cell = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, element_cell, '速度（度/秒）', color=light_gray)
+            element_cell = 'G' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, element_cell, '固视抑制', color=light_gray)
+            element_cell = 'K' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, element_cell, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            element_cell = "A" + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, element_cell, spontaneous_nystagmus.get("自发性眼震模式", ""), border=border)
+            element_cell = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, element_cell, spontaneous_nystagmus.get("自发性眼震速度", ""), border=border)
+            element_cell = 'G' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, element_cell, spontaneous_nystagmus.get("自发性眼震固视抑制", ""), border=border)
+            element_cell = 'K' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, element_cell, spontaneous_nystagmus.get("自发性眼震检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
+            
         else:
             pass
         
@@ -196,15 +280,31 @@ class DatabasePage(ttk.Frame):
         head_shake_test = data.get("摇头试验", {})
         if not is_dict_empty(head_shake_test):
             
-            ws.merge_cells('A11:C11')
-            ws.merge_cells('D11:E11')
-            ws.merge_cells('F11:G11')
-            ws.merge_cells('I11:M11')
+            set_section_title(ws, cell_anchor, '摇头试验 (head-shaking test)')
+    
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['A11'] = head_shake_test.get("眼震模式", "")
-            ws['D11'] = head_shake_test.get("摇头方向", "")
-            ws['F11'] = head_shake_test.get("眼震速度", "")
-            ws['I11'] = head_shake_test.get("检查结果", "")
+            element_cell = "A" + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, element_cell, '模式', color=light_gray)
+            element_cell = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, element_cell, '方向', color=light_gray)
+            element_cell = 'G' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, element_cell, '速度（度/秒）', color=light_gray)
+            element_cell = 'K' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, element_cell, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            element_cell = "A" + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, element_cell, head_shake_test.get("眼震模式", ""), border=border)
+            element_cell = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, element_cell, head_shake_test.get("摇头方向", ""), border=border)
+            element_cell = 'G' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, element_cell, head_shake_test.get("眼震速度", ""), border=border)
+            element_cell = 'K' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, element_cell, head_shake_test.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -214,29 +314,52 @@ class DatabasePage(ttk.Frame):
         gaze_nystagmus = data.get("凝视性眼震", {})
         if not is_dict_empty(gaze_nystagmus):
             
-            ws.merge_cells('C15:D15')
-            ws.merge_cells('E15:F15')
-            ws.merge_cells('G15:H15')
-            ws.merge_cells('I15:J15')
+            set_section_title(ws, cell_anchor, '凝视性眼震 (gaze-evoked nystagmus)')
             
-            ws.merge_cells('C16:D16')
-            ws.merge_cells('E16:F16')
-            ws.merge_cells('G16:H16')
-            ws.merge_cells('I16:J16')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('L15:M16')
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '凝视方向', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, '上', color=light_gray)
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
+            set_cell_element(ws, range_string, '下', color=light_gray)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
             
-            ws['C15'] = gaze_nystagmus.get("凝视性眼震模式（左）", "")
-            ws['E15'] = gaze_nystagmus.get("凝视性眼震模式（右）", "")
-            ws['G15'] = gaze_nystagmus.get("凝视性眼震模式（上）", "")
-            ws['I15'] = gaze_nystagmus.get("凝视性眼震模式（下）", "")
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['C16'] = gaze_nystagmus.get("凝视性眼震速度（左）", "")
-            ws['E16'] = gaze_nystagmus.get("凝视性眼震速度（右）", "")
-            ws['G16'] = gaze_nystagmus.get("凝视性眼震速度（上）", "")
-            ws['I16'] = gaze_nystagmus.get("凝视性眼震速度（下）", "")
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '眼震模式', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震模式（左）", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震模式（右）", ""), border=border)
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震模式（上）", ""), border=border)
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震模式（下）", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震检查结果", ""), border=border)
             
-            ws['L15'] = gaze_nystagmus.get("凝视性眼震检查结果", "")
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '眼震速度', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震速度（左）", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震速度（右）", ""), border=border)
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震速度（上）", ""), border=border)
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
+            set_cell_element(ws, range_string, gaze_nystagmus.get("凝视性眼震速度（下）", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -246,62 +369,119 @@ class DatabasePage(ttk.Frame):
         head_impulse = data.get("头脉冲试验", "")
         if not is_dict_empty(head_impulse):
             
-            ws.merge_cells('J20:M22')
             
-            ws['C20'] = head_impulse.get("VOR增益 (左外半规管)", "")
-            ws['D20'] = head_impulse.get("VOR增益 (右外半规管)", "")
-            ws['E20'] = head_impulse.get("VOR增益 (左前半规管)", "")
-            ws['F20'] = head_impulse.get("VOR增益 (右后半规管)", "")
-            ws['G20'] = head_impulse.get("VOR增益 (左后半规管)", "")
-            ws['H20'] = head_impulse.get("VOR增益 (右前半规管)", "")
+            set_section_title(ws, cell_anchor, '头脉冲试验 (head impulse test)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['C21'] = head_impulse.get("PR分数 (左外半规管)", "")
-            ws['D21'] = head_impulse.get("PR分数 (右外半规管)", "")
-            ws['E21'] = head_impulse.get("PR分数 (左前半规管)", "")
-            ws['F21'] = head_impulse.get("PR分数 (右后半规管)", "")
-            ws['G21'] = head_impulse.get("PR分数 (左后半规管)", "")
-            ws['H21'] = head_impulse.get("PR分数 (右前半规管)", "")
-        
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, '左外', color=light_gray)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, '右外', color=light_gray)
+            range_string = 'E' + cell_anchor
+            set_cell_element(ws, range_string, '左前', color=light_gray)
+            range_string = 'F' + cell_anchor
+            set_cell_element(ws, range_string, '右后', color=light_gray)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, '左后', color=light_gray)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, '右前', color=light_gray)
+            range_string = 'J' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, 'VOR增益', color=light_gray)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("VOR增益 (左外半规管)", ""), border=border)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("VOR增益 (右外半规管)", ""), border=border)
+            range_string = 'E' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("VOR增益 (左前半规管)", ""), border=border)
+            range_string = 'F' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("VOR增益 (右后半规管)", ""), border=border)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("VOR增益 (左后半规管)", ""), border=border)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("VOR增益 (右前半规管)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 2)
             head_impulse_result = head_impulse.get("头脉冲试验检查结果", [])
-            ws['J20'] = ','.join(head_impulse_result)
+            head_impulse_result = ','.join(head_impulse_result)
+            set_cell_element(ws, range_string, head_impulse_result, border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, 'PR分数', color=light_gray)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("PR分数 (左外半规管)", ""), border=border)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("PR分数 (右外半规管)", ""), border=border)
+            range_string = 'E' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("PR分数 (左前半规管)", ""), border=border)
+            range_string = 'F' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("PR分数 (右后半规管)", ""), border=border)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("PR分数 (左后半规管)", ""), border=border)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, head_impulse.get("PR分数 (右前半规管)", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '扫视波', color=light_gray)
             
             sccade_wave = head_impulse.get("头脉冲试验扫视波", [])
             if '阴性' in sccade_wave or '配合欠佳' in sccade_wave:
-                ws.merge_cells('C22:H22')
+                range_string = 'C' + cell_anchor + ':' + 'H' + cell_anchor
+                start_cell = 'C' + cell_anchor
+                ws.merge_cells(range_string)
                 
                 if '配合欠佳' in sccade_wave:
-                    ws['C22'] = '配合欠佳'
+                    ws[start_cell] = '配合欠佳'
                 else:
-                    ws['C22'] = '阴性'
+                    ws[start_cell] = '阴性'
                 
             else:
+                
+                ws[f'C{cell_anchor}'].border = border
+                ws[f'D{cell_anchor}'].border = border
+                ws[f'E{cell_anchor}'].border = border
+                ws[f'F{cell_anchor}'].border = border
+                ws[f'G{cell_anchor}'].border = border
+                ws[f'H{cell_anchor}'].border = border
+                
                 for i, option in enumerate(sccade_wave):
                     if option == "左外半规管":
-                        ws['C22'] = '√'
+                        ws[f'C{cell_anchor}'] = '√'
                     elif option == "右外半规管":
-                        ws['D22'] = '√'
+                        ws[f'D{cell_anchor}'] = '√'
                     elif option == "左前半规管":
-                        ws['E22'] = '√'
+                        ws[f'E{cell_anchor}'] = '√'
                     elif option == "右后半规管":
-                        ws['F22'] = '√'
+                        ws[f'F{cell_anchor}'] = '√'
                     elif option == "左后半规管":
-                        ws['G22'] = '√'
+                        ws[f'G{cell_anchor}'] = '√'
                     elif option == "右前半规管":
-                        ws['H22'] = '√'
+                        ws[f'H{cell_anchor}'] = '√'
+                        
+            cell_anchor = str(int(cell_anchor) + 2)
             
-            if head_impulse.get("头脉冲试验示意图") != "":
-                pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
-                if os.path.exists(pic_path):
-                    img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'O7'
+            # if head_impulse.get("头脉冲试验示意图") != "":
+            #     pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
+            #     if os.path.exists(pic_path):
+            #         img = openpyxl.drawing.image.Image(pic_path)
+            #         img.anchor = 'O7'
                     
-                    cell_width = 6
-                    cell_height = 20
+            #         cell_width = 6
+            #         cell_height = 20
                     
-                    img.width = cell_width * 60
-                    img.height = cell_height * 18
+            #         img.width = cell_width * 60
+            #         img.height = cell_height * 18
                     
-                    ws.add_image(img)
+            #         ws.add_image(img)
             
         else:
             pass
@@ -310,44 +490,73 @@ class DatabasePage(ttk.Frame):
         head_suppression = data.get("头脉冲抑制试验", "")
         if not is_dict_empty(head_suppression):
             
-            ws.merge_cells('C26:D26')
-            ws.merge_cells('C27:D27')
-            ws.merge_cells('E26:F26')
-            ws.merge_cells('E27:F27')
-            ws.merge_cells('H26:M27')
+            set_section_title(ws, cell_anchor, '头脉冲抑制试验 (head impulse suppression)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['C26'] = head_suppression.get("头脉冲抑制试验增益 (左外半规管)", "")
-            ws['C27'] = head_suppression.get("头脉冲抑制试验增益 (右外半规管)", "")
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, '增益', color=light_gray)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, '扫视波', color=light_gray)
+            range_string = 'H' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '左外半规管', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, head_suppression.get("头脉冲抑制试验增益 (左外半规管)", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            ws.merge_cells(range_string)
+            set_merged_cell_border(ws, range_string, border)
+            
+            
+            range_string = 'H' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, head_suppression.get("头脉冲抑制试验检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '右外半规管', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, head_suppression.get("头脉冲抑制试验增益 (右外半规管)", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            ws.merge_cells(range_string)
+            set_merged_cell_border(ws, range_string, border)
+            
+            
             
             sccade_wave = head_suppression.get("头脉冲抑制试验补偿性扫视波", [])
             if '阴性' in sccade_wave:
-                ws['E26'] = '阴性'
-                ws['E27'] = '阴性'
+                ws[f'E{str(int(cell_anchor) - 1)}'] = '阴性'
+                ws[f'E{cell_anchor}'] = '阴性'
             elif '配合欠佳' in sccade_wave:
-                ws['E26'] = '配合欠佳'
-                ws['E27'] = '配合欠佳'
+                ws[f'E{str(int(cell_anchor) - 1)}'] = '配合欠佳'
+                ws[f'E{cell_anchor}'] = '配合欠佳'
             
             else:
                 if '左外半规管' in sccade_wave:
-                    ws['E26'] = '√'
+                    ws[f'E{str(int(cell_anchor) - 1)}'] = '√'
                 if '右外半规管' in sccade_wave:
-                    ws['E27'] = '√'
+                    ws[f'E{cell_anchor}'] = '√'
+                    
+            cell_anchor = str(int(cell_anchor) + 2)
             
-            ws['H26'] = head_suppression.get("头脉冲抑制试验检查结果", "")
-            
-            if head_suppression.get("头脉冲抑制试验示意图") != "":
-                pic_path = os.path.join(self.db_path, head_suppression.get("头脉冲抑制试验示意图"))
-                if os.path.exists(pic_path):
-                    img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'O30'
+            # if head_suppression.get("头脉冲抑制试验示意图") != "":
+            #     pic_path = os.path.join(self.db_path, head_suppression.get("头脉冲抑制试验示意图"))
+            #     if os.path.exists(pic_path):
+            #         img = openpyxl.drawing.image.Image(pic_path)
+            #         img.anchor = 'O30'
                     
-                    cell_width = 6
-                    cell_height = 22
+            #         cell_width = 6
+            #         cell_height = 22
                     
-                    img.width = cell_width * 60
-                    img.height = cell_height * 18
+            #         img.width = cell_width * 60
+            #         img.height = cell_height * 18
                     
-                    ws.add_image(img)
+            #         ws.add_image(img)
         else:
             pass
         
@@ -355,13 +564,26 @@ class DatabasePage(ttk.Frame):
         skew_deviation = data.get("眼位反向偏斜", "")
         if not is_dict_empty(skew_deviation):
             
-            ws.merge_cells('A31:C31')
-            ws.merge_cells('D31:F31')
-            ws.merge_cells('H31:M31')
+            set_section_title(ws, cell_anchor, '眼位反向偏斜 (skew deviation)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['A31'] = skew_deviation.get("眼位反向偏斜 (HR, 度)", "")
-            ws['D31'] = skew_deviation.get("眼位反向偏斜 (VR, 度)", "")
-            ws['H31'] = skew_deviation.get("眼位反向偏斜检查结果", "")
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, 'HR（度）', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, 'VR（度）', color=light_gray)
+            range_string = 'H' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, skew_deviation.get("眼位反向偏斜 (HR, 度)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, skew_deviation.get("眼位反向偏斜 (VR, 度)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, skew_deviation.get("眼位反向偏斜检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -370,8 +592,15 @@ class DatabasePage(ttk.Frame):
         vvor = data.get("视觉增强前庭-眼反射试验", "")
         if not is_dict_empty(vvor):
             
-            ws.merge_cells('C34:F34')
-            ws['C34'] = vvor.get("检查结果", "")
+            set_section_title(ws, cell_anchor, '视觉增强前庭-眼反射试验 (VVOR)')
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, vvor.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -380,8 +609,16 @@ class DatabasePage(ttk.Frame):
         vor_suppression = data.get("前庭-眼反射抑制试验", "")
         if not is_dict_empty(vor_suppression):
             
-            ws.merge_cells('J34:M34')
-            ws['J34'] = vor_suppression.get("检查结果", "")
+            set_section_title(ws, cell_anchor, '前庭-眼反射抑制试验 (VOR suppression)')
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, vor_suppression.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -390,22 +627,46 @@ class DatabasePage(ttk.Frame):
         pursuit_test = data.get("扫视检查", "")
         if not is_dict_empty(pursuit_test):
             
-            ws.merge_cells('B38:C38')
-            ws.merge_cells('D38:E38')
-            ws.merge_cells('F38:G38')
-            ws.merge_cells('B39:C39')
-            ws.merge_cells('D39:E39')
-            ws.merge_cells('F39:G39')
-            ws.merge_cells('I38:M39')
+            set_section_title(ws, cell_anchor, '扫视检查 (pursuit test)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['B38'] = pursuit_test.get("扫视延迟时间 (左向, 毫秒)", "")
-            ws['B39'] = pursuit_test.get("扫视延迟时间 (右向, 毫秒)", "")
-            ws['D38'] = pursuit_test.get("扫视峰速度 (左向, 度/秒)", "")
-            ws['D39'] = pursuit_test.get("扫视峰速度 (右向, 度/秒)", "")
-            ws['F38'] = pursuit_test.get("扫视精确度 (左向, %)", "")
-            ws['F39'] = pursuit_test.get("扫视精确度 (右向, %)", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '视靶方向', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '扫视延迟时间 (毫秒)', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, '扫视峰速度 (度/秒)', color=light_gray)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, '扫视精确度 (%)', color=light_gray)
+            range_string = 'I' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
             
-            ws['I38'] = pursuit_test.get("扫视检查结果", "")
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, pursuit_test.get("扫视延迟时间 (左向, 毫秒)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, pursuit_test.get("扫视峰速度 (左向, 度/秒)", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, pursuit_test.get("扫视精确度 (左向, %)", ""), border=border)
+            
+            range_string = 'I' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, pursuit_test.get("扫视检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, pursuit_test.get("扫视延迟时间 (右向, 毫秒)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, pursuit_test.get("扫视峰速度 (右向, 度/秒)", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, pursuit_test.get("扫视精确度 (右向, %)", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -414,37 +675,72 @@ class DatabasePage(ttk.Frame):
         dix_hallpike = data.get("位置试验 (Dix-Hallpike试验)", "")
         if not is_dict_empty(dix_hallpike):
             
-            ws.merge_cells('B43:C43')
-            ws.merge_cells('D43:E43')
-            ws.merge_cells('F43:G43')
-            ws.merge_cells('J43:K43')
-            ws.merge_cells('L43:M43')
+            set_section_title(ws, cell_anchor, '位置试验 (Dix-Hallpike试验)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('B44:C44')
-            ws.merge_cells('D44:E44')
-            ws.merge_cells('F44:G44')
-            ws.merge_cells('J44:K44')
-            ws.merge_cells('L44:M44')
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '眼震模式', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, '坐起眼震模式', color=light_gray)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, '出现眩晕/头晕', color=light_gray)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, '潜伏期 (秒)', color=light_gray)
+            range_string = 'I' + cell_anchor
+            set_cell_element(ws, range_string, '持续时长 (秒)', color=light_gray)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, '最大速度 (度/秒)', color=light_gray)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '眼震疲劳性', color=light_gray)
             
-            ws.merge_cells('C46:M46')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['B43'] = dix_hallpike.get("左侧眼震模式", "")
-            ws['D43'] = dix_hallpike.get("左侧坐起眼震模式", "")
-            ws['F43'] = dix_hallpike.get("左侧出现眩晕/头晕", "")
-            ws['H43'] = dix_hallpike.get("左侧眼震潜伏期 (秒)", "")
-            ws['I43'] = dix_hallpike.get("左侧眼震持续时长 (秒)", "")
-            ws['J43'] = dix_hallpike.get("左侧眼震最大速度 (度/秒)", "")
-            ws['L43'] = dix_hallpike.get("左侧眼震疲劳性", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧眼震模式", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧坐起眼震模式", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧出现眩晕/头晕", ""), border=border)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧眼震潜伏期 (秒)", ""), border=border)
+            range_string = 'I' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧眼震持续时长 (秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧眼震最大速度 (度/秒)", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("左侧眼震疲劳性", ""), border=border)
             
-            ws['B44'] = dix_hallpike.get("右侧眼震模式", "")
-            ws['D44'] = dix_hallpike.get("右侧坐起眼震模式", "")
-            ws['F44'] = dix_hallpike.get("右侧出现眩晕/头晕", "")
-            ws['H44'] = dix_hallpike.get("右侧眼震潜伏期 (秒)", "")
-            ws['I44'] = dix_hallpike.get("右侧眼震持续时长 (秒)", "")
-            ws['J44'] = dix_hallpike.get("右侧眼震最大速度 (度/秒)", "")
-            ws['L44'] = dix_hallpike.get("右侧眼震疲劳性", "")
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['C46'] = dix_hallpike.get("检查结果", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧眼震模式", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧坐起眼震模式", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧出现眩晕/头晕", ""), border=border)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧眼震潜伏期 (秒)", ""), border=border)
+            range_string = 'I' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧眼震持续时长 (秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧眼震最大速度 (度/秒)", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("右侧眼震疲劳性", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, dix_hallpike.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -453,29 +749,58 @@ class DatabasePage(ttk.Frame):
         supine_roll = data.get("位置试验 (仰卧滚转试验)", "")
         if not is_dict_empty(supine_roll):
             
-            ws.merge_cells('B50:C50')
-            ws.merge_cells('D50:E50')
-            ws.merge_cells('H50:I50')
+            set_section_title(ws, cell_anchor, '位置试验 (仰卧滚转试验)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('B51:C51')
-            ws.merge_cells('D51:E51')
-            ws.merge_cells('H51:I51')
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '眼震模式', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, '出现眩晕/头晕', color=light_gray)
+            range_string = 'F' + cell_anchor
+            set_cell_element(ws, range_string, '潜伏期 (秒)', color=light_gray)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, '持续时长 (秒)', color=light_gray)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, '最大速度 (度/秒)', color=light_gray)
+            range_string = 'K' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
             
-            ws.merge_cells('K50:M51')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['B50'] = supine_roll.get("左侧眼震模式", "")
-            ws['D50'] = supine_roll.get("左侧出现眩晕/头晕", "")
-            ws['F50'] = supine_roll.get("左侧眼震潜伏期 (秒)", "")
-            ws['G50'] = supine_roll.get("左侧眼震持续时长 (秒)", "")
-            ws['H50'] = supine_roll.get("左侧眼震最大速度 (度/秒)", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("左侧眼震模式", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("左侧出现眩晕/头晕", ""), border=border)
+            range_string = 'F' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("左侧眼震潜伏期 (秒)", ""), border=border)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("左侧眼震持续时长 (秒)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("左侧眼震最大速度 (度/秒)", ""), border=border)
             
-            ws['B51'] = supine_roll.get("右侧眼震模式", "")
-            ws['D51'] = supine_roll.get("右侧出现眩晕/头晕", "")
-            ws['F51'] = supine_roll.get("右侧眼震潜伏期 (秒)", "")
-            ws['G51'] = supine_roll.get("右侧眼震持续时长 (秒)", "")
-            ws['H51'] = supine_roll.get("右侧眼震最大速度 (度/秒)", "")
+            range_string = 'K' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, supine_roll.get("检查结果", ""), border=border)
             
-            ws['K50'] = supine_roll.get("检查结果", "")
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("右侧眼震模式", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("右侧出现眩晕/头晕", ""), border=border)
+            range_string = 'F' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("右侧眼震潜伏期 (秒)", ""), border=border)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("右侧眼震持续时长 (秒)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("右侧眼震最大速度 (度/秒)", ""), border=border)
+
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -485,19 +810,34 @@ class DatabasePage(ttk.Frame):
         other_position_test = data.get("位置试验(其他)", "")
         if not is_dict_empty(other_position_test):
             
-            ws.merge_cells('A57:C57')
-            ws.merge_cells('D57:F57')
-            ws.merge_cells('G57:I57')
-            ws.merge_cells('J57:M57')
+            set_section_title(ws, cell_anchor, '位置试验 (其他)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('C59:M59')
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '坐位-平卧试验', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, '坐位-低头试验', color=light_gray)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, '坐位-仰头试验', color=light_gray)
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, '零平面', color=light_gray)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
             
-            ws['A57'] = other_position_test.get("坐位-平卧试验", "")
-            ws['D57'] = other_position_test.get("坐位-低头试验", "")
-            ws['G57'] = other_position_test.get("坐位-仰头试验", "")
-            ws['J57'] = other_position_test.get("零平面", "")
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['C59'] = other_position_test.get("检查结果", "")
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, other_position_test.get("坐位-平卧试验", ""), border=border)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, other_position_test.get("坐位-低头试验", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, other_position_test.get("坐位-仰头试验", ""), border=border)
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, other_position_test.get("零平面", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, other_position_test.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -506,14 +846,27 @@ class DatabasePage(ttk.Frame):
         visual_tracking = data.get("视跟踪", "")
         if not is_dict_empty(visual_tracking):
             
-            ws.merge_cells('A63:B63')
-            ws.merge_cells('C63:D63')
+            set_section_title(ws, cell_anchor, '视跟踪 (visual tracking)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('F63:M63')
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '视跟踪曲线分型', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, '视跟踪增益', color=light_gray)
+            range_string = 'H' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
             
-            ws['A63'] = visual_tracking.get("视跟踪曲线分型", "")
-            ws['C63'] = visual_tracking.get("视跟踪增益", "")
-            ws['F63'] = visual_tracking.get("视跟踪检查结果", "")
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, visual_tracking.get("视跟踪曲线分型", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, visual_tracking.get("视跟踪增益", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, visual_tracking.get("视跟踪检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
+
             
         else:
             pass
@@ -522,17 +875,52 @@ class DatabasePage(ttk.Frame):
         spontaneous_nystagmus = data.get("视动性眼震", "")
         if not is_dict_empty(spontaneous_nystagmus):
             
-            ws.merge_cells('L67:M67')
+            set_section_title(ws, cell_anchor, '视动性眼震 (optokinetic Nystagmus)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['B67'] = spontaneous_nystagmus.get("向左视标增益", "")
-            ws['C67'] = spontaneous_nystagmus.get("向右视标增益", "")
-            ws['D67'] = spontaneous_nystagmus.get("向上视标增益", "")
-            ws['E67'] = spontaneous_nystagmus.get("向下视标增益", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '视靶方向', color=light_gray)
+            range_string = 'B' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, '上', color=light_gray)
+            range_string = 'E' + cell_anchor
+            set_cell_element(ws, range_string, '下', color=light_gray)
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, '视靶方向', color=light_gray)
+            range_string = 'I' + cell_anchor
+            set_cell_element(ws, range_string, '水平', color=light_gray)
+            range_string = 'J' + cell_anchor
+            set_cell_element(ws, range_string, '垂直', color=light_gray)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
             
-            ws['I67'] = spontaneous_nystagmus.get("水平视标不对称性（%）", "")
-            ws['J67'] = spontaneous_nystagmus.get("垂直视标不对称性（%）", "")
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['L67'] = spontaneous_nystagmus.get("检查结果", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '增益', color=light_gray)
+            range_string = 'B' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("向左视标增益", ""), border=border)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("向右视标增益", ""), border=border)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("向上视标增益", ""), border=border)
+            range_string = 'E' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("向下视标增益", ""), border=border)
+            
+            range_string = 'G' + cell_anchor + ':' + 'H' + cell_anchor
+            set_cell_element(ws, range_string, '不对称性 (%)', color=light_gray)
+            range_string = 'I' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("水平视标不对称性（%）", ""), border=border)
+            range_string = 'J' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("垂直视标不对称性（%）", ""), border=border)
+            
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, spontaneous_nystagmus.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -541,43 +929,74 @@ class DatabasePage(ttk.Frame):
         laceration_test = data.get("瘘管试验", "")
         if not is_dict_empty(laceration_test):
             
+            set_section_title(ws, cell_anchor, '瘘管试验 (caloric test)')
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '反应', color=light_gray)
+            range_string = 'F' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'A' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            
             positive_options = laceration_test.get("瘘管试验", [])
+            
             
             if '配合欠佳' in positive_options:
                 
-                ws.merge_cells('B71:C72')
-                ws['B71'] = '配合欠佳'
+                range_string = 'B' + cell_anchor + ':' + 'C' + str(int(cell_anchor) + 1)
+                set_cell_element(ws, range_string, '配合欠佳', border=border)
                 
-            elif '阴性' in positive_options:
+            else:
                 
-                ws['B71'] = '阴性'
-                ws['B72'] = '阴性'
+                range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+                ws.merge_cells(range_string)
+                set_merged_cell_border(ws, range_string, border)
+                
+                range_string = 'B' + str(int(cell_anchor) + 1) + ':' + 'C' + str(int(cell_anchor) + 1)
+                ws.merge_cells(range_string)
+                set_merged_cell_border(ws, range_string, border)
+                
+                if '阴性' in positive_options:
                     
-            elif '双耳阳性' in positive_options:
-                ws['B71'] = "阳性"
-                ws['B72'] = "阳性"
+                    ws[f'B{cell_anchor}'] = '阴性'
+                    ws[f'B{str(int(cell_anchor + 1))}'] = '阴性'
+                        
+                elif '双耳阳性' in positive_options:
+                    ws[f'B{cell_anchor}'] = "阳性"
+                    ws[f'B{str(int(cell_anchor + 1))}'] = "阳性"
+                    
+                elif '双耳弱阳性' in positive_options:
+                    ws[f'B{cell_anchor}'] = "弱阳性"
+                    ws[f'B{str(int(cell_anchor + 1))}'] = "弱阳性"
                 
-            elif '双耳弱阳性' in positive_options:
-                ws['B71'] = "弱阳性"
-                ws['B72'] = "弱阳性"
+                elif '右耳阳性' in positive_options:
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = "阳性"
+                    ws[f'B{cell_anchor}'] = "阴性"
+                    
+                elif '左耳阳性' in positive_options:
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = "阴性"
+                    ws[f'B{cell_anchor}'] = "阳性"
+                    
+                elif '右耳弱阳性' in positive_options:
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = "弱阳性"
+                    ws[f'B{cell_anchor}'] = "阴性"
+                    
+                elif '左耳弱阳性' in positive_options:
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = "阴性"
+                    ws[f'B{cell_anchor}'] = "弱阳性"
+                    
+            range_string = 'F' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, laceration_test.get("检查结果", ""), border=border)
             
-            elif '右耳阳性' in positive_options:
-                ws['B72'] = "阳性"
-                ws['B71'] = "阴性"
-                
-            elif '左耳阳性' in positive_options:
-                ws['B72'] = "阴性"
-                ws['B71'] = "阳性"
-                
-            elif '右耳弱阳性' in positive_options:
-                ws['B72'] = "弱阳性"
-                ws['B71'] = "阴性"
-                
-            elif '左耳弱阳性' in positive_options:
-                ws['B72'] = "阴性"
-                ws['B71'] = "弱阳性"
-            
-            ws['E71'] = laceration_test.get("检查结果", "")
+            cell_anchor = str(int(cell_anchor) + 3)
             
         else:
             pass
@@ -586,41 +1005,70 @@ class DatabasePage(ttk.Frame):
         temperature_test = data.get("温度试验", "")
         if not is_dict_empty(temperature_test):
             
-            ws.merge_cells('D75:E75')
-            ws.merge_cells('J75:K75')
-            ws.merge_cells('Q75:R75')
-            ws.merge_cells('D76:E76')
-            ws.merge_cells('J76:K76')
-            ws.merge_cells('Q76:R76')
+            set_section_title(ws, cell_anchor, '温度试验 (temperature test)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('D78:E78')
-            ws.merge_cells('J78:R78')
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '单侧减弱侧别 (UW)', color=light_gray)
+            range_string = 'C' + cell_anchor 
+            set_cell_element(ws, range_string, temperature_test.get("单侧减弱侧别 (UW)", ""), border=border)
             
-            ws.merge_cells('O57:T72')
+            range_string = 'E' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, '优势偏向侧别 (DP)', color=light_gray)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("优势偏向侧别 (DP)", ""), border=border)
             
-            ws['D75'] = temperature_test.get("单侧减弱侧别 (UW)", "")
-            ws['D76'] = temperature_test.get("单侧减弱数值 (UW, %)", "")
-            ws['J75'] = temperature_test.get("优势偏向侧别 (DP)", "")
-            ws['J76'] = temperature_test.get("优势偏向数值 (DP, 度/秒)", "")
-            ws['Q75'] = temperature_test.get("最大慢相速度总和（右耳, 度/秒）", "")
-            ws['Q76'] = temperature_test.get("最大慢相速度总和（左耳, 度/秒）", "")
-            ws['D78'] = temperature_test.get("固视抑制指数 (FI, %)", "")
-            ws['J78'] = temperature_test.get("检查结果", "")
+            range_string = 'J' + cell_anchor + ':' + 'L' + cell_anchor
+            set_cell_element(ws, range_string, '最大慢相速度总和（右耳, 度/秒）', color=light_gray)
+            range_string = 'M' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("最大慢相速度总和（右耳, 度/秒）", ""), border=border)
             
-            pic_path = temperature_test.get("温度试验示意图", "")
-            if pic_path != '':
-                pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
-                if os.path.exists(pic_path):
-                    img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'O58'
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '单侧减弱数值 (UW, %)', color=light_gray)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("单侧减弱数值 (UW, %)", ""), border=border)
+            
+            range_string = 'E' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, '优势偏向数值 (DP, 度/秒)', color=light_gray)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("优势偏向数值 (DP, 度/秒)", ""), border=border)
+            
+            range_string = 'J' + cell_anchor + ':' + 'L' + cell_anchor
+            set_cell_element(ws, range_string, '最大慢相速度总和（左耳, 度/秒）', color=light_gray)
+            range_string = 'M' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("最大慢相速度总和（左耳, 度/秒）", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '固视抑制指数 (FI, %)', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("固视抑制指数 (FI, %)", ""), border=border)
+            
+            range_string = 'G' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            range_string = 'J' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, temperature_test.get("检查结果", ""), border=border)
+            
+            
+            cell_anchor = str(int(cell_anchor) + 2)
+            
+            # pic_path = temperature_test.get("温度试验示意图", "")
+            # if pic_path != '':
+            #     pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
+            #     if os.path.exists(pic_path):
+            #         img = openpyxl.drawing.image.Image(pic_path)
+            #         img.anchor = 'O58'
                     
-                    cell_width = 6
-                    cell_height = 16
+            #         cell_width = 6
+            #         cell_height = 16
                     
-                    img.width = cell_width * 60
-                    img.height = cell_height * 18
+            #         img.width = cell_width * 60
+            #         img.height = cell_height * 18
                     
-                    ws.add_image(img)
+            #         ws.add_image(img)
             
             
             
@@ -631,44 +1079,79 @@ class DatabasePage(ttk.Frame):
         cervical_evoked_myogenic_potential = data.get("颈肌前庭诱发肌源性电位 (cVEMP)", "")
         if not is_dict_empty(cervical_evoked_myogenic_potential):
             
-            ws.merge_cells('B82:C82')
-            ws.merge_cells('D82:E82')
-            ws.merge_cells('F82:G82')
-            ws.merge_cells('H82:J82')
-            ws.merge_cells('K82:M82')
-            ws.merge_cells('N82:O82')
-            ws.merge_cells('P82:R82')
+            set_section_title(ws, cell_anchor, '颈肌前庭诱发肌源性电位 (cVEMP)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('B83:C83')
-            ws.merge_cells('D83:E83')
-            ws.merge_cells('F83:G83')
-            ws.merge_cells('H83:J83')
-            ws.merge_cells('K83:M83')
-            ws.merge_cells('N83:O83')
-            ws.merge_cells('P83:R83')
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '声强阈值 (分贝)', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, 'P13波潜伏期 (毫秒)', color=light_gray)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, 'N23波潜伏期 (毫秒)', color=light_gray)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, 'P13-N23波间期 (毫秒)', color=light_gray)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, 'P13波振幅 (微伏)', color=light_gray)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, 'N23波振幅 (微伏)', color=light_gray)
+            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            set_cell_element(ws, range_string, 'P13-N23波振幅 (微伏)', color=light_gray)
             
-            ws.merge_cells('A86:C86')
-            ws.merge_cells('E86:R86')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['B82'] = cervical_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", "")
-            ws['D82'] = cervical_evoked_myogenic_potential.get("左耳P13波潜伏期 (毫秒)", "")
-            ws['F82'] = cervical_evoked_myogenic_potential.get("左耳N23波潜伏期 (毫秒)", "")
-            ws['H82'] = cervical_evoked_myogenic_potential.get("左耳P13-N23波间期 (毫秒)", "")
-            ws['K82'] = cervical_evoked_myogenic_potential.get("左耳P13波振幅 (微伏)", "")
-            ws['N82'] = cervical_evoked_myogenic_potential.get("左耳N23波振幅 (微伏)", "")
-            ws['P82'] = cervical_evoked_myogenic_potential.get("左耳P13-N23波振幅 (微伏)", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳N23波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13-N23波间期 (毫秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13波振幅 (微伏)", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳N23波振幅 (微伏)", ""), border=border)
+            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13-N23波振幅 (微伏)", ""), border=border)
             
-            ws['B83'] = cervical_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", "")
-            ws['D83'] = cervical_evoked_myogenic_potential.get("右耳P13波潜伏期 (毫秒)", "")
-            ws['F83'] = cervical_evoked_myogenic_potential.get("右耳N23波潜伏期 (毫秒)", "")
-            ws['H83'] = cervical_evoked_myogenic_potential.get("右耳P13-N23波间期 (毫秒)", "")
-            ws['K83'] = cervical_evoked_myogenic_potential.get("右耳P13波振幅 (微伏)", "")
-            ws['N83'] = cervical_evoked_myogenic_potential.get("右耳N23波振幅 (微伏)", "")
-            ws['P83'] = cervical_evoked_myogenic_potential.get("右耳P13-N23波振幅 (微伏)", "")
+            cell_anchor = str(int(cell_anchor) + 1)
             
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳N23波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13-N23波间期 (毫秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13波振幅 (微伏)", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳N23波振幅 (微伏)", ""), border=border)
+            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13-N23波振幅 (微伏)", ""), border=border)
             
-            ws['A86'] = cervical_evoked_myogenic_potential.get("cVEMP耳间不对称性 (%)", "")
-            ws['E86'] = cervical_evoked_myogenic_potential.get("检查结果", "")
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, 'cVEMP耳间不对称性 (%)', color=light_gray)
+            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("cVEMP耳间不对称性 (%)", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -677,43 +1160,79 @@ class DatabasePage(ttk.Frame):
         ocular_evoked_myogenic_potential = data.get("眼肌前庭诱发肌源性电位 (oVEMP)", "")
         if not is_dict_empty(ocular_evoked_myogenic_potential):
             
-            ws.merge_cells('B90:C90')
-            ws.merge_cells('D90:E90')
-            ws.merge_cells('F90:G90')
-            ws.merge_cells('H90:J90')
-            ws.merge_cells('K90:M90')
-            ws.merge_cells('N90:O90')
-            ws.merge_cells('P90:R90')
+            set_section_title(ws, cell_anchor, '眼肌前庭诱发肌源性电位 (oVEMP)')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws.merge_cells('B91:C91')
-            ws.merge_cells('D91:E91')
-            ws.merge_cells('F91:G91')
-            ws.merge_cells('H91:J91')
-            ws.merge_cells('K91:M91')
-            ws.merge_cells('N91:O91')
-            ws.merge_cells('P91:R91')
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '侧别', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, '声强阈值 (分贝)', color=light_gray)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, 'N10波潜伏期 (毫秒)', color=light_gray)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, 'P15波潜伏期 (毫秒)', color=light_gray)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, 'N10-P15波间期 (毫秒)', color=light_gray)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, 'N10波振幅 (微伏)', color=light_gray)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, 'P15波振幅 (微伏)', color=light_gray)
+            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            set_cell_element(ws, range_string, 'N10-P15波振幅 (微伏)', color=light_gray)
             
-            ws.merge_cells('A94:C94')
-            ws.merge_cells('E94:R94')
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['B90'] = ocular_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", "")
-            ws['D90'] = ocular_evoked_myogenic_potential.get("左耳N10波潜伏期 (毫秒)", "")
-            ws['F90'] = ocular_evoked_myogenic_potential.get("左耳P15波潜伏期 (毫秒)", "")
-            ws['H90'] = ocular_evoked_myogenic_potential.get("左耳N10-P15波间期 (毫秒)", "")
-            ws['K90'] = ocular_evoked_myogenic_potential.get("左耳N10波振幅 (微伏)", "")
-            ws['N90'] = ocular_evoked_myogenic_potential.get("左耳P15波振幅 (微伏)", "")
-            ws['P90'] = ocular_evoked_myogenic_potential.get("左耳N10-P15波振幅 (微伏)", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '左', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳P15波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10-P15波间期 (毫秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10波振幅 (微伏)", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳P15波振幅 (微伏)", ""), border=border)
+            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10-P15波振幅 (微伏)", ""), border=border)
             
-            ws['B91'] = ocular_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", "")
-            ws['D91'] = ocular_evoked_myogenic_potential.get("右耳N10波潜伏期 (毫秒)", "")
-            ws['F91'] = ocular_evoked_myogenic_potential.get("右耳P15波潜伏期 (毫秒)", "")
-            ws['H91'] = ocular_evoked_myogenic_potential.get("右耳N10-P15波间期 (毫秒)", "")
-            ws['K91'] = ocular_evoked_myogenic_potential.get("右耳N10波振幅 (微伏)", "")
-            ws['N91'] = ocular_evoked_myogenic_potential.get("右耳P15波振幅 (微伏)", "")
-            ws['P91'] = ocular_evoked_myogenic_potential.get("右耳N10-P15波振幅 (微伏)", "")
+            cell_anchor = str(int(cell_anchor) + 1)
             
-            ws['A94'] = ocular_evoked_myogenic_potential.get("oVEMP耳间不对称性 (%)", "")
-            ws['E94'] = ocular_evoked_myogenic_potential.get("检查结果", "")
+            range_string = 'A' + cell_anchor
+            set_cell_element(ws, range_string, '右', color=light_gray)
+            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", ""), border=border)
+            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳P15波潜伏期 (毫秒)", ""), border=border)
+            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10-P15波间期 (毫秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10波振幅 (微伏)", ""), border=border)
+            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳P15波振幅 (微伏)", ""), border=border)
+            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10-P15波振幅 (微伏)", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, 'oVEMP耳间不对称性 (%)', color=light_gray)
+            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("oVEMP耳间不对称性 (%)", ""), border=border)
+            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("检查结果", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 2)
             
         else:
             pass
@@ -721,36 +1240,139 @@ class DatabasePage(ttk.Frame):
         # 主观视觉垂直线
         subjective_visual_vertical_line = data.get("主观视觉垂直线 (SVV)", "")
         if not is_dict_empty(subjective_visual_vertical_line):
-        
-            ws.merge_cells('A98:B98')
-            ws.merge_cells('C98:D98')
-            ws.merge_cells('F98:M98')
             
-            ws['A98'] = subjective_visual_vertical_line.get("偏斜方向", "")
-            ws['C98'] = subjective_visual_vertical_line.get("偏斜角度（度）", "")
-            ws['F98'] = subjective_visual_vertical_line.get("检查结果", "")
+            set_section_title(ws, cell_anchor, '主观视觉垂直线 (SVV)')
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '偏斜方向', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, '偏斜角度（度）', color=light_gray)
+            range_string = 'F' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, subjective_visual_vertical_line.get("偏斜方向", ""), border=border)
+            range_string = 'C' + cell_anchor + ':' + 'D' + cell_anchor
+            set_cell_element(ws, range_string, subjective_visual_vertical_line.get("偏斜角度（度）", ""), border=border)
+            range_string = 'F' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, subjective_visual_vertical_line.get("检查结果", ""), border=border)
             
         else:
             pass
         
-        # 生成唯一的临时文件名
-        random_id = str(uuid.uuid4())
-        excel_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}_{random_id}.xlsx")
+        # # 设置页面布局
+        # ws.page_setup.paperSize = 9  # A4纸
+        # ws.page_setup.orientation = 'landscape'  # 横向
+        # ws.page_setup.fitToWidth = 1  # 调整为1页宽
+        # ws.page_setup.fitToHeight = 1  # 调整为1页高
         
-        # 设置页面布局
-        ws.page_setup.paperSize = 9  # A4纸
-        ws.page_setup.orientation = 'landscape'  # 横向
-        ws.page_setup.fitToWidth = 1  # 调整为1页宽
-        ws.page_setup.fitToHeight = 1  # 调整为1页高
+        # # 设置打印区域边距（单位：英寸）
+        # ws.page_margins.left = 0.5
+        # ws.page_margins.right = 0.5
+        # ws.page_margins.top = 0.5
+        # ws.page_margins.bottom = 0.5
         
-        # 设置打印区域边距（单位：英寸）
-        ws.page_margins.left = 0.5
-        ws.page_margins.right = 0.5
-        ws.page_margins.top = 0.5
-        ws.page_margins.bottom = 0.5
+        # 切换到第二页放图片
         
-        # 切换到第二页来做结论
         ws = wb.worksheets[1]
+        cell_anchor = '1'
+        
+        # 头脉冲试验示意图
+        head_impulse = data.get("头脉冲试验", "")
+        if not is_dict_empty(head_impulse):
+
+            
+            pic_path = head_impulse.get("头脉冲试验示意图", "")
+            if pic_path != '': 
+                
+                pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
+                if platform.system() == "Darwin":
+                    pic_path = pic_path.replace('\\', '/')
+                if os.path.exists(pic_path):
+                    
+                    set_section_title(ws, cell_anchor, '头脉冲试验 (head impulse test)')
+                    cell_anchor = str(int(cell_anchor) + 1)
+                    
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'A' + cell_anchor
+                    
+                    cell_width = 6
+                    cell_height = 16
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+            
+            cell_anchor = str(int(cell_anchor) + 20)
+            
+        else:
+            pass
+        
+        # 头脉冲抑制试验示意图
+        head_impulse_suppression = data.get("头脉冲抑制试验", "")
+        if not is_dict_empty(head_impulse_suppression):
+                
+                pic_path = head_impulse_suppression.get("头脉冲抑制试验示意图", "")
+                if pic_path != '':
+                    pic_path = os.path.join(self.db_path, head_impulse_suppression.get("头脉冲抑制试验示意图"))
+                    if platform.system() == "Darwin":
+                        pic_path = pic_path.replace('\\', '/')
+                    if os.path.exists(pic_path):
+                        
+                        set_section_title(ws, cell_anchor, '头脉冲抑制试验 (head impulse suppression test)')
+                        cell_anchor = str(int(cell_anchor) + 1)
+                        
+                        img = openpyxl.drawing.image.Image(pic_path)
+                        img.anchor = 'A' + cell_anchor
+                        
+                        cell_width = 6
+                        cell_height = 16
+                        
+                        img.width = cell_width * 60
+                        img.height = cell_height * 18
+                        
+                        ws.add_image(img)
+                
+                cell_anchor = str(int(cell_anchor) + 20)
+                
+        else:
+            pass
+        
+        # 温度试验示意图
+        temperature_test = data.get("温度试验", "")
+        if not is_dict_empty(temperature_test):
+            
+            pic_path = temperature_test.get("温度试验示意图", "")
+            if platform.system() == "Darwin":
+                pic_path = pic_path.replace('\\', '/')
+            if pic_path != '':
+                pic_path = os.path.join(self.db_path, temperature_test.get("温度试验示意图"))
+                if os.path.exists(pic_path):
+                    set_section_title(ws, cell_anchor, '温度试验 (temperature test)')
+                    cell_anchor = str(int(cell_anchor) + 1)
+                    
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'A1'
+                    
+                    cell_width = 6
+                    cell_height = 16
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+            
+            cell_anchor = str(int(cell_anchor) + 20)
+            
+        else:
+            pass
+        
+        # 切换到第三页来做结论
+        ws = wb.worksheets[2]
         exp_seen = self.save_his_report(data)
         ws.merge_cells('A2:I2')
         ws['A2'] = exp_seen
@@ -759,6 +1381,10 @@ class DatabasePage(ttk.Frame):
         exp_result = ','.join(exp_result)
         ws.merge_cells('K2:N6')
         ws['K2'] = exp_result
+        
+        # 生成唯一的临时文件名
+        random_id = str(uuid.uuid4())
+        excel_path = os.path.join(tempfile.gettempdir(), f"report_{basic_info.get('ID', 'temp')}_{random_id}.xlsx")
         
         # 保存Excel文件
         wb.save(excel_path)

@@ -8,3 +8,5 @@ config.json
 /screenshots
 /.VSCodeCounter
 /.DS_Store
+/template/arch
+/template/.DS_Store
