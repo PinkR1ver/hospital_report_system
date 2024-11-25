@@ -464,7 +464,7 @@ class VestibularFunctionReport:
         
         本软件遵循 MIT 许可证
         
-        Copyright (c) 2023 Your Company Name
+        Copyright (c) 2024
         
         Author: JudeW
         Email: pinkr1veroops@gmail.com
@@ -570,7 +570,7 @@ class VestibularFunctionReport:
         # 创建一个新的顶层窗口
         dialog = tk.Toplevel(self.master)
         dialog.title("检查结论")
-        dialog.geometry("400x250")
+        dialog.geometry("400x300")
         dialog.transient(self.master)  # 设置为主窗口的临时窗口
         dialog.grab_set()  # 模态窗口
         
@@ -593,6 +593,25 @@ class VestibularFunctionReport:
             conclusion_vars[conclusion] = var
             chk = ttk.Checkbutton(frame, text=conclusion, variable=var)
             chk.grid(row=i, column=0, sticky=tk.W, padx=5, pady=5)
+            
+        #  # 添加“其他”选项
+        # other_var = tk.BooleanVar()
+        # conclusion_vars["其他"] = other_var
+        # chk_other = ttk.Checkbutton(frame, text="其他", variable=other_var)
+        # chk_other.grid(row=len(conclusions), column=0, sticky=tk.W, padx=5, pady=5)
+        
+        # # 添加输入框
+        # other_entry = ttk.Entry(frame, state=tk.DISABLED)
+        # other_entry.grid(row=len(conclusions), column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # # 启用或禁用输入框
+        # def toggle_other_entry():
+        #     if other_var.get():
+        #         other_entry.config(state=tk.NORMAL)
+        #     else:
+        #         other_entry.config(state=tk.DISABLED)
+        
+        # other_var.trace_add("write", lambda *args: toggle_other_entry())
         
         # 结果变量
         result = {"selected": None}

@@ -49,16 +49,10 @@ class BasicInfoPage(ttk.Frame):
         exam_info_frame.columnconfigure(1, weight=1)
         exam_info_frame.columnconfigure(3, weight=1)
 
-        # 检查项目
-        ttk.Label(exam_info_frame, text="检查项目:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
-        self.exam_type_var = tk.StringVar()
-        self.exam_type_combobox = ttk.Combobox(exam_info_frame, textvariable=self.exam_type_var, values=["", "前庭报告-1", "前庭报告-2", "前庭报告-3"])
-        self.exam_type_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
-
         # 检查时间
-        ttk.Label(exam_info_frame, text="检查时间:").grid(row=0, column=2, sticky=tk.E, padx=5, pady=5)
+        ttk.Label(exam_info_frame, text="检查时间:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.exam_date = DateEntry(exam_info_frame, width=12, background='darkblue', foreground='white', borderwidth=2, date_pattern='yyyy/mm/dd')
-        self.exam_date.grid(row=0, column=3, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.exam_date.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 检查医生
         ttk.Label(exam_info_frame, text="检查医生:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
@@ -68,11 +62,11 @@ class BasicInfoPage(ttk.Frame):
         self.doctor_combobox.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 检查设备
-        ttk.Label(exam_info_frame, text="检查设备:").grid(row=1, column=2, sticky=tk.E, padx=5, pady=5)
+        ttk.Label(exam_info_frame, text="检查设备:").grid(row=0, column=2, sticky=tk.E, padx=5, pady=5)
         self.equipment_var = tk.StringVar()
         self.equipment_combobox = ttk.Combobox(exam_info_frame, textvariable=self.equipment_var, 
                                                values=["", "Otometrics", "ZEHINT", "Interacoustics"])
-        self.equipment_combobox.grid(row=1, column=3, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.equipment_combobox.grid(row=0, column=3, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):
         birth_date = self.birth_date.get_date() if self.birth_date.get() else None
@@ -82,7 +76,6 @@ class BasicInfoPage(ttk.Frame):
                 "姓名": self.name_entry.get(),
                 "性别": self.gender_var.get(),
                 "出生日期": birth_date.strftime("%Y/%m/%d") if birth_date else "",
-                "检查项目": self.exam_type_var.get(),
                 "检查时间": self.exam_date.get_date().strftime("%Y/%m/%d"),
                 "检查医生": self.doctor_var.get(),
                 "检查设备": self.equipment_var.get()
@@ -96,7 +89,6 @@ class BasicInfoPage(ttk.Frame):
         self.name_entry.insert(0, data.get("姓名", ""))
         self.gender_var.set(data.get("性别", ""))
         self.birth_date.set_date(data.get("出生日期", ""))
-        self.exam_type_var.set(data.get("检查项目", ""))
         self.exam_date.set_date(data.get("检查时间", ""))
         self.doctor_var.set(data.get("检查医生", ""))
         self.equipment_var.set(data.get("检查设备", ""))

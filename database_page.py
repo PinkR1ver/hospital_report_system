@@ -967,15 +967,15 @@ class DatabasePage(ttk.Frame):
                 if '阴性' in positive_options:
                     
                     ws[f'B{cell_anchor}'] = '阴性'
-                    ws[f'B{str(int(cell_anchor + 1))}'] = '阴性'
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = '阴性'
                         
                 elif '双耳阳性' in positive_options:
                     ws[f'B{cell_anchor}'] = "阳性"
-                    ws[f'B{str(int(cell_anchor + 1))}'] = "阳性"
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = "阳性"
                     
                 elif '双耳弱阳性' in positive_options:
                     ws[f'B{cell_anchor}'] = "弱阳性"
-                    ws[f'B{str(int(cell_anchor + 1))}'] = "弱阳性"
+                    ws[f'B{str(int(cell_anchor) + 1)}'] = "弱阳性"
                 
                 elif '右耳阳性' in positive_options:
                     ws[f'B{str(int(cell_anchor) + 1)}'] = "阳性"
@@ -1260,8 +1260,15 @@ class DatabasePage(ttk.Frame):
             range_string = 'F' + cell_anchor + ':' + 'M' + cell_anchor
             set_cell_element(ws, range_string, subjective_visual_vertical_line.get("检查结果", ""), border=border)
             
+            cell_anchor = str(int(cell_anchor) + 2)
+            
         else:
             pass
+        
+        range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+        set_cell_element(ws, range_string, '检查医师', color=light_gray)
+        range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+        set_cell_element(ws, range_string, examine_doctor, border=border)
         
         # # 设置页面布局
         # ws.page_setup.paperSize = 9  # A4纸
