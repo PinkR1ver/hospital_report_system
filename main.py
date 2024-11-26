@@ -30,6 +30,7 @@ from caloric_test_page import CaloricTestPage
 from cvemp_test_page import CVEMPTestPage
 from ovemp_test_page import OVEMPTestPage
 from svv_test_page import SVVTestPage
+from conclusion_page import ConclusionPage
 
 from database_page import DatabasePage
 from utils import *
@@ -101,7 +102,8 @@ class VestibularFunctionReport:
             ("温度试验", self.show_caloric_test),
             ("颈肌前庭诱发肌源性电位", self.show_cvemp_test),
             ("眼肌前庭诱发肌源性电位", self.show_ovemp_test),
-            ("主观视觉垂直线", self.show_svv_test)
+            ("主观视觉垂直线", self.show_svv_test),
+            ("检查结论", self.show_conclusion)
         ]
         
         for text, command in pages:
@@ -129,6 +131,7 @@ class VestibularFunctionReport:
             "cvemp_test": CVEMPTestPage(self.content_frame, self),
             "ovemp_test": OVEMPTestPage(self.content_frame, self),
             "svv_test": SVVTestPage(self.content_frame, self),
+            "conclusion": ConclusionPage(self.content_frame, self),
             "database": DatabasePage(self.content_frame, self)
         }
         
@@ -204,6 +207,9 @@ class VestibularFunctionReport:
     
     def show_svv_test(self):
         self.show_page("svv_test")
+    
+    def show_conclusion(self):
+        self.show_page("conclusion")
 
     def create_menu(self):
         menubar = tk.Menu(self.master)
