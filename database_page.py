@@ -187,6 +187,7 @@ class DatabasePage(ttk.Frame):
         # 按检查时间排序
         # self.report_tree.set_children('', sorted(self.report_tree.get_children(''), key=lambda x: self.report_tree.item(x)['values'][2], reverse=True))
 
+
     def generate_his_files(self):
         # 创建HIS文件夹
         his_dir = os.path.join(self.db_path, "HIS")
@@ -204,8 +205,17 @@ class DatabasePage(ttk.Frame):
         success_count = 0
         error_count = 0
         
+        # 创建进度条窗口
+        progress_window = tk.Toplevel(self)
+        progress_window.title("生成HIS文件")
+        progress_label = ttk.Label(progress_window, text="正在生成HIS文件...")
+        progress_label.pack(pady=10)
+        progress_bar = ttk.Progressbar(progress_window, length=300, mode='determinate')
+        progress_bar.pack(pady=10)
+        progress_bar['maximum'] = len(report_files)
+        
         # 处理每个报告文件
-        for file_path in report_files:
+        for i, file_path in enumerate(report_files):
             try:
                 # 读取JSON文件
                 with open(file_path, 'r', encoding='utf-8') as f:
@@ -214,7 +224,6 @@ class DatabasePage(ttk.Frame):
                 file_name = os.path.basename(file_path)
                 file_name = file_name.replace('.json', '.txt')
                 date_str = file_path.split('\\')[-2]
-                
                 
                 # 生成HIS报告内容
                 his_content = self.save_his_report(data)
@@ -230,7 +239,21 @@ class DatabasePage(ttk.Frame):
             except Exception as e:
                 print(f"处理文件 {file_path} 时出错: {str(e)}")
                 error_count += 1
+            
+            # 更新进度条
+            progress_bar['value'] = i + 1
+            progress_window.update_idletasks()
         
+        # 关闭进度条窗口
+        progress_window.destroy()
+        
+        # 显示完成消息
+        message = f"HIS文件生成完成！\n成功: {success_count} 个文件\n"
+        if error_count > 0:
+            message += f"失败: {error_count} 个文件"
+        
+        messagebox.showinfo("完成", message)
+            
     
     def search_reports(self):
         # 实现搜索功能
