@@ -31,7 +31,7 @@ class ConclusionPage(ttk.Frame):
             "右后半规管增益降低",
             "左后半规管增益降低",
             "右前半规管增益降低",
-            "左后半规管增益降低",
+            "左前半规管增益降低",
             "右侧外半规管增益增高",
             "左侧外半规管增益增高",
             "双侧外半规管增益增高",
@@ -107,7 +107,7 @@ class ConclusionPage(ttk.Frame):
             else:
                 parent_frame = column3
                 
-            cb = ttk.Checkbutton(parent_frame, text=conclusion, variable=var, takefocus=False)
+            cb = ttk.Checkbutton(parent_frame, text=conclusion, variable=var)
             cb.pack(anchor="w", pady=2)
             self.checkboxes[conclusion] = var
             
@@ -119,7 +119,7 @@ class ConclusionPage(ttk.Frame):
         # self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
         
         # 将焦点设置到主框架
-        self.focus_set()
+        # self.focus_set()
         
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
@@ -132,6 +132,15 @@ class ConclusionPage(ttk.Frame):
         return {"检查结论": selected_conclusions}
 
     def set_data(self, data):
-        conclusions = data.get("检查结论", [])
+        # 如果传入的是字典，就从字典中获取列表
+        if isinstance(data, dict):
+            conclusions = data.get("检查结论", [])
+        # 如果传入的直接是列表，就直接使用
+        elif isinstance(data, list):
+            conclusions = data
+        else:
+            conclusions = []
+        
+        # 重置所有复选框
         for conclusion, var in self.checkboxes.items():
             var.set(conclusion in conclusions)
