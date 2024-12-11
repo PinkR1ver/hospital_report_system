@@ -94,3 +94,23 @@ class OVEMPTestPage(ttk.Frame):
             getattr(self, f"{prefix}_n10_p15_amplitude_var").set(data.get(f"{side}N10-P15波振幅 (微伏)", ""))
         self.asymmetry_var.set(data.get("oVEMP耳间不对称性 (%)", ""))
         self.result_var.set(data.get("检查结果", ""))
+        
+    
+    def clear_inputs(self):
+        self.right_threshold_var.set("")
+        self.left_threshold_var.set("")
+        self.right_n10_latency_var.set("")
+        self.right_p15_latency_var.set("")
+        self.right_n10_p15_interval_var.set("")
+        self.right_n10_amplitude_var.set("")
+        self.right_p15_amplitude_var.set("")
+        self.right_n10_p15_amplitude_var.set("")
+        self.left_n10_latency_var.set("")
+        self.left_p15_latency_var.set("")
+        self.left_n10_p15_interval_var.set("")
+        self.left_n10_amplitude_var.set("")
+        self.left_p15_amplitude_var.set("")
+        self.left_n10_p15_amplitude_var.set("")
+        self.asymmetry_var.set("")
+        self.result_var.set("")
+

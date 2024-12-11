@@ -113,3 +113,13 @@ class FistulaTestPage(ttk.Frame):
             self.video_label.config(text="未选择视频")
             self.open_video_button.config(state=tk.DISABLED)
             self.cancel_video_button.config(state=tk.DISABLED)
+            
+    
+    def clear_inputs(self):
+        for option, var in self.fistula_vars.items():
+            var.set(False)
+        self.result_var.set("")
+        self.video_path = ""
+        self.video_label.config(text="未选择视频")
+        self.open_video_button.config(state=tk.DISABLED)
+        self.cancel_video_button.config(state=tk.DISABLED)

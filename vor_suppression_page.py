@@ -27,3 +27,7 @@ class VORSuppressionPage(ttk.Frame):
 
     def set_data(self, data):
         self.vor_suppression_result.set(data.get("检查结果", ""))
+        
+    def clear_inputs(self):
+        self.vor_suppression_result.set("")
+

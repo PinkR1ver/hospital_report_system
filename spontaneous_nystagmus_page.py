@@ -116,3 +116,14 @@ class SpontaneousNystagmusPage(ttk.Frame):
             self.video_label.config(text="未选择视频")
             self.open_video_button.config(state=tk.DISABLED)
             self.cancel_video_button.config(state=tk.DISABLED)
+            
+        
+    def clear_inputs(self):
+        self.nystagmus_mode.set("")
+        self.nystagmus_speed.delete(0, tk.END)
+        self.fixation_suppression.set("")
+        self.exam_result.set("")
+        self.video_path = ""
+        self.video_label.config(text="未选择视频")
+        self.open_video_button.config(state=tk.DISABLED)
+        self.cancel_video_button.config(state=tk.DISABLED)

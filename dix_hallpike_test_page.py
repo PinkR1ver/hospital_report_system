@@ -172,3 +172,25 @@ class DixHallpikeTestPage(ttk.Frame):
             self.video_label.config(text="未选择视频")
             self.open_video_button.config(state=tk.DISABLED)
             self.cancel_video_button.config(state=tk.DISABLED)
+            
+    def clear_inputs(self):
+        self.right_nystagmus_mode.set("")
+        self.right_sitting_nystagmus_mode.set("")
+        self.right_nystagmus_dizziness.set("")
+        self.right_latency.delete(0, tk.END)
+        self.right_duration.delete(0, tk.END)
+        self.right_max_speed.delete(0, tk.END)
+        self.right_fatigue.set("")
+        self.left_nystagmus_mode.set("")
+        self.left_sitting_nystagmus_mode.set("")
+        self.left_nystagmus_dizziness.set("")
+        self.left_latency.delete(0, tk.END)
+        self.left_duration.delete(0, tk.END)
+        self.left_max_speed.delete(0, tk.END)
+        self.left_fatigue.set("")
+        self.test_result.set("")
+        self.video_path = ""
+        self.video_label.config(text="未选择视频")
+        self.open_video_button.config(state=tk.DISABLED)
+        self.cancel_video_button.config(state=tk.DISABLED)
+

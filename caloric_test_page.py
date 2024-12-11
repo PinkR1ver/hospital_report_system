@@ -272,3 +272,16 @@ class CaloricTestPage(ttk.Frame):
         root = self.winfo_toplevel()
         root.deiconify()
         self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
+
+    def clear_inputs(self):
+        self.uw_side_var.set("")
+        self.uw_value_var.set("")
+        self.dp_side_var.set("")
+        self.dp_value_var.set("")
+        self.right_ear_spv_var.set("")
+        self.left_ear_spv_var.set("")
+        self.fi_var.set("")
+        self.result_var.set("")
+        self.image_path = ""
+        self.image_label.config(image="")
+

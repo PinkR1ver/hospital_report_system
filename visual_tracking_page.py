@@ -46,3 +46,10 @@ class VisualTrackingPage(ttk.Frame):
         self.curve_type_var.set(data.get("视跟踪曲线分型", ""))
         self.gain_var.set(data.get("视跟踪增益", ""))
         self.result_var.set(data.get("视跟踪检查结果", ""))
+        
+    
+    def clear_inputs(self):
+        self.curve_type_var.set("")
+        self.gain_var.set("")
+        self.result_var.set("")
+

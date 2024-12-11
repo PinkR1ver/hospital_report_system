@@ -144,3 +144,9 @@ class ConclusionPage(ttk.Frame):
         # 重置所有复选框
         for conclusion, var in self.checkboxes.items():
             var.set(conclusion in conclusions)
+            
+
+    def clear_inputs(self):
+        for conclusion, var in self.checkboxes.items():
+            var.set(False)
+

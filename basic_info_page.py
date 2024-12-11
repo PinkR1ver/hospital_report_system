@@ -92,3 +92,12 @@ class BasicInfoPage(ttk.Frame):
         self.exam_date.set_date(data.get("检查时间", ""))
         self.doctor_var.set(data.get("检查医生", ""))
         self.equipment_var.set(data.get("检查设备", ""))
+        
+    def clear_inputs(self):
+        self.id_entry.delete(0, tk.END)
+        self.name_entry.delete(0, tk.END)
+        self.gender_var.set("")
+        self.birth_date.delete(0, tk.END)
+        self.exam_date.delete(0, tk.END)
+        self.doctor_var.set("")
+        self.equipment_var.set("")

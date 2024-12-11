@@ -295,3 +295,28 @@ class HeadImpulseTestPage(ttk.Frame):
         root.deiconify()
         self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
 
+
+    def clear_inputs(self):
+        canals = [
+            ("左外半规管", "vor_left_lateral", "pr_left_lateral"),
+            ("右外半规管", "vor_right_lateral", "pr_right_lateral"),
+            ("左前半规管", "vor_left_anterior", "pr_left_anterior"),
+            ("右后半规管", "vor_right_posterior", "pr_right_posterior"),
+            ("左后半规管", "vor_left_posterior", "pr_left_posterior"),
+            ("右前半规管", "vor_right_anterior", "pr_right_anterior")
+        ]
+        
+        for canal_name, vor_attr, pr_attr in canals:
+            getattr(self, vor_attr).delete(0, tk.END)
+            getattr(self, vor_attr).insert(0, "")
+            getattr(self, pr_attr).delete(0, tk.END)
+            getattr(self, pr_attr).insert(0, "")
+        
+        for option, var in self.hit_compensatory_saccade_vars.items():
+            var.set(False)
+        for option, var in self.hit_result_vars.items():
+            var.set(False)
+
+        self.image_path = ""
+        self.image_label.config(image="")
+

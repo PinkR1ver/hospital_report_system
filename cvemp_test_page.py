@@ -94,3 +94,23 @@ class CVEMPTestPage(ttk.Frame):
             getattr(self, f"{prefix}_p13_n23_amplitude_var").set(data.get(f"{side}P13-N23波振幅 (微伏)", ""))
         self.asymmetry_var.set(data.get("cVEMP耳间不对称性 (%)", ""))
         self.result_var.set(data.get("检查结果", ""))
+        
+    
+    def clear_inputs(self):
+        self.right_threshold_var.set("")
+        self.left_threshold_var.set("")
+        self.right_p13_latency_var.set("")
+        self.right_n23_latency_var.set("")
+        self.right_p13_n23_interval_var.set("")
+        self.right_p13_amplitude_var.set("")
+        self.right_n23_amplitude_var.set("")
+        self.right_p13_n23_amplitude_var.set("")
+        self.left_p13_latency_var.set("")
+        self.left_n23_latency_var.set("")
+        self.left_p13_n23_interval_var.set("")
+        self.left_p13_amplitude_var.set("")
+        self.left_n23_amplitude_var.set("")
+        self.left_p13_n23_amplitude_var.set("")
+        self.asymmetry_var.set("")
+        self.result_var.set("")
+

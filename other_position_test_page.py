@@ -120,3 +120,15 @@ class OtherPositionTestPage(ttk.Frame):
             self.video_label.config(text="未选择视频")
             self.open_video_button.config(state=tk.DISABLED)
             self.cancel_video_button.config(state=tk.DISABLED)
+
+    def clear_inputs(self):
+        self.sitting_supine_var.set("")
+        self.sitting_head_down_var.set("")
+        self.sitting_head_up_var.set("")
+        self.zero_plane_var.set("")
+        self.result_var.set("")
+        self.video_path = ""
+        self.video_label.config(text="未选择视频")
+        self.open_video_button.config(state=tk.DISABLED)
+        self.cancel_video_button.config(state=tk.DISABLED)
+

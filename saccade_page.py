@@ -69,3 +69,14 @@ class SaccadePage(ttk.Frame):
         self.left_accuracy.delete(0, tk.END)
         self.left_accuracy.insert(0, data.get("扫视精确度 (左向, %)", ""))
         self.saccade_result.set(data.get("扫视检查结果", ""))
+        
+    
+    def clear_inputs(self):
+        self.right_delay.delete(0, tk.END)
+        self.left_delay.delete(0, tk.END)
+        self.right_peak_velocity.delete(0, tk.END)
+        self.left_peak_velocity.delete(0, tk.END)
+        self.right_accuracy.delete(0, tk.END)
+        self.left_accuracy.delete(0, tk.END)
+        self.saccade_result.set("")
+

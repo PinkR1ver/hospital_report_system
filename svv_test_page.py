@@ -46,3 +46,10 @@ class SVVTestPage(ttk.Frame):
         self.direction_var.set(data.get("偏斜方向", ""))
         self.angle_var.set(data.get("偏斜角度（度）", ""))
         self.result_var.set(data.get("检查结果", ""))
+        
+        
+    def clear_inputs(self):
+        self.direction_var.set("")
+        self.angle_var.set("")
+        self.result_var.set("")
+

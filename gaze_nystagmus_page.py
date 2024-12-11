@@ -124,3 +124,14 @@ class GazeNystagmusPage(ttk.Frame):
             self.video_label.config(text="未选择视频")
             self.open_video_button.config(state=tk.DISABLED)
             self.cancel_video_button.config(state=tk.DISABLED)
+
+
+    def clear_inputs(self):
+        for direction in ['上', '下', '左', '右']:
+            self.nystagmus_vars[direction].set("")
+            self.speed_entries[direction].delete(0, tk.END)
+        self.exam_result_var.set("")
+        self.video_path = ""
+        self.video_label.config(text="未选择视频")
+        self.open_video_button.config(state=tk.DISABLED)
+        self.cancel_video_button.config(state=tk.DISABLED)

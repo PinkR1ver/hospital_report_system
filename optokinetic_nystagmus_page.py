@@ -88,3 +88,14 @@ class OptoKineticNystagmusPage(ttk.Frame):
         self.up_gain_var.set(data.get("向上视标增益", ""))
         self.down_gain_var.set(data.get("向下视标增益", ""))
         self.result_var.set(data.get("检查结果", ""))
+
+
+    def clear_inputs(self):
+        self.horizontal_asymmetry_var.set("")
+        self.right_gain_var.set("")
+        self.left_gain_var.set("")
+        self.vertical_asymmetry_var.set("")
+        self.up_gain_var.set("")
+        self.down_gain_var.set("")
+        self.result_var.set("")
+

@@ -269,4 +269,14 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         root = self.winfo_toplevel()
         root.deiconify()
         self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
+        
+        
+    def clear_inputs(self):
+        self.left_gain.delete(0, tk.END)
+        self.right_gain.delete(0, tk.END)
+        for option, var in self.compensatory_saccade_vars.items():
+            var.set(False)
+        self.test_result.set("")
+        self.image_path = ""
+        self.image_label.config(image="")
 
