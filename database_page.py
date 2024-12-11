@@ -1946,6 +1946,10 @@ class DatabasePage(ttk.Frame):
                 # 填充数据到Excel
                 self.fill_excel_with_data(ws, data)
 
+                ws = wb.worksheets[1]
+                self.fill_excel_with_images(ws, data)
+
+
                 # 保存Excel文件
                 file_name = os.path.basename(file_path).replace('.json', '.xlsx')
                 excel_file_path = os.path.join(excel_dir, file_name)
@@ -3037,6 +3041,102 @@ class DatabasePage(ttk.Frame):
         set_cell_element(ws, range_string, '检查医师', color=light_gray)
         range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
         set_cell_element(ws, range_string, examine_doctor, border=border)
+        
+    def fill_excel_with_images(self, ws, data):
+        
+        cell_anchor = '1'
+        
+        # 头脉冲试验示意图
+        head_impulse = data.get("头脉冲试验", "")
+        if not is_dict_empty(head_impulse):
+
+            
+            pic_path = head_impulse.get("头脉冲试验示意图", "")
+            if pic_path != '': 
+                
+                pic_path = os.path.join(self.db_path, head_impulse.get("头脉冲试验示意图"))
+                if platform.system() == "Darwin":
+                    pic_path = pic_path.replace('\\', '/')
+                if os.path.exists(pic_path):
+                    
+                    set_section_title(ws, cell_anchor, '头脉冲试验 (head impulse test)')
+                    cell_anchor = str(int(cell_anchor) + 1)
+                    
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'A' + cell_anchor
+                    
+                    cell_width = 6
+                    cell_height = 16
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+            
+            cell_anchor = str(int(cell_anchor) + 20)
+            
+        else:
+            pass
+        
+        # 头脉冲抑制试验示意图
+        head_impulse_suppression = data.get("头脉冲抑制试验", "")
+        if not is_dict_empty(head_impulse_suppression):
+                
+                pic_path = head_impulse_suppression.get("头脉冲抑制试验示意图", "")
+                if pic_path != '':
+                    pic_path = os.path.join(self.db_path, head_impulse_suppression.get("头脉冲抑制试验示意图"))
+                    if platform.system() == "Darwin":
+                        pic_path = pic_path.replace('\\', '/')
+                    if os.path.exists(pic_path):
+                        
+                        set_section_title(ws, cell_anchor, '头脉冲抑制试验 (head impulse suppression test)')
+                        cell_anchor = str(int(cell_anchor) + 1)
+                        
+                        img = openpyxl.drawing.image.Image(pic_path)
+                        img.anchor = 'A' + cell_anchor
+                        
+                        cell_width = 6
+                        cell_height = 16
+                        
+                        img.width = cell_width * 60
+                        img.height = cell_height * 18
+                        
+                        ws.add_image(img)
+                
+                cell_anchor = str(int(cell_anchor) + 20)
+                
+        else:
+            pass
+        
+        # 温度试验示意图
+        temperature_test = data.get("温度试验", "")
+        if not is_dict_empty(temperature_test):
+            
+            pic_path = temperature_test.get("温度试验示意图", "")
+            if platform.system() == "Darwin":
+                pic_path = pic_path.replace('\\', '/')
+            if pic_path != '':
+                pic_path = os.path.join(self.db_path, temperature_test.get("温度试验示意图"))
+                if os.path.exists(pic_path):
+                    set_section_title(ws, cell_anchor, '温度试验 (temperature test)')
+                    cell_anchor = str(int(cell_anchor) + 1)
+                    
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'A1'
+                    
+                    cell_width = 6
+                    cell_height = 16
+                    
+                    img.width = cell_width * 60
+                    img.height = cell_height * 18
+                    
+                    ws.add_image(img)
+            
+            cell_anchor = str(int(cell_anchor) + 20)
+            
+        else:
+            pass
+        
 
     def load_config(self):
         config = json.load(open(self.config_file, 'r'))
