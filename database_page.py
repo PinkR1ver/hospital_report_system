@@ -21,6 +21,7 @@ import io
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill, Color
 import uuid
+from PIL import Image
 
 thin_border = Side(border_style="thin", color="000000")  # 细线
 medium_border = Side(border_style="medium", color="000000")  # 中等粗线
@@ -48,16 +49,16 @@ def set_merged_cell_border(ws, range_string, border):
         ws[range_string].border = border
             
 
-def set_section_title(ws, cell_anchor, title):
+def set_section_title(ws, cell_anchor, title, left_end='M'):
     
-    range_string = 'A' + cell_anchor + ":" + 'M' +cell_anchor
+    range_string = 'A' + cell_anchor + ":" + left_end + cell_anchor
     start_cell = 'A' + cell_anchor
     
     ws.merge_cells(range_string)
     ws[start_cell] = title
     ws[start_cell].alignment = Alignment(horizontal='left')
 
-def set_cell_element(ws, range_string, element, color=None, border=None):
+def set_cell_element(ws, range_string, element, color=None, border=None, shrink=False):
     
     '''
     ws: excel
@@ -86,6 +87,20 @@ def set_cell_element(ws, range_string, element, color=None, border=None):
         set_merged_cell_border(ws, range_string, border)
         
     ws[start_cell] = element
+    
+    if shrink:
+        ws[start_cell].alignment = Alignment(
+            horizontal='center',
+            vertical='center',
+            shrink_to_fit=True,  # 启用自动缩小
+            wrap_text=True  # 同时启用自动换行
+        )
+        
+    else:
+        ws[start_cell].alignment = Alignment(
+            horizontal='center',
+            vertical='center',
+        )
 
 class MyDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
@@ -293,11 +308,48 @@ class DatabasePage(ttk.Frame):
 
         ws = wb.worksheets[0]
         
-        self.fill_excel_with_data(ws, data)
+        last_row = self.fill_excel_with_data(ws, data)
+
+        ws.print_area = f'A1:M{last_row}'
+        
+        ws.page_setup.orientation = 'portrait'  # 纵向打印\
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = None
+        
+        ws.sheet_properties.pageSetUpPr.fitToPage = True  # 在工作表级别也设置适应页面
+        
+        # 75行分页，不到75行不分页
+        if last_row > 75:
+            ws.page_setup.fitToHeight = 2  # 内容分成2页
+        else:
+            ws.page_setup.fitToHeight = 1  # 内容分成1页
         
         ws = wb.worksheets[1]
         
-        self.fill_excel_with_images(ws, data)
+        last_row = self.fill_excel_with_images(ws, data)
+        
+        ws.print_area = f'A1:H{last_row}'
+        
+        ws.page_setup.orientation = 'portrait'  # 纵向打印
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = None
+        
+        ws.sheet_properties.pageSetUpPr.fitToPage = True  # 在工作表级别也设置适应页面
+        
+        for ws in wb.worksheets:
+            # 设置页边距
+            ws.page_margins.left = 0.1
+            ws.page_margins.right = 0.1
+            ws.page_margins.top = 0.1
+            ws.page_margins.bottom = 0.1
+            ws.page_margins.header = 0.1
+            ws.page_margins.footer = 0.1
+            
+        wb.active_sheet = 0  # 设置活动工作表为第一个
+        wb.properties.defaultPrintSettings = {
+            'printEntireWorkbook': True
+        }
+    
         
         # 生成唯一的临时文件名
         random_id = str(uuid.uuid4())
@@ -316,6 +368,8 @@ class DatabasePage(ttk.Frame):
                 subprocess.call(["xdg-open", excel_path])
         except Exception as e:
             messagebox.showerror("错误", f"无法打开Excel文件: {str(e)}")
+            
+
 
     def edit_report(self):
         selected_item = self.report_tree.selection()
@@ -769,13 +823,50 @@ class DatabasePage(ttk.Frame):
                 base_path = os.path.dirname(__file__)
                 template_path = os.path.join(base_path, "template", "report_template.xlsx")
                 wb = openpyxl.load_workbook(template_path)
-                ws = wb.active
+                
+                ws = wb.worksheets[0]
+                
+                last_row = self.fill_excel_with_data(ws, data)
 
-                # 填充数据到Excel
-                self.fill_excel_with_data(ws, data)
-
+                ws.print_area = f'A1:M{last_row}'
+                
+                ws.page_setup.orientation = 'portrait'  # 纵向打印\
+                ws.page_setup.fitToWidth = 1
+                ws.page_setup.fitToHeight = None
+                
+                ws.sheet_properties.pageSetUpPr.fitToPage = True  # 在工作表级别也设置适应页面
+                
+                # 75行分页，不到75行不分页
+                if last_row > 75:
+                    ws.page_setup.fitToHeight = 2  # 内容分成2页
+                else:
+                    ws.page_setup.fitToHeight = 1  # 内容分成1页
+                
                 ws = wb.worksheets[1]
-                self.fill_excel_with_images(ws, data)
+                
+                last_row = self.fill_excel_with_images(ws, data)
+                
+                ws.print_area = f'A1:H{last_row}'
+                
+                ws.page_setup.orientation = 'portrait'  # 纵向打印
+                ws.page_setup.fitToWidth = 1
+                ws.page_setup.fitToHeight = None
+                
+                ws.sheet_properties.pageSetUpPr.fitToPage = True  # 在工作表级别也设置适应页面
+                
+                for ws in wb.worksheets:
+                    # 设置页边距
+                    ws.page_margins.left = 0.1
+                    ws.page_margins.right = 0.1
+                    ws.page_margins.top = 0.1
+                    ws.page_margins.bottom = 0.1
+                    ws.page_margins.header = 0.1
+                    ws.page_margins.footer = 0.1
+                    
+                wb.active_sheet = 0  # 设置活动工作表为第一个
+                wb.properties.defaultPrintSettings = {
+                    'printEntireWorkbook': True
+                }
 
 
                 # 保存Excel文件
@@ -1659,73 +1750,69 @@ class DatabasePage(ttk.Frame):
             cell_anchor = str(int(cell_anchor) + 1)
             
             range_string = 'A' + cell_anchor
-            set_cell_element(ws, range_string, '侧别', color=light_gray)
-            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
-            set_cell_element(ws, range_string, '声强阈值 (分贝)', color=light_gray)
-            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
-            set_cell_element(ws, range_string, 'P13波潜伏期 (毫秒)', color=light_gray)
-            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
-            set_cell_element(ws, range_string, 'N23波潜伏期 (毫秒)', color=light_gray)
-            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
-            set_cell_element(ws, range_string, 'P13-N23波间期 (毫秒)', color=light_gray)
-            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
-            set_cell_element(ws, range_string, 'P13波振幅 (微伏)', color=light_gray)
-            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, 'N23波振幅 (微伏)', color=light_gray)
-            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
-            set_cell_element(ws, range_string, 'P13-N23波振幅 (微伏)', color=light_gray)
+            set_cell_element(ws, range_string, '侧别', color=light_gray, shrink=True)
+            range_string = 'B' + cell_anchor
+            set_cell_element(ws, range_string, '声强阈值 (分贝)', color=light_gray, shrink=True)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, 'P13波潜伏期 (毫秒)', color=light_gray, shrink=True)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, 'N23波潜伏期 (毫秒)', color=light_gray, shrink=True)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, 'P13-N23波间期 (毫秒)', color=light_gray, shrink=True)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, 'P13波振幅 (微伏)', color=light_gray, shrink=True)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, 'N23波振幅 (微伏)', color=light_gray, shrink=True)
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
+            set_cell_element(ws, range_string, 'P13-N23波振幅 (微伏)', color=light_gray, shrink=True)
+            range_string = 'L' + cell_anchor
+            set_cell_element(ws, range_string, 'cVEMP耳间不对称性 (%)', color=light_gray, shrink=True)
+            range_string = 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray, shrink=True)
             
             cell_anchor = str(int(cell_anchor) + 1)
             
             range_string = 'A' + cell_anchor
             set_cell_element(ws, range_string, '左', color=light_gray)
-            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            range_string = 'B' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", ""), border=border)
-            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            range_string = 'C' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            range_string = 'D' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳N23波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13-N23波间期 (毫秒)", ""), border=border)
-            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            range_string = 'G' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13波振幅 (微伏)", ""), border=border)
-            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            range_string = 'H' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳N23波振幅 (微伏)", ""), border=border)
-            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("左耳P13-N23波振幅 (微伏)", ""), border=border)
+           
+           
+            range_string = 'L' + cell_anchor + ':' + 'L' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("cVEMP耳间不对称性 (%)", ""), border=border)
+            range_string = 'M' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("检查结果", ""), border=border)
             
             cell_anchor = str(int(cell_anchor) + 1)
             
             range_string = 'A' + cell_anchor
             set_cell_element(ws, range_string, '右', color=light_gray)
-            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            range_string = 'B' + cell_anchor 
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", ""), border=border)
-            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            range_string = 'C' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            range_string = 'D' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳N23波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13-N23波间期 (毫秒)", ""), border=border)
-            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            range_string = 'G' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13波振幅 (微伏)", ""), border=border)
-            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            range_string = 'H' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳N23波振幅 (微伏)", ""), border=border)
-            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
             set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("右耳P13-N23波振幅 (微伏)", ""), border=border)
-            
-            cell_anchor = str(int(cell_anchor) + 1)
-            
-            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
-            set_cell_element(ws, range_string, 'cVEMP耳间不对称性 (%)', color=light_gray)
-            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, '检查结果', color=light_gray)
-            
-            cell_anchor = str(int(cell_anchor) + 1)
-            
-            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
-            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("cVEMP耳间不对称性 (%)", ""), border=border)
-            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, cervical_evoked_myogenic_potential.get("检查结果", ""), border=border)
             
             cell_anchor = str(int(cell_anchor) + 2)
             
@@ -1741,72 +1828,68 @@ class DatabasePage(ttk.Frame):
             
             range_string = 'A' + cell_anchor
             set_cell_element(ws, range_string, '侧别', color=light_gray)
-            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
-            set_cell_element(ws, range_string, '声强阈值 (分贝)', color=light_gray)
-            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
-            set_cell_element(ws, range_string, 'N10波潜伏期 (毫秒)', color=light_gray)
-            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
-            set_cell_element(ws, range_string, 'P15波潜伏期 (毫秒)', color=light_gray)
-            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
-            set_cell_element(ws, range_string, 'N10-P15波间期 (毫秒)', color=light_gray)
-            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
-            set_cell_element(ws, range_string, 'N10波振幅 (微伏)', color=light_gray)
-            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, 'P15波振幅 (微伏)', color=light_gray)
-            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
-            set_cell_element(ws, range_string, 'N10-P15波振幅 (微伏)', color=light_gray)
+            range_string = 'B' + cell_anchor
+            set_cell_element(ws, range_string, '声强阈值 (分贝)', color=light_gray, shrink=True)
+            range_string = 'C' + cell_anchor
+            set_cell_element(ws, range_string, 'N10波潜伏期 (毫秒)', color=light_gray, shrink=True)
+            range_string = 'D' + cell_anchor
+            set_cell_element(ws, range_string, 'P15波潜伏期 (毫秒)', color=light_gray, shrink=True)
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
+            set_cell_element(ws, range_string, 'N10-P15波间期 (毫秒)', color=light_gray, shrink=True)
+            range_string = 'G' + cell_anchor
+            set_cell_element(ws, range_string, 'N10波振幅 (微伏)', color=light_gray, shrink=True)
+            range_string = 'H' + cell_anchor
+            set_cell_element(ws, range_string, 'P15波振幅 (微伏)', color=light_gray, shrink=True)
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
+            set_cell_element(ws, range_string, 'N10-P15波振幅 (微伏)', color=light_gray, shrink=True)
+            
+            range_string = 'L' + cell_anchor
+            set_cell_element(ws, range_string, 'oVEMP耳间不对称性 (%)', color=light_gray, shrink=True)
+            range_string = 'M' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray, shrink=True)
             
             cell_anchor = str(int(cell_anchor) + 1)
             
             range_string = 'A' + cell_anchor
             set_cell_element(ws, range_string, '左', color=light_gray)
-            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            range_string = 'B' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳声强阈值 (分贝)", ""), border=border)
-            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            range_string = 'C' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            range_string = 'D' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳P15波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10-P15波间期 (毫秒)", ""), border=border)
-            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            range_string = 'G' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10波振幅 (微伏)", ""), border=border)
-            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            range_string = 'H' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳P15波振幅 (微伏)", ""), border=border)
-            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("左耳N10-P15波振幅 (微伏)", ""), border=border)
+            
+            range_string = 'L' + cell_anchor + ':' + 'L' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("oVEMP耳间不对称性 (%)", ""), border=border)
+            range_string = 'M' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
+            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("检查结果", ""), border=border)
             
             cell_anchor = str(int(cell_anchor) + 1)
             
             range_string = 'A' + cell_anchor
             set_cell_element(ws, range_string, '右', color=light_gray)
-            range_string = 'B' + cell_anchor + ':' + 'C' + cell_anchor
+            range_string = 'B' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳声强阈值 (分贝)", ""), border=border)
-            range_string = 'D' + cell_anchor + ':' + 'E' + cell_anchor
+            range_string = 'C' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'F' + cell_anchor + ':' + 'G' + cell_anchor
+            range_string = 'D' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳P15波潜伏期 (毫秒)", ""), border=border)
-            range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
+            range_string = 'E' + cell_anchor + ':' + 'F' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10-P15波间期 (毫秒)", ""), border=border)
-            range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
+            range_string = 'G' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10波振幅 (微伏)", ""), border=border)
-            range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
+            range_string = 'H' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳P15波振幅 (微伏)", ""), border=border)
-            range_string = 'N' + cell_anchor + ':' + 'O' + cell_anchor
+            range_string = 'I' + cell_anchor + ':' + 'J' + cell_anchor
             set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("右耳N10-P15波振幅 (微伏)", ""), border=border)
-            
-            cell_anchor = str(int(cell_anchor) + 1)
-            
-            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
-            set_cell_element(ws, range_string, 'oVEMP耳间不对称性 (%)', color=light_gray)
-            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, '检查结果', color=light_gray)
-            
-            cell_anchor = str(int(cell_anchor) + 1)
-            
-            range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
-            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("oVEMP耳间不对称性 (%)", ""), border=border)
-            range_string = 'E' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, ocular_evoked_myogenic_potential.get("检查结果", ""), border=border)
             
             cell_anchor = str(int(cell_anchor) + 2)
             
@@ -1870,6 +1953,8 @@ class DatabasePage(ttk.Frame):
         range_string = 'L' + cell_anchor + ':' + 'M' + cell_anchor
         set_cell_element(ws, range_string, examine_doctor, border=border)
         
+        return int(cell_anchor)
+        
     def fill_excel_with_images(self, ws, data):
         
         cell_anchor = '1'
@@ -1887,21 +1972,27 @@ class DatabasePage(ttk.Frame):
                     pic_path = pic_path.replace('\\', '/')
                 if os.path.exists(pic_path):
                     
-                    set_section_title(ws, cell_anchor, '头脉冲试验 (head impulse test)')
+                    set_section_title(ws, cell_anchor, '头脉冲试验 (head impulse test)', left_end='H')
                     cell_anchor = str(int(cell_anchor) + 1)
+                    
+                    with Image.open(pic_path) as img:
+                        orig_width, orig_height = img.size
+                        aspect_ratio = orig_width / orig_height
                     
                     img = openpyxl.drawing.image.Image(pic_path)
                     img.anchor = 'A' + cell_anchor
                     
-                    cell_width = 6
-                    cell_height = 16
+                    cell_width = 8
+                    cell_height = cell_width * aspect_ratio
                     
                     img.width = cell_width * 60
-                    img.height = cell_height * 18
+                    img.height = cell_height * 60
                     
                     ws.add_image(img)
+                    
+                    cell_height_int = int(img.height) // 18 + 1
             
-            cell_anchor = str(int(cell_anchor) + 20)
+            cell_anchor = str(int(cell_anchor) + cell_height_int)
             
         else:
             pass
@@ -1917,21 +2008,27 @@ class DatabasePage(ttk.Frame):
                         pic_path = pic_path.replace('\\', '/')
                     if os.path.exists(pic_path):
                         
-                        set_section_title(ws, cell_anchor, '头脉冲抑制试验 (head impulse suppression test)')
+                        set_section_title(ws, cell_anchor, '头脉冲抑制试验 (head impulse suppression test)', left_end='H')
                         cell_anchor = str(int(cell_anchor) + 1)
+                        
+                        with Image.open(pic_path) as img:
+                            orig_width, orig_height = img.size
+                            aspect_ratio = orig_width / orig_height
                         
                         img = openpyxl.drawing.image.Image(pic_path)
                         img.anchor = 'A' + cell_anchor
                         
-                        cell_width = 6
-                        cell_height = 16
+                        cell_width = 8
+                        cell_height = cell_width * aspect_ratio
                         
                         img.width = cell_width * 60
-                        img.height = cell_height * 18
+                        img.height = cell_height * 60
                         
                         ws.add_image(img)
+                        
+                        cell_height_int = int(img.height) // 18 + 1
                 
-                cell_anchor = str(int(cell_anchor) + 20)
+                cell_anchor = str(int(cell_anchor) + cell_height_int)
                 
         else:
             pass
@@ -1946,24 +2043,32 @@ class DatabasePage(ttk.Frame):
             if pic_path != '':
                 pic_path = os.path.join(self.db_path, temperature_test.get("温度试验示意图"))
                 if os.path.exists(pic_path):
-                    set_section_title(ws, cell_anchor, '温度试验 (temperature test)')
+                    set_section_title(ws, cell_anchor, '温度试验 (temperature test)', left_end='H')
                     cell_anchor = str(int(cell_anchor) + 1)
                     
-                    img = openpyxl.drawing.image.Image(pic_path)
-                    img.anchor = 'A1'
+                    with Image.open(pic_path) as img:
+                        orig_width, orig_height = img.size
+                        aspect_ratio = orig_width / orig_height
                     
-                    cell_width = 6
-                    cell_height = 16
+                    img = openpyxl.drawing.image.Image(pic_path)
+                    img.anchor = 'A' + cell_anchor
+                    
+                    cell_width = 8
+                    cell_height = cell_width * aspect_ratio
                     
                     img.width = cell_width * 60
-                    img.height = cell_height * 18
+                    img.height = cell_height * 60
                     
                     ws.add_image(img)
+                    
+                    cell_height_int = int(img.height) // 18 + 1
             
-            cell_anchor = str(int(cell_anchor) + 20)
+            cell_anchor = str(int(cell_anchor) + cell_height_int)
             
         else:
             pass
+        
+        return int(cell_anchor)
         
 
     def load_config(self):
