@@ -1941,6 +1941,9 @@ class DatabasePage(ttk.Frame):
         
         exp_result = data.get("检查结论", "")
         exp_result = ','.join(exp_result)
+        if '请结合临床' in exp_result:
+            exp_result = exp_result.replace('请结合临床,', '')
+            exp_result = exp_result + ',请结合临床'
         range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
         set_cell_element(ws, range_string, '检查印象', color=light_gray)
         range_string = 'D' + cell_anchor + ':' + 'M' + cell_anchor
