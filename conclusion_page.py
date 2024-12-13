@@ -65,6 +65,14 @@ class ConclusionPage(ttk.Frame):
             "病理性内耳第三窗可能"
         ]
         
+        # 创建自定义结论输入框
+        custom_frame = ttk.Frame(self)
+        custom_frame.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Label(custom_frame, text="其它结论（用分号;分隔多个结论）:").pack(side="left", padx=5)
+        self.custom_conclusion = tk.Text(custom_frame, height=1, width=30)
+        self.custom_conclusion.pack(side="left", padx=5, fill="x", expand=True)
+        
         # 创建滚动框架
         self.canvas = tk.Canvas(self)
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
@@ -126,9 +134,19 @@ class ConclusionPage(ttk.Frame):
 
     def get_data(self):
         selected_conclusions = []
+        # 获取选中的预设结论
         for conclusion, var in self.checkboxes.items():
             if var.get():
                 selected_conclusions.append(conclusion)
+        
+        # 获取自定义结论
+        custom_text = self.custom_conclusion.get("1.0", "end-1c").strip()
+        if custom_text:
+            # 分割自定义结论（支持中文分号和英文分号）
+            custom_conclusions = [c.strip() for c in custom_text.replace("；", ";").split(";")]
+            # 只添加非空的结论
+            selected_conclusions.extend([c for c in custom_conclusions if c])
+            
         return {"检查结论": selected_conclusions}
 
     def set_data(self, data):
@@ -144,9 +162,17 @@ class ConclusionPage(ttk.Frame):
         # 重置所有复选框
         for conclusion, var in self.checkboxes.items():
             var.set(conclusion in conclusions)
-            
+        
+        # 找出不在预设选项中的结论，作为自定义结论
+        custom_conclusions = [c for c in conclusions if c not in self.checkboxes]
+        if custom_conclusions:
+            self.custom_conclusion.delete("1.0", "end")
+            self.custom_conclusion.insert("1.0", "; ".join(custom_conclusions))
 
     def clear_inputs(self):
+        # 清空所有复选框
         for conclusion, var in self.checkboxes.items():
             var.set(False)
+        # 清空自定义结论
+        self.custom_conclusion.delete("1.0", "end")
 
