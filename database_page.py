@@ -1971,7 +1971,7 @@ class DatabasePage(ttk.Frame):
         
         # 头脉冲试验示意图
         head_impulse = data.get("头脉冲试验", "")
-        if not is_dict_empty(head_impulse):
+        if not is_dict_empty_except_na(head_impulse):
 
             
             pic_path = head_impulse.get("头脉冲试验示意图", "")
@@ -2002,7 +2002,7 @@ class DatabasePage(ttk.Frame):
                     
                     cell_height_int = int(img.height) // 18 + 1
             
-            cell_anchor = str(int(cell_anchor) + cell_height_int)
+                    cell_anchor = str(int(cell_anchor) + cell_height_int)
             
         else:
             pass
@@ -2038,7 +2038,7 @@ class DatabasePage(ttk.Frame):
                         
                         cell_height_int = int(img.height) // 18 + 1
                 
-                cell_anchor = str(int(cell_anchor) + cell_height_int)
+                        cell_anchor = str(int(cell_anchor) + cell_height_int)
                 
         else:
             pass
@@ -2073,7 +2073,7 @@ class DatabasePage(ttk.Frame):
                     
                     cell_height_int = int(img.height) // 18 + 1
             
-            cell_anchor = str(int(cell_anchor) + cell_height_int)
+                    cell_anchor = str(int(cell_anchor) + cell_height_int)
             
         else:
             pass
