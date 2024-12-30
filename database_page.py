@@ -35,7 +35,7 @@ def is_dict_empty(d):
     空的定义: None, "", [], {}, 0, "0", "未知", "无"
     返回: True 如果所有值都为空，False 如果存在非空值
     """
-    empty_values = [None, "", [], {}, 0, "0", "未知", "无"]
+    empty_values = [None, "", [], {}, 0, "0", "未知", "无", 'NA']
     return all(value in empty_values or (isinstance(value, str) and value.strip() == "") 
               for value in d.values())
     
@@ -505,7 +505,7 @@ class DatabasePage(ttk.Frame):
         
         # 头脉冲试验
         hit = data.get("头脉冲试验", {})
-        if not is_dict_empty_except_na(hit):
+        if not is_dict_empty(hit):
             if hit.get("VOR增益（左外半规管）", "") != "":
                 results.append("VOR增益（左外半规管）：" + hit.get("VOR增益（左外半规管）", ""))
             if hit.get("PR分数（左外半规管）", "") != "":
@@ -1971,7 +1971,7 @@ class DatabasePage(ttk.Frame):
         
         # 头脉冲试验示意图
         head_impulse = data.get("头脉冲试验", "")
-        if not is_dict_empty_except_na(head_impulse):
+        if not is_dict_empty(head_impulse):
 
             
             pic_path = head_impulse.get("头脉冲试验示意图", "")
