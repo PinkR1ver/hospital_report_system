@@ -31,9 +31,9 @@ class OtherPositionTestPage(ttk.Frame):
             combobox = ttk.Combobox(main_frame, textvariable=getattr(self, f"{test_prefix}_var"), width=30)
             
             if test_prefix == "zero_plane":
-                combobox['values'] = ["", "仰卧右侧转", "仰卧左侧转", "其他", "阴性", "配合欠佳"]
+                combobox['values'] = ["", "阴性", "仰卧右侧转", "仰卧左侧转", "其他", "配合欠佳"]
             else:
-                combobox['values'] = ["", "右跳性眼震", "左跳性眼震", "其他", "阴性", "配合欠佳"]
+                combobox['values'] = ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"]
             
             combobox.grid(row=i, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 

@@ -105,9 +105,10 @@ class HeadImpulseTestPage(ttk.Frame):
             getattr(self, vor_attr).grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # PR分数
-            ttk.Label(canal_frame, text="PR分数 (%):").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
-            setattr(self, pr_attr, ttk.Entry(canal_frame))
-            getattr(self, pr_attr).grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+            ttk.Label(canal_frame, text=f"PR分数:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=2)
+            pr_var = ttk.Entry(canal_frame, width=10)
+            pr_var.insert(0, "NA")  # 设置默认值为 "NA"
+            pr_var.grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
 
         # 头脉冲试验补偿性扫视波
         compensatory_saccade_frame = ttk.LabelFrame(main_frame, text="头脉冲试验扫视波", padding="10 10 10 10")
@@ -116,8 +117,8 @@ class HeadImpulseTestPage(ttk.Frame):
 
         # 使用字典存储每个选项的变量
         self.hit_compensatory_saccade_vars = {}
-        options = ["左外半规管", "右外半规管", "左前半规管", "右前半规管", 
-                  "左后半规管", "右后半规管", "阴性", "配合欠佳"]
+        options = ["阴性", "左外半规管", "右外半规管", "左前半规管", "右前半规管", 
+                  "左后半规管", "右后半规管", "配合欠佳"]
         
         # 创建两行选项
         for i, option in enumerate(options):
@@ -159,7 +160,7 @@ class HeadImpulseTestPage(ttk.Frame):
             "配合欠佳"
         ]
         
-        # 创建两行选项
+        # 创建两行��项
         for i, option in enumerate(result_options):
             var = tk.BooleanVar()
             self.hit_result_vars[option] = var

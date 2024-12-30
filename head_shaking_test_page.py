@@ -21,8 +21,8 @@ class HeadShakingTestPage(ttk.Frame):
         # 眼震模式（摇头试验）
         ttk.Label(main_frame, text="眼震模式（摇头试验）:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.nystagmus_mode = ttk.Combobox(main_frame, values=[
-            "", "I型摇头眼震", "II型摇头眼震", "III型摇头眼震", "IV型摇头眼震", 
-            "其他", "阴性", "配合欠佳"
+            "", "阴性", "I型摇头眼震", "II型摇头眼震", "III型摇头眼震", "IV型摇头眼震", 
+            "其他", "配合欠佳"
         ], width=20)
         self.nystagmus_mode.grid(row=0, column=1, sticky=tk.W, padx=5, pady=5)
 

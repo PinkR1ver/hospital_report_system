@@ -22,7 +22,7 @@ class FistulaTestPage(ttk.Frame):
         
         # 使用字典存储每个选项的变量
         self.fistula_vars = {}
-        options = ["右耳阳性", "左耳阳性", "右耳弱阳性", "左耳弱阳性", "双耳阳性", "双耳弱阳性", "阴性", "配合欠佳"]
+        options = ["阴性", "右耳阳性", "左耳阳性", "右耳弱阳性", "左耳弱阳性", "双耳阳性", "双耳弱阳性", "配合欠佳"]
         
         # 创建两行选项
         for i, option in enumerate(options):

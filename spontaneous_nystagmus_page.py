@@ -21,9 +21,9 @@ class SpontaneousNystagmusPage(ttk.Frame):
         # 自发性眼震模式
         ttk.Label(main_frame, text="自发性眼震模式:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.nystagmus_mode = ttk.Combobox(main_frame, values=[
-            "", "右跳性眼震", "左跳性眼震", "右跳+左转性眼震", "左跳+右转性眼震", 
+            "", "阴性", "右跳性眼震", "左跳性眼震", "右跳+左转性眼震", "左跳+右转性眼震", 
             "上跳性眼震", "下跳性眼震", "右转性眼震", "左转性眼震", 
-            "其他", "阴性", "配合欠佳"
+            "其他", "配合欠佳"
         ], width=30)
         self.nystagmus_mode.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 

@@ -31,9 +31,9 @@ class GazeNystagmusPage(ttk.Frame):
             ttk.Label(direction_frame, text="凝视性眼震模式:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
             self.nystagmus_vars[direction] = tk.StringVar()
             nystagmus_combobox = ttk.Combobox(direction_frame, textvariable=self.nystagmus_vars[direction], 
-                                              values=["", "右跳性眼震", "左跳性眼震", "右跳+左转性眼震", "左跳+右转性眼震", 
+                                              values=["", "阴性", "右跳性眼震", "左跳性眼震", "右跳+左转性眼震", "左跳+右转性眼震", 
                                                       "上跳性眼震", "下跳性眼震", "右转性眼震", "左转性眼震", 
-                                                      "其他", "阴性", "配合欠佳", "NULL"])
+                                                      "其他", "配合欠佳", "NULL"])
             nystagmus_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
             # 凝视性眼震速度

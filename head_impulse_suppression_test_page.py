@@ -225,7 +225,7 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         
         # 设置已选中的选项
         selected_options = data.get("头脉冲抑制试验补偿性扫视波", [])
-        if isinstance(selected_options, str):  # ��理旧数据兼容性
+        if isinstance(selected_options, str):  # 处理旧数据兼容性
             selected_options = [selected_options] if selected_options else []
         for option in selected_options:
             if option in self.compensatory_saccade_vars:

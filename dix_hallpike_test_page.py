@@ -76,10 +76,10 @@ class DixHallpikeTestPage(ttk.Frame):
         result_frame.columnconfigure(0, weight=1)
 
         self.test_result = ttk.Combobox(result_frame, values=[
-            "", "右后半规管良性阵发性位置性眩晕", "左后半规管良性阵发性位置性眩晕",
+            "", "阴性", "右后半规管良性阵发性位置性眩晕", "左后半规管良性阵发性位置性眩晕",
             "双侧后半规管良性阵发性位置性眩晕", "右前半规管良性阵发性位置性眩晕",
             "左前半规管良性阵发性位置性眩晕", "双侧前半规管良性阵发性位置性眩晕",
-            "不典型良性阵发性位置性眩晕", "阴性", "配合欠佳"
+            "不典型位置性眼震", "配合欠佳"
         ], width=50)
         self.test_result.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=5, pady=5)
 

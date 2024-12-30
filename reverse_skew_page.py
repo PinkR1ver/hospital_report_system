@@ -25,7 +25,7 @@ class ReverseSkewPage(ttk.Frame):
 
         # 眼位反向偏斜检查结果
         ttk.Label(main_frame, text="眼位反向偏斜检查结果:").grid(row=2, column=0, sticky=tk.E, padx=5, pady=5)
-        self.skew_result = ttk.Combobox(main_frame, values=["", "阳性", "阴性", "配合欠佳"])
+        self.skew_result = ttk.Combobox(main_frame, values=["", "阴性", "阳性", "配合欠佳"])
         self.skew_result.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def get_data(self):
