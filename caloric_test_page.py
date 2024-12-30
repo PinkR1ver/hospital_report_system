@@ -3,6 +3,8 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageGrab
 import os
 from datetime import datetime
+import sys
+from tkinter import messagebox
 
 # 添加 ScreenshotWindow 类定义
 class ScreenshotWindow(tk.Toplevel):
@@ -244,20 +246,34 @@ class CaloricTestPage(ttk.Frame):
 
     def save_screenshot(self):
         if self.screenshot:
-            # 创建保存截图的目录
-            save_dir = os.path.join(os.path.dirname(__file__), "screenshots")
-            os.makedirs(save_dir, exist_ok=True)
-            
-            # 生成文件名
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"caloric_test_{timestamp}.png"
-            
-            # 保存为相对路径
-            self.image_path = os.path.join("screenshots", filename)  # 修改这里，只保存相对路径
-            
-            # 使用完整路径保存文件
-            full_path = os.path.join(os.path.dirname(__file__), self.image_path)
-            self.screenshot.save(full_path)
+            try:
+                # 创建保存截图的目录
+                base_path = self._get_base_path()
+                save_dir = os.path.join(base_path, "screenshots")
+                os.makedirs(save_dir, exist_ok=True)
+                
+                # 生成文件名
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"caloric_test_{timestamp}.png"
+                
+                # 保存为相对路径
+                self.image_path = os.path.join("screenshots", filename)
+                
+                # 使用完整路径保存文件
+                full_path = os.path.join(base_path, self.image_path)
+                self.screenshot.save(full_path)
+                
+                # 更新图片显示
+                self.image_label.config(text=filename)
+            except Exception as e:
+                messagebox.showerror("错误", f"保存截图时出错：{str(e)}")
+
+    def _get_base_path(self):
+        # 如果是打包后的程序，使用可执行文件所在目录
+        if getattr(sys, 'frozen', False):
+            return os.path.dirname(sys.executable)
+        # 如果是开发环境，使用当前文件所在目录
+        return os.path.dirname(os.path.abspath(__file__))
 
     def cancel_screenshot(self):
         if hasattr(self, 'screenshot_window') and self.screenshot_window:
