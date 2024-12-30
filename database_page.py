@@ -39,6 +39,13 @@ def is_dict_empty(d):
     return all(value in empty_values or (isinstance(value, str) and value.strip() == "") 
               for value in d.values())
     
+def is_dict_empty_except_na(d):
+    """
+    检查字典中的所有值是否为空，除了"NA"
+    """
+    return all(value in [None, "", [], {}, 0, "0", "未知", "无", "NA"] or (isinstance(value, str) and value.strip() == "") 
+              for value in d.values())
+    
 def set_merged_cell_border(ws, range_string, border):
     if ':' in range_string:
         rows = ws[range_string]
@@ -498,7 +505,7 @@ class DatabasePage(ttk.Frame):
         
         # 头脉冲试验
         hit = data.get("头脉冲试验", {})
-        if not is_dict_empty(hit):
+        if not is_dict_empty_except_na(hit):
             if hit.get("VOR增益（左外半规管）", "") != "":
                 results.append("VOR增益（左外半规管）：" + hit.get("VOR增益（左外半规管）", ""))
             if hit.get("PR分数（左外半规管）", "") != "":
