@@ -1957,9 +1957,9 @@ class DatabasePage(ttk.Frame):
         if '请结合临床' in exp_result:
             exp_result = exp_result.replace('请结合临床,', '')
             exp_result = exp_result + ',请结合临床'
-        range_string = 'A' + cell_anchor + ':' + 'C' + str(int(cell_anchor) + 2)
+        range_string = 'A' + cell_anchor + ':' + 'C' + str(int(cell_anchor) + 1)
         set_cell_element(ws, range_string, '检查印象', color=light_gray)
-        range_string = 'D' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 2)
+        range_string = 'D' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
         set_cell_element(ws, range_string, exp_result, border=border)
         first_cell = 'D' + cell_anchor
         ws[first_cell].alignment = Alignment(horizontal='left',  # 左对齐
@@ -1967,7 +1967,7 @@ class DatabasePage(ttk.Frame):
                                            wrap_text=True)
         ws[first_cell].font = Font(size=8)
         
-        cell_anchor = str(int(cell_anchor) + 4)
+        cell_anchor = str(int(cell_anchor) + 3)
         
         range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
         set_cell_element(ws, range_string, '检查医师', color=light_gray)
@@ -2093,9 +2093,19 @@ class DatabasePage(ttk.Frame):
         
 
     def load_config(self):
-        config = json.load(open(self.config_file, 'r'))
-        self.font_name = config['font_name']
-        self.font_path = config['font_path']
+        try:
+            with open(self.config_file, 'rb') as f:
+                encrypted_data = f.read()
+                config = self.controller.decrypt_config(encrypted_data)
+                
+            # 使用解密后的配置
+            self.db_path = config.get('db_path', os.path.join(os.getcwd(), "vest_database"))
+            # ... 其他配置读取 ...
+            
+        except Exception as e:
+            # 使用默认值
+            self.db_path = os.path.join(os.getcwd(), "vest_database")
+            # ... 其他默认值设置 ...
     
     def get_data(self):
         return {}
