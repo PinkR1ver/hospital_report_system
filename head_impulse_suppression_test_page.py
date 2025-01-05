@@ -52,8 +52,8 @@ class ScreenshotWindow(tk.Toplevel):
         self.destroy()
 
 class HeadImpulseSuppressionTestPage(ttk.Frame):
-    def __init__(self, master, controller):
-        super().__init__(master)
+    def __init__(self, parent, controller):
+        super().__init__(parent)
         self.controller = controller
         self.image_path = ""
         self.screenshot = None
@@ -77,7 +77,8 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         # 绑定鼠标滚轮事件
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.bind('<Enter>', self._bind_mousewheel)
+        self.bind('<Leave>', self._unbind_mousewheel)
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
@@ -269,8 +270,23 @@ class HeadImpulseSuppressionTestPage(ttk.Frame):
             self.image_label.config(image=photo)
             self.image_label.image = photo  # 保持对图片的引用
 
+    def _bind_mousewheel(self, event):
+        if hasattr(self, 'canvas'):
+            self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+    
+    def _unbind_mousewheel(self, event):
+        if hasattr(self, 'canvas'):
+            self.canvas.unbind_all("<MouseWheel>")
+    
     def _on_mousewheel(self, event):
-        self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        if hasattr(self, 'canvas') and self.canvas.winfo_exists():
+            self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+            
+    def pack_forget(self):
+        # 在隐藏页面前解绑鼠标滚轮事件
+        if hasattr(self, 'canvas'):
+            self.canvas.unbind_all("<MouseWheel>")
+        super().pack_forget()
 
     def cancel_screenshot(self):
         if self.screenshot_window:

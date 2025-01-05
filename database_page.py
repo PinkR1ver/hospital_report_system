@@ -178,7 +178,7 @@ class DatabasePage(ttk.Frame):
         ttk.Button(button_frame, text="生成HIS文件", command=self.generate_his_files).grid(row=0, column=3, padx=(0, 5))
         ttk.Button(button_frame, text="刷新列表", command=self.load_reports).grid(row=0, column=4)
         ttk.Button(button_frame, text="批量生成Excel", command=self.generate_all_excel).grid(row=0, column=5, padx=(0, 5))
-        
+
         # 添加滚动条
         scrollbar = ttk.Scrollbar(main_frame, orient=tk.VERTICAL, command=self.report_tree.yview)
         scrollbar.grid(row=1, column=1, sticky=(tk.N, tk.S))
@@ -1458,6 +1458,12 @@ class DatabasePage(ttk.Frame):
             
             range_string = 'K' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
             set_cell_element(ws, range_string, supine_roll.get("检查结果", ""), border=border)
+            # set the 检查结果 cell wrap and center
+            first_cell = 'K' + cell_anchor
+            ws[first_cell].alignment = Alignment(horizontal='left',  # 左对齐
+                                    vertical='center',    # 垂直居中
+                                    wrap_text=True)   
+           
             
             cell_anchor = str(int(cell_anchor) + 1)
             
@@ -1951,12 +1957,17 @@ class DatabasePage(ttk.Frame):
         if '请结合临床' in exp_result:
             exp_result = exp_result.replace('请结合临床,', '')
             exp_result = exp_result + ',请结合临床'
-        range_string = 'A' + cell_anchor + ':' + 'C' + cell_anchor
+        range_string = 'A' + cell_anchor + ':' + 'C' + str(int(cell_anchor) + 2)
         set_cell_element(ws, range_string, '检查印象', color=light_gray)
-        range_string = 'D' + cell_anchor + ':' + 'M' + cell_anchor
+        range_string = 'D' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 2)
         set_cell_element(ws, range_string, exp_result, border=border)
+        first_cell = 'D' + cell_anchor
+        ws[first_cell].alignment = Alignment(horizontal='left',  # 左对齐
+                                           vertical='center',    # 垂直居中
+                                           wrap_text=True)
+        ws[first_cell].font = Font(size=8)
         
-        cell_anchor = str(int(cell_anchor) + 2)
+        cell_anchor = str(int(cell_anchor) + 4)
         
         range_string = 'J' + cell_anchor + ':' + 'K' + cell_anchor
         set_cell_element(ws, range_string, '检查医师', color=light_gray)
