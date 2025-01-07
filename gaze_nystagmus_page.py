@@ -49,7 +49,7 @@ class GazeNystagmusPage(ttk.Frame):
         ttk.Label(result_frame, text="凝视性眼震检查结果:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
         self.exam_result_var = tk.StringVar()
         self.exam_result_combobox = ttk.Combobox(result_frame, textvariable=self.exam_result_var, 
-                                                 values=["", "阳性", "阴性", "配合欠佳"])
+                                                 values=["", "正常", "异常", "配合欠佳"])
         self.exam_result_combobox.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 视频导入

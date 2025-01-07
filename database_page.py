@@ -1438,8 +1438,8 @@ class DatabasePage(ttk.Frame):
             set_cell_element(ws, range_string, '持续时长 (秒)', color=light_gray)
             range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
             set_cell_element(ws, range_string, '最大速度 (度/秒)', color=light_gray)
-            range_string = 'K' + cell_anchor + ':' + 'M' + cell_anchor
-            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            range_string = 'J' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, '眼震疲劳性', color=light_gray)
             
             cell_anchor = str(int(cell_anchor) + 1)
             
@@ -1455,14 +1455,8 @@ class DatabasePage(ttk.Frame):
             set_cell_element(ws, range_string, supine_roll.get("左侧眼震持续时长 (秒)", ""), border=border)
             range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
             set_cell_element(ws, range_string, supine_roll.get("左侧眼震最大速度 (度/秒)", ""), border=border)
-            
-            range_string = 'K' + cell_anchor + ':' + 'M' + str(int(cell_anchor) + 1)
-            set_cell_element(ws, range_string, supine_roll.get("检查结果", ""), border=border)
-            # set the 检查结果 cell wrap and center
-            first_cell = 'K' + cell_anchor
-            ws[first_cell].alignment = Alignment(horizontal='left',  # 左对齐
-                                    vertical='center',    # 垂直居中
-                                    wrap_text=True)   
+            range_string = 'J' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("左侧眼震疲劳性", ""), border=border)
            
             
             cell_anchor = str(int(cell_anchor) + 1)
@@ -1479,6 +1473,15 @@ class DatabasePage(ttk.Frame):
             set_cell_element(ws, range_string, supine_roll.get("右侧眼震持续时长 (秒)", ""), border=border)
             range_string = 'H' + cell_anchor + ':' + 'I' + cell_anchor
             set_cell_element(ws, range_string, supine_roll.get("右侧眼震最大速度 (度/秒)", ""), border=border)
+            range_string = 'J' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("右侧眼震疲劳性", ""), border=border)
+            
+            cell_anchor = str(int(cell_anchor) + 1)
+            
+            range_string = 'A' + cell_anchor + ':' + 'B' + cell_anchor
+            set_cell_element(ws, range_string, '检查结果', color=light_gray)
+            range_string = 'C' + cell_anchor + ':' + 'M' + cell_anchor
+            set_cell_element(ws, range_string, supine_roll.get("检查结果", ""), border=border)
 
             cell_anchor = str(int(cell_anchor) + 2)
             

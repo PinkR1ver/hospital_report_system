@@ -55,6 +55,11 @@ class SupineRollTestPage(ttk.Frame):
             setattr(self, f"{side_prefix}_max_speed", ttk.Entry(side_frame, width=25))
             getattr(self, f"{side_prefix}_max_speed").grid(row=4, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
+            # 添加眼震疲劳性
+            ttk.Label(side_frame, text="眼震疲劳性:").grid(row=5, column=0, sticky=tk.E, padx=5, pady=5)
+            setattr(self, f"{side_prefix}_fatigue", ttk.Combobox(side_frame, values=["", "是", "否", "配合欠佳"], width=25))
+            getattr(self, f"{side_prefix}_fatigue").grid(row=5, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+
         # 位置试验检查结果
         result_frame = ttk.LabelFrame(main_frame, text="位置试验 (仰卧滚转试验) 检查结果", padding="10 10 10 10")
         result_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
@@ -128,11 +133,13 @@ class SupineRollTestPage(ttk.Frame):
                 "右侧眼震潜伏期 (秒)": self.right_latency.get(),
                 "右侧眼震持续时长 (秒)": self.right_duration.get(),
                 "右侧眼震最大速度 (度/秒)": self.right_max_speed.get(),
+                "右侧眼震疲劳性": self.right_fatigue.get(),
                 "左侧眼震模式": self.left_nystagmus_mode.get(),
                 "左侧出现眩晕/头晕": self.left_nystagmus_dizziness.get(),
                 "左侧眼震潜伏期 (秒)": self.left_latency.get(),
                 "左侧眼震持续时长 (秒)": self.left_duration.get(),
                 "左侧眼震最大速度 (度/秒)": self.left_max_speed.get(),
+                "左侧眼震疲劳性": self.left_fatigue.get(),
                 "检查结果": self.test_result.get(),
                 "视频": self.video_path
             }
@@ -150,6 +157,7 @@ class SupineRollTestPage(ttk.Frame):
             getattr(self, f"{side_prefix}_duration").insert(0, data.get(f"{side_name}眼震持续时长 (秒)", ""))
             getattr(self, f"{side_prefix}_max_speed").delete(0, tk.END)
             getattr(self, f"{side_prefix}_max_speed").insert(0, data.get(f"{side_name}眼震最大速度 (度/秒)", ""))
+            getattr(self, f"{side_prefix}_fatigue").set(data.get(f"{side_name}眼震疲劳性", ""))
         self.test_result.set(data.get("检查结果", ""))
         self.video_path = data.get("视频", "")
         if self.video_path:
@@ -168,11 +176,13 @@ class SupineRollTestPage(ttk.Frame):
         self.right_latency.delete(0, tk.END)
         self.right_duration.delete(0, tk.END)
         self.right_max_speed.delete(0, tk.END)
+        self.right_fatigue.set("")
         self.left_nystagmus_mode.set("")
         self.left_nystagmus_dizziness.set("")
         self.left_latency.delete(0, tk.END)
         self.left_duration.delete(0, tk.END)
         self.left_max_speed.delete(0, tk.END)
+        self.left_fatigue.set("")
         self.test_result.set("")
         self.video_path = ""
         self.video_label.config(text="未选择视频")
