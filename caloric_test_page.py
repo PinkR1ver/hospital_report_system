@@ -17,7 +17,7 @@ class ScreenshotWindow(tk.Toplevel):
         self.configure(bg='grey')
         self.canvas = tk.Canvas(self, cursor="cross")
         self.canvas.pack(fill=tk.BOTH, expand=True)
-        
+
         self.start_x = None
         self.start_y = None
         self.rect = None
@@ -150,17 +150,17 @@ class CaloricTestPage(ttk.Frame):
         frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         ttk.Label(frame, text="温度试验示意图:").grid(row=0, column=0, sticky=tk.E, padx=5, pady=5)
-        
+
         self.image_path = ""
         self.screenshot = None
         self.screenshot_window = None
-        
+
         self.image_button = ttk.Button(frame, text="截取图片", command=self.select_image)
         self.image_button.grid(row=0, column=1, sticky=tk.W, padx=5, pady=5)
-        
+
         self.cancel_button = ttk.Button(frame, text="取消截图", command=self.cancel_screenshot, state=tk.DISABLED)
         self.cancel_button.grid(row=0, column=2, sticky=tk.W, padx=5, pady=5)
-        
+
         self.image_label = ttk.Label(frame)
         self.image_label.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), padx=5, pady=5)
 
@@ -178,8 +178,8 @@ class CaloricTestPage(ttk.Frame):
                 "检查结果": self.result_var.get()
             }
         }
-        
-        
+
+
     def set_data(self, data):
         self.uw_side_var.set(data.get("单侧减弱侧别 (UW)", ""))
         self.uw_value_var.set(data.get("单侧减弱数值 (UW, %)", ""))
@@ -231,16 +231,16 @@ class CaloricTestPage(ttk.Frame):
         width = 300  # 设置期望的宽度
         ratio = width / screenshot.width
         height = int(screenshot.height * ratio)
-        
+
         resized_image = screenshot.resize((width, height), Image.LANCZOS)
         photo = ImageTk.PhotoImage(resized_image)
-        
+
         self.image_label.config(image=photo)
         self.image_label.image = photo  # 保持对图片的引用
-        
+
         self.image_button.config(text="重新截图")
         self.cancel_button.config(state=tk.NORMAL)  # 保持取消按钮为启用状态
-        
+
         # 保存图片
         self.save_screenshot()
 
@@ -251,18 +251,18 @@ class CaloricTestPage(ttk.Frame):
                 base_path = self._get_base_path()
                 save_dir = os.path.join(base_path, "screenshots")
                 os.makedirs(save_dir, exist_ok=True)
-                
+
                 # 生成文件名
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 filename = f"caloric_test_{timestamp}.png"
-                
+
                 # 保存为相对路径
                 self.image_path = os.path.join("screenshots", filename)
-                
+
                 # 使用完整路径保存文件
                 full_path = os.path.join(base_path, self.image_path)
                 self.screenshot.save(full_path)
-                
+
                 # 更新图片显示
                 self.image_label.config(text=filename)
             except Exception as e:
@@ -278,13 +278,13 @@ class CaloricTestPage(ttk.Frame):
     def cancel_screenshot(self):
         if hasattr(self, 'screenshot_window') and self.screenshot_window:
             self.screenshot_window.destroy()
-        
+
         # 清除已截取的图片
         self.screenshot = None
         self.image_path = ""
         self.image_label.config(image="")
         self.image_button.config(text="截取图片")
-        
+
         root = self.winfo_toplevel()
         root.deiconify()
         self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
