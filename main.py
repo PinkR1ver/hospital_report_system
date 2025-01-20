@@ -624,10 +624,25 @@ class VestibularFunctionReport:
     def new_report(self):
         """创建新报告，清空所有字段"""
         if messagebox.askyesno("确认", "是否要创建新报告？这将清空所有字段。"):
+            # 先保存当前页面
+            current_page = self.current_page
+
             # 清空所有页面的输入
             for page in self.pages.values():
                 if hasattr(page, 'clear_inputs'):
                     page.clear_inputs()
+
+                    # 特殊处理头脉冲试验页面的PR分数字段
+                    if isinstance(page, HeadImpulseTestPage):
+                        pr_fields = [
+                            'pr_left_lateral', 'pr_right_lateral',
+                            'pr_left_anterior', 'pr_right_posterior',
+                            'pr_left_posterior', 'pr_right_anterior'
+                        ]
+                        for field in pr_fields:
+                            if hasattr(page, field):
+                                getattr(page, field).delete(0, tk.END)
+                                getattr(page, field).insert(0, "NA")
 
             # 切换到基本信息页面
             self.show_basic_info()
