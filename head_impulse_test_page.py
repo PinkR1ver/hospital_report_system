@@ -14,7 +14,7 @@ class ScreenshotWindow(tk.Toplevel):
         self.configure(bg='grey')
         self.canvas = tk.Canvas(self, cursor="cross")
         self.canvas.pack(fill=tk.BOTH, expand=True)
-        
+
         self.start_x = None
         self.start_y = None
         self.rect = None
@@ -117,9 +117,9 @@ class HeadImpulseTestPage(ttk.Frame):
 
         # 使用字典存储每个选项的变量
         self.hit_compensatory_saccade_vars = {}
-        options = ["阴性", "左外半规管", "右外半规管", "左前半规管", "右前半规管", 
+        options = ["阴性", "左外半规管", "右外半规管", "左前半规管", "右前半规管",
                   "左后半规管", "右后半规管", "配合欠佳"]
-        
+
         # 创建两行选项
         for i, option in enumerate(options):
             var = tk.BooleanVar()
@@ -151,21 +151,28 @@ class HeadImpulseTestPage(ttk.Frame):
         self.hit_result_vars = {}
         result_options = [
             "左外半规管功能低下",
-            "右外半规管功能低下", 
-            "左前半规管功能低下", 
+            "右外半规管功能低下",
+            "左前半规管功能低下",
             "右前半规管功能低下",
-            "左后半规管功能低下", 
-            "右后半规管功能低下", 
+            "左后半规管功能低下",
+            "右后半规管功能低下",
+            "左外半规管增益降低",
+            "右外半规管增益降低",
+            "左前半规管增益降低",
+            "右前半规管增益降低",
+            "左后半规管增益降低",
+            "右后半规管增益降低",
+            "扫视波扫视阳性",
             "半规管功能正常",
             "配合欠佳"
         ]
-        
-        # 创建两行选项
+
+        # 由于选项增多，调整为每行3个选项
         for i, option in enumerate(result_options):
             var = tk.BooleanVar()
             self.hit_result_vars[option] = var
             chk = ttk.Checkbutton(result_frame, text=option, variable=var)
-            chk.grid(row=i//4, column=i%4, sticky=tk.W, padx=5, pady=2)
+            chk.grid(row=i//3, column=i%3, sticky=tk.W, padx=5, pady=2)
 
     def select_image(self):
         root = self.winfo_toplevel()  # 获取顶层窗口
@@ -187,16 +194,16 @@ class HeadImpulseTestPage(ttk.Frame):
         width = 300  # 设置期望的宽度
         ratio = width / screenshot.width
         height = int(screenshot.height * ratio)
-        
+
         resized_image = screenshot.resize((width, height), Image.LANCZOS)
         photo = ImageTk.PhotoImage(resized_image)
-        
+
         self.image_label.config(image=photo)
         self.image_label.image = photo  # 保持对图片的引用
-        
+
         self.image_button.config(text="重新截图")
         self.cancel_button.config(state=tk.NORMAL)  # 保持取消按钮为启用状态
-        
+
         # 保存图片
         self.save_screenshot()
 
@@ -208,24 +215,24 @@ class HeadImpulseTestPage(ttk.Frame):
             # 创建保存截图的目录
             save_dir = os.path.join(os.path.dirname(__file__), "screenshots")
             os.makedirs(save_dir, exist_ok=True)
-            
+
             # 生成文件名
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"head_impulse_test_{timestamp}.png"
             self.image_path = os.path.join(save_dir, filename)
-            
+
             # 保存截图
             self.screenshot.save(self.image_path)
 
     def get_data(self):
         # 获取选中的扫视波选项
-        selected_saccades = [option for option, var in self.hit_compensatory_saccade_vars.items() 
+        selected_saccades = [option for option, var in self.hit_compensatory_saccade_vars.items()
                            if var.get()]
-        
+
         # 获取选中的检查结果选项
-        selected_results = [option for option, var in self.hit_result_vars.items() 
+        selected_results = [option for option, var in self.hit_result_vars.items()
                           if var.get()]
-        
+
         return {
             "头脉冲试验": {
                 "VOR增益 (左外半规管)": self.vor_left_lateral.get(),
@@ -255,25 +262,25 @@ class HeadImpulseTestPage(ttk.Frame):
             ("左后半规管", "vor_left_posterior", "pr_left_posterior"),
             ("右前半规管", "vor_right_anterior", "pr_right_anterior")
         ]
-        
+
         for canal_name, vor_attr, pr_attr in canals:
             getattr(self, vor_attr).delete(0, tk.END)
             getattr(self, vor_attr).insert(0, data.get(f"VOR增益 ({canal_name})", ""))
             getattr(self, pr_attr).delete(0, tk.END)
             getattr(self, pr_attr).insert(0, data.get(f"PR分数 ({canal_name})", ""))
-        
+
         # 设置扫视波选项
         selected_saccades = data.get("头脉冲试验扫视波", [])
         for option, var in self.hit_compensatory_saccade_vars.items():
             var.set(option in selected_saccades)
-        
+
         if data.get("头脉冲试验示意图"):
             self.image_path = data.get("头脉冲试验示意图")
             self.image_button.config(text="图片已选择")
         else:
             self.image_path = ""
             self.image_button.config(text="选择图片")
-        
+
         # 设置检查结果选项
         selected_results = data.get("头脉冲试验检查结果", [])
         for option, var in self.hit_result_vars.items():
@@ -285,13 +292,13 @@ class HeadImpulseTestPage(ttk.Frame):
     def cancel_screenshot(self):
         if self.screenshot_window:
             self.screenshot_window.destroy()
-        
+
         # 清除已截取的图片
         self.screenshot = None
         self.image_path = ""
         self.image_label.config(image="")
         self.image_button.config(text="截取图片")
-        
+
         root = self.winfo_toplevel()
         root.deiconify()
         self.cancel_button.config(state=tk.DISABLED)  # 禁用取消按钮
@@ -306,13 +313,13 @@ class HeadImpulseTestPage(ttk.Frame):
             ("左后半规管", "vor_left_posterior", "pr_left_posterior"),
             ("右前半规管", "vor_right_anterior", "pr_right_anterior")
         ]
-        
+
         for canal_name, vor_attr, pr_attr in canals:
             getattr(self, vor_attr).delete(0, tk.END)
             getattr(self, vor_attr).insert(0, "")
             getattr(self, pr_attr).delete(0, tk.END)
             getattr(self, pr_attr).insert(0, "")
-        
+
         for option, var in self.hit_compensatory_saccade_vars.items():
             var.set(False)
         for option, var in self.hit_result_vars.items():
