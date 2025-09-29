@@ -58,7 +58,7 @@ class BasicInfoPage(ttk.Frame):
         ttk.Label(exam_info_frame, text="检查医生:").grid(row=1, column=0, sticky=tk.E, padx=5, pady=5)
         self.doctor_var = tk.StringVar()
         self.doctor_combobox = ttk.Combobox(exam_info_frame, textvariable=self.doctor_var, 
-                                            values=["", "任文磊", "付敏郡", "刘译升", "郑郭嫄", "王锦雪", "唐沛", "吕志军", "赵晓瑜", "朱璐", "孙娜娜", "肖楚韵"])
+                                            values=["", "赵敏", "王少杰"])
         self.doctor_combobox.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
         # 检查设备
