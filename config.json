@@ -1,0 +1,21 @@
+{
+  "system": {
+    "name": "前庭功能检查报告系统",
+    "version": "2.0.0",
+    "theme": "blue",
+    "font_size": 14,
+    "window_size": {
+      "width": 1500,
+      "height": 900
+    }
+  },
+  "database": {
+    "path": "vest_database",
+    "folders": ["report", "pic", "video", "HIS"]
+  },
+  "report_template": {
+    "enabled_pages": ["basic_info", "spontaneous_nystagmus", "head_shaking_test", "gaze_nystagmus", "head_impulse_test", "head_impulse_suppression_test"],
+    "output_format": "json",
+    "file_naming": "{patient_id}_{timestamp}.json"
+  }
+}

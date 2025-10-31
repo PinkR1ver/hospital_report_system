@@ -1,0 +1,98 @@
+{
+  "page_id": "basic_info",
+  "title": "基本信息",
+  "layout": {
+    "type": "grid",
+    "columns": 2,
+    "padding": {"x": 20, "y": 20},
+    "spacing": {"x": 10, "y": 10}
+  },
+  "sections": [
+    {
+      "id": "patient_info",
+      "name": "患者基本信息",
+      "order": 1,
+      "layout": {
+        "type": "grid",
+        "columns": 2,
+        "padding": {"x": 10, "y": 10}
+      },
+      "fields": [
+        { 
+          "key": "ID", 
+          "type": "entry", 
+          "label": "ID", 
+          "required": true, 
+          "placeholder": "请输入患者ID",
+          "order": 1,
+          "position": {"row": 0, "column": 0}
+        },
+        { 
+          "key": "姓名", 
+          "type": "entry", 
+          "label": "姓名", 
+          "required": true, 
+          "placeholder": "请输入患者姓名",
+          "order": 2,
+          "position": {"row": 0, "column": 1}
+        },
+        { 
+          "key": "性别", 
+          "type": "combobox", 
+          "label": "性别", 
+          "values": ["", "男", "女"], 
+          "required": true,
+          "order": 3,
+          "position": {"row": 1, "column": 0}
+        },
+        { 
+          "key": "出生日期", 
+          "type": "date", 
+          "label": "出生日期", 
+          "format": "yyyy/mm/dd",
+          "order": 4,
+          "position": {"row": 1, "column": 1}
+        }
+      ]
+    },
+    {
+      "id": "exam_info",
+      "name": "检查信息",
+      "order": 2,
+      "layout": {
+        "type": "grid",
+        "columns": 2,
+        "padding": {"x": 10, "y": 10}
+      },
+      "fields": [
+        { 
+          "key": "检查时间", 
+          "type": "date", 
+          "label": "检查时间", 
+          "format": "yyyy/mm/dd", 
+          "required": true,
+          "order": 1,
+          "position": {"row": 0, "column": 0}
+        },
+        { 
+          "key": "检查医生", 
+          "type": "combobox", 
+          "label": "检查医生", 
+          "values": ["", "赵敏", "王少杰"], 
+          "required": true,
+          "order": 2,
+          "position": {"row": 0, "column": 1}
+        },
+        { 
+          "key": "检查设备", 
+          "type": "combobox", 
+          "label": "检查设备", 
+          "values": ["", "Otometrics", "ZEHINT", "Interacoustics"], 
+          "required": true,
+          "order": 3,
+          "position": {"row": 1, "column": 0}
+        }
+      ]
+    }
+  ]
+}

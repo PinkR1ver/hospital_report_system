@@ -1,0 +1,46 @@
+{
+  "pages": [
+    {
+      "id": "basic_info",
+      "name": "基本信息",
+      "enabled": true,
+      "required": true,
+      "order": 1
+    },
+    {
+      "id": "spontaneous_nystagmus", 
+      "name": "自发性眼震",
+      "enabled": true,
+      "required": false,
+      "order": 2
+    },
+    {
+      "id": "head_shaking_test",
+      "name": "摇头眼震",
+      "enabled": true,
+      "required": false,
+      "order": 3
+    },
+    {
+      "id": "gaze_nystagmus",
+      "name": "凝视性眼震",
+      "enabled": true,
+      "required": false,
+      "order": 4
+    },
+    {
+      "id": "head_impulse_test",
+      "name": "头脉冲试验",
+      "enabled": true,
+      "required": false,
+      "order": 5
+    },
+    {
+      "id": "head_impulse_suppression_test",
+      "name": "头脉冲抑制试验 (SHIMP)",
+      "enabled": true,
+      "required": false,
+      "order": 6
+    }
+  ]
+}

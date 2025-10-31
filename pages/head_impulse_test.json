@@ -1,0 +1,69 @@
+{
+  "page_id": "head_impulse_test",
+  "title": "头脉冲试验",
+  "name": "头脉冲试验",
+  "enabled": true,
+  "required": false,
+  "order": 5,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "canals",
+      "name": "半规管参数",
+      "order": 1,
+      "fields": [
+        {"key": "VOR增益 (左外半规管)", "type": "number", "label": "VOR增益 (左外半规管)", "order": 1},
+        {"key": "PR分数 (左外半规管)", "type": "entry", "label": "PR分数 (%) (左外半规管)", "order": 2},
+
+        {"key": "VOR增益 (右外半规管)", "type": "number", "label": "VOR增益 (右外半规管)", "order": 3},
+        {"key": "PR分数 (右外半规管)", "type": "entry", "label": "PR分数 (%) (右外半规管)", "order": 4},
+
+        {"key": "VOR增益 (左前半规管)", "type": "number", "label": "VOR增益 (左前半规管)", "order": 5},
+        {"key": "PR分数 (左前半规管)", "type": "entry", "label": "PR分数 (%) (左前半规管)", "order": 6},
+
+        {"key": "VOR增益 (右后半规管)", "type": "number", "label": "VOR增益 (右后半规管)", "order": 7},
+        {"key": "PR分数 (右后半规管)", "type": "entry", "label": "PR分数 (%) (右后半规管)", "order": 8},
+
+        {"key": "VOR增益 (左后半规管)", "type": "number", "label": "VOR增益 (左后半规管)", "order": 9},
+        {"key": "PR分数 (左后半规管)", "type": "entry", "label": "PR分数 (%) (左后半规管)", "order": 10},
+
+        {"key": "VOR增益 (右前半规管)", "type": "number", "label": "VOR增益 (右前半规管)", "order": 11},
+        {"key": "PR分数 (右前半规管)", "type": "entry", "label": "PR分数 (%) (右前半规管)", "order": 12}
+      ]
+    },
+    {
+      "id": "saccade",
+      "name": "头脉冲试验扫视波",
+      "order": 2,
+      "fields": [
+        {
+          "key": "头脉冲试验扫视波",
+          "type": "checkboxes",
+          "label": "扫视波",
+          "values": ["阴性", "左外半规管", "右外半规管", "左前半规管", "右前半规管", "左后半规管", "右后半规管", "配合欠佳"],
+          "order": 1
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "name": "头脉冲试验检查结果",
+      "order": 3,
+      "fields": [
+        {
+          "key": "头脉冲试验检查结果",
+          "type": "checkboxes",
+          "label": "检查结果",
+          "values": [
+            "左外半规管功能低下","右外半规管功能低下","左前半规管功能低下","右前半规管功能低下",
+            "左后半规管功能低下","右后半规管功能低下",
+            "左外半规管增益降低","右外半规管增益降低","左前半规管增益降低","右前半规管增益降低",
+            "左后半规管增益降低","右后半规管增益降低",
+            "扫视波扫视阳性","半规管功能正常","配合欠佳"
+          ],
+          "order": 1
+        }
+      ]
+    }
+  ]
+}

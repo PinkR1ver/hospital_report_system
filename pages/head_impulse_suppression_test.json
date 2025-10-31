@@ -1,0 +1,49 @@
+{
+  "page_id": "head_impulse_suppression_test",
+  "title": "头脉冲抑制试验 (SHIMP)",
+  "name": "头脉冲抑制试验",
+  "enabled": true,
+  "required": false,
+  "order": 6,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "gains",
+      "name": "增益",
+      "order": 1,
+      "fields": [
+        {"key": "头脉冲抑制试验增益 (左外半规管)", "type": "number", "label": "左外半规管增益", "order": 1},
+        {"key": "头脉冲抑制试验增益 (右外半规管)", "type": "number", "label": "右外半规管增益", "order": 2}
+      ]
+    },
+    {
+      "id": "saccade",
+      "name": "补偿性扫视波",
+      "order": 2,
+      "fields": [
+        {
+          "key": "头脉冲抑制试验补偿性扫视波",
+          "type": "checkboxes",
+          "label": "扫视波",
+          "values": ["左外半规管", "右外半规管", "阴性", "配合欠佳"],
+          "order": 1
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "name": "检查结果",
+      "order": 3,
+      "fields": [
+        {
+          "key": "头脉冲抑制试验检查结果",
+          "type": "combobox",
+          "label": "检查结果",
+          "values": ["", "未见异常", "左外半规管功能低下", "右外半规管功能低下", "双侧外半规管功能低下", "配合欠佳"],
+          "required": true,
+          "order": 1
+        }
+      ]
+    }
+  ]
+}
