@@ -1,0 +1,19 @@
+{
+  "page_id": "vor_suppression",
+  "title": "前庭-眼反射抑制试验",
+  "name": "VOR抑制试验",
+  "enabled": true,
+  "required": false,
+  "order": 10,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "suppression_main",
+      "name": "检查结果",
+      "order": 1,
+      "fields": [
+        {"key": "检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 1}
+      ]
+    }
+  ]
+}

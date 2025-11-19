@@ -1,0 +1,21 @@
+{
+  "page_id": "reverse_skew",
+  "title": "眼位反向偏斜",
+  "name": "眼位反向偏斜",
+  "enabled": true,
+  "required": false,
+  "order": 7,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "skew_main",
+      "name": "眼位反向偏斜记录",
+      "order": 1,
+      "fields": [
+        {"key": "眼位反向偏斜 (HR, 度)", "type": "number", "label": "眼位反向偏斜 (HR, 度)", "order": 1},
+        {"key": "眼位反向偏斜 (VR, 度)", "type": "number", "label": "眼位反向偏斜 (VR, 度)", "order": 2},
+        {"key": "眼位反向偏斜检查结果", "type": "combobox", "label": "检查结果", "values": ["", "阴性", "阳性", "配合欠佳"], "order": 3}
+      ]
+    }
+  ]
+}

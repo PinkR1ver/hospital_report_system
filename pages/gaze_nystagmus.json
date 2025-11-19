@@ -8,9 +8,29 @@
   "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
   "sections": [
     {
+      "id": "gaze_center",
+      "name": "正中凝视",
+      "order": 1,
+      "fields": [
+        {
+          "key": "凝视性眼震模式（正中）",
+          "type": "combobox",
+          "label": "凝视性眼震模式",
+          "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "右跳+左转性眼震", "左跳+右转性眼震", "上跳性眼震", "下跳性眼震", "右转性眼震", "左转性眼震", "其他", "配合欠佳", "NULL"],
+          "order": 1
+        },
+        {
+          "key": "凝视性眼震速度（正中）",
+          "type": "number",
+          "label": "凝视性眼震速度（度/秒）",
+          "order": 2
+        }
+      ]
+    },
+    {
       "id": "gaze_up",
       "name": "上方凝视",
-      "order": 1,
+      "order": 2,
       "fields": [
         {
           "key": "凝视性眼震模式（上）",
@@ -30,7 +50,7 @@
     {
       "id": "gaze_down",
       "name": "下方凝视",
-      "order": 2,
+      "order": 3,
       "fields": [
         {
           "key": "凝视性眼震模式（下）",
@@ -50,7 +70,7 @@
     {
       "id": "gaze_left",
       "name": "左方凝视",
-      "order": 3,
+      "order": 4,
       "fields": [
         {
           "key": "凝视性眼震模式（左）",
@@ -70,7 +90,7 @@
     {
       "id": "gaze_right",
       "name": "右方凝视",
-      "order": 4,
+      "order": 5,
       "fields": [
         {
           "key": "凝视性眼震模式（右）",
@@ -90,7 +110,7 @@
     {
       "id": "gaze_result",
       "name": "检查结果",
-      "order": 5,
+      "order": 6,
       "fields": [
         {
           "key": "凝视性眼震检查结果",

@@ -1,6 +1,13 @@
 {
   "pages": [
     {
+      "id": "database_management",
+      "name": "数据库管理",
+      "enabled": true,
+      "required": false,
+      "order": 0
+    },
+    {
       "id": "basic_info",
       "name": "基本信息",
       "enabled": true,
@@ -41,6 +48,111 @@
       "enabled": true,
       "required": false,
       "order": 6
+    },
+    {
+      "id": "reverse_skew",
+      "name": "眼位反向偏斜",
+      "enabled": true,
+      "required": false,
+      "order": 7
+    },
+    {
+      "id": "saccade",
+      "name": "扫视检查",
+      "enabled": true,
+      "required": false,
+      "order": 8
+    },
+    {
+      "id": "visual_enhanced_vor",
+      "name": "视觉增强VOR",
+      "enabled": true,
+      "required": false,
+      "order": 9
+    },
+    {
+      "id": "vor_suppression",
+      "name": "VOR抑制试验",
+      "enabled": true,
+      "required": false,
+      "order": 10
+    },
+    {
+      "id": "visual_tracking",
+      "name": "视跟踪",
+      "enabled": true,
+      "required": false,
+      "order": 11
+    },
+    {
+      "id": "optokinetic_nystagmus",
+      "name": "视动性眼震",
+      "enabled": true,
+      "required": false,
+      "order": 12
+    },
+    {
+      "id": "svv_test",
+      "name": "主观视觉垂直线",
+      "enabled": true,
+      "required": false,
+      "order": 13
+    },
+    {
+      "id": "fistula_test",
+      "name": "瘘管试验",
+      "enabled": true,
+      "required": false,
+      "order": 14
+    },
+    {
+      "id": "dix_hallpike_test",
+      "name": "Dix-Hallpike试验",
+      "enabled": true,
+      "required": false,
+      "order": 15
+    },
+    {
+      "id": "supine_roll_test",
+      "name": "仰卧滚转试验",
+      "enabled": true,
+      "required": false,
+      "order": 16
+    },
+    {
+      "id": "other_position_test",
+      "name": "位置试验(其他)",
+      "enabled": true,
+      "required": false,
+      "order": 17
+    },
+    {
+      "id": "caloric_test",
+      "name": "温度试验",
+      "enabled": true,
+      "required": false,
+      "order": 18
+    },
+    {
+      "id": "cvemp_test",
+      "name": "cVEMP",
+      "enabled": true,
+      "required": false,
+      "order": 19
+    },
+    {
+      "id": "ovemp_test",
+      "name": "oVEMP",
+      "enabled": true,
+      "required": false,
+      "order": 20
+    },
+    {
+      "id": "conclusion",
+      "name": "检查结论",
+      "enabled": true,
+      "required": false,
+      "order": 21
     }
   ]
 }

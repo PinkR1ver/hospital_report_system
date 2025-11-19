@@ -1,0 +1,54 @@
+{
+  "page_id": "caloric_test",
+  "title": "温度试验",
+  "name": "温度试验",
+  "enabled": true,
+  "required": false,
+  "order": 18,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "uw",
+      "name": "单侧减弱 (UW)",
+      "order": 1,
+      "fields": [
+        {"key": "单侧减弱侧别 (UW)", "type": "combobox", "label": "侧别", "values": ["", "右耳", "左耳", "左右对称"], "order": 1},
+        {"key": "单侧减弱数值 (UW, %)", "type": "number", "label": "数值 (%)", "order": 2}
+      ]
+    },
+    {
+      "id": "dp",
+      "name": "优势偏向 (DP)",
+      "order": 2,
+      "fields": [
+        {"key": "优势偏向侧别 (DP)", "type": "combobox", "label": "侧别", "values": ["", "右耳", "左耳", "左右对称"], "order": 1},
+        {"key": "优势偏向数值 (DP, 度/秒)", "type": "number", "label": "数值 (度/秒)", "order": 2}
+      ]
+    },
+    {
+      "id": "spv",
+      "name": "最大慢相速度总和",
+      "order": 3,
+      "fields": [
+        {"key": "最大慢相速度总和（右耳, 度/秒）", "type": "number", "label": "右耳 (度/秒)", "order": 1},
+        {"key": "最大慢相速度总和（左耳, 度/秒）", "type": "number", "label": "左耳 (度/秒)", "order": 2}
+      ]
+    },
+    {
+      "id": "fi",
+      "name": "固视抑制指数",
+      "order": 4,
+      "fields": [
+        {"key": "固视抑制指数 (FI, %)", "type": "number", "label": "固视抑制指数 (FI, %)", "order": 1}
+      ]
+    },
+    {
+      "id": "result",
+      "name": "检查结果",
+      "order": 5,
+      "fields": [
+        {"key": "检查结果", "type": "combobox", "label": "温度试验检查结果", "values": ["", "左外半规管功能减退", "右外半规管功能减退", "双外半规管功能减退", "双外半规管功能正常", "配合欠佳"], "order": 1}
+      ]
+    }
+  ]
+}

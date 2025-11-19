@@ -1,0 +1,39 @@
+{
+  "page_id": "optokinetic_nystagmus",
+  "title": "视动性眼震",
+  "name": "视动性眼震",
+  "enabled": true,
+  "required": false,
+  "order": 12,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "horizontal",
+      "name": "水平视标",
+      "order": 1,
+      "fields": [
+        {"key": "水平视标不对称性（%）", "type": "number", "label": "水平视标不对称性（%）", "order": 1},
+        {"key": "向右视标增益", "type": "number", "label": "视动性眼震增益（向右视标）", "order": 2},
+        {"key": "向左视标增益", "type": "number", "label": "视动性眼震增益（向左视标）", "order": 3}
+      ]
+    },
+    {
+      "id": "vertical",
+      "name": "垂直视标",
+      "order": 2,
+      "fields": [
+        {"key": "垂直视标不对称性（%）", "type": "number", "label": "垂直视标不对称性（%）", "order": 1},
+        {"key": "向上视标增益", "type": "number", "label": "视动性眼震增益（向上视标）", "order": 2},
+        {"key": "向下视标增益", "type": "number", "label": "视动性眼震增益（向下视标）", "order": 3}
+      ]
+    },
+    {
+      "id": "result",
+      "name": "检查结果",
+      "order": 3,
+      "fields": [
+        {"key": "检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 1}
+      ]
+    }
+  ]
+}

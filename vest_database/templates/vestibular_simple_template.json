@@ -1,0 +1,467 @@
+{
+  "description": "前庭功能检查报告 - 简约版（JSON模板）",
+  "create_from_blank": true,
+  "sheet_name": "前庭报告（简约版）",
+  "output_directory": "excel",
+  "page_setup": {
+    "orientation": "portrait",
+    "fitToWidth": 1,
+    "fitToHeight": null,
+    "margins": {
+      "left": 0.5,
+      "right": 0.5,
+      "top": 0.75,
+      "bottom": 0.75,
+      "header": 0.3,
+      "footer": 0.3
+    }
+  },
+  "column_widths": {
+    "A": 26,
+    "B": 4,
+    "C": 34,
+    "D": 24
+  },
+  "row_heights": {
+    "1": 28
+  },
+  "styles": {
+    "title": {
+      "font": {
+        "name": "Microsoft YaHei UI",
+        "size": 16,
+        "bold": true
+      },
+      "alignment": {
+        "horizontal": "center",
+        "vertical": "center"
+      }
+    },
+    "section": {
+      "font": {
+        "name": "Microsoft YaHei UI",
+        "size": 12,
+        "bold": true
+      },
+      "fill": {
+        "type": "solid",
+        "color": "E2EFDA"
+      },
+      "alignment": {
+        "horizontal": "left",
+        "vertical": "center"
+      },
+      "border": {
+        "all": "thin",
+        "color": "C5C5C5"
+      }
+    },
+    "label": {
+      "font": {
+        "name": "Microsoft YaHei UI",
+        "size": 11,
+        "bold": true
+      },
+      "alignment": {
+        "horizontal": "left",
+        "vertical": "center"
+      }
+    },
+    "value": {
+      "font": {
+        "name": "Microsoft YaHei UI",
+        "size": 11
+      },
+      "alignment": {
+        "horizontal": "left",
+        "vertical": "center"
+      },
+      "border": {
+        "all": "thin",
+        "color": "DADADA"
+      }
+    },
+    "multiline": {
+      "font": {
+        "name": "Microsoft YaHei UI",
+        "size": 11
+      },
+      "alignment": {
+        "horizontal": "left",
+        "vertical": "top",
+        "wrap_text": true
+      },
+      "border": {
+        "all": "thin",
+        "color": "DADADA"
+      }
+    }
+  },
+  "data_formatters": {
+    "date": {
+      "input_format": "%Y/%m/%d",
+      "output_format": "%Y/%m/%d"
+    },
+    "number": {
+      "decimal_places": 2
+    },
+    "list": {
+      "join": true,
+      "separator": "、"
+    }
+  },
+  "empty_value_handling": {
+    "default": "",
+    "check_empty_values": [
+      "",
+      null,
+      [],
+      {},
+      "未知",
+      "无",
+      "N/A",
+      "NULL"
+    ]
+  },
+  "static_cells": [
+    {
+      "range": "A1:D1",
+      "value": "前庭功能检查报告（简约版）",
+      "style": "title"
+    },
+    {
+      "range": "A3:B3",
+      "value": "患者ID",
+      "style": "label"
+    },
+    {
+      "range": "A4:B4",
+      "value": "姓名",
+      "style": "label"
+    },
+    {
+      "range": "A5:B5",
+      "value": "性别",
+      "style": "label"
+    },
+    {
+      "range": "A6:B6",
+      "value": "出生日期",
+      "style": "label"
+    },
+    {
+      "range": "A7:B7",
+      "value": "检查时间",
+      "style": "label"
+    },
+    {
+      "range": "A8:B8",
+      "value": "检查设备",
+      "style": "label"
+    },
+    {
+      "range": "A10:D10",
+      "value": "自发性眼震",
+      "style": "section"
+    },
+    {
+      "range": "A11:B11",
+      "value": "模式",
+      "style": "label"
+    },
+    {
+      "range": "A12:B12",
+      "value": "速度（度/秒）",
+      "style": "label"
+    },
+    {
+      "range": "A13:B13",
+      "value": "固视抑制",
+      "style": "label"
+    },
+    {
+      "range": "A14:B14",
+      "value": "结果判读",
+      "style": "label"
+    },
+    {
+      "range": "A16:D16",
+      "value": "头脉冲试验 (HIT)",
+      "style": "section"
+    },
+    {
+      "range": "A17:B17",
+      "value": "左外半规管 VOR增益",
+      "style": "label"
+    },
+    {
+      "range": "A18:B18",
+      "value": "右外半规管 VOR增益",
+      "style": "label"
+    },
+    {
+      "range": "A19:B19",
+      "value": "扫视波",
+      "style": "label"
+    },
+    {
+      "range": "A20:B20",
+      "value": "检查结果",
+      "style": "label"
+    },
+    {
+      "range": "A22:D22",
+      "value": "头脉冲抑制试验 (SHIMP)",
+      "style": "section"
+    },
+    {
+      "range": "A23:B23",
+      "value": "左外半规管增益",
+      "style": "label"
+    },
+    {
+      "range": "A24:B24",
+      "value": "右外半规管增益",
+      "style": "label"
+    },
+    {
+      "range": "A25:B25",
+      "value": "扫视波",
+      "style": "label"
+    },
+    {
+      "range": "A26:B26",
+      "value": "检查结果",
+      "style": "label"
+    },
+    {
+      "range": "A28:D28",
+      "value": "温度试验",
+      "style": "section"
+    },
+    {
+      "range": "A29:B29",
+      "value": "单侧减弱侧别 (UW)",
+      "style": "label"
+    },
+    {
+      "range": "A30:B30",
+      "value": "单侧减弱数值 (UW, %)",
+      "style": "label"
+    },
+    {
+      "range": "A31:B31",
+      "value": "优势偏向侧别 (DP)",
+      "style": "label"
+    },
+    {
+      "range": "A32:B32",
+      "value": "优势偏向数值 (DP, 度/秒)",
+      "style": "label"
+    },
+    {
+      "range": "A33:B33",
+      "value": "检查结果",
+      "style": "label"
+    },
+    {
+      "range": "A35:D35",
+      "value": "主观视觉垂直线 (SVV)",
+      "style": "section"
+    },
+    {
+      "range": "A36:B36",
+      "value": "偏斜方向",
+      "style": "label"
+    },
+    {
+      "range": "A37:B37",
+      "value": "偏斜角度（度）",
+      "style": "label"
+    },
+    {
+      "range": "A39:D39",
+      "value": "检查所见",
+      "style": "section"
+    },
+    {
+      "range": "A40:B40",
+      "value": "检查所见",
+      "style": "label"
+    },
+    {
+      "range": "A42:D42",
+      "value": "检查结论",
+      "style": "section"
+    },
+    {
+      "range": "A43:B43",
+      "value": "检查结论",
+      "style": "label"
+    },
+    {
+      "range": "A45:D45",
+      "value": "医师信息",
+      "style": "section"
+    },
+    {
+      "range": "A46:B46",
+      "value": "检查医师",
+      "style": "label"
+    }
+  ],
+  "data_cells": [
+    {
+      "range": "C3:D3",
+      "data_path": "基本信息.ID",
+      "style": "value"
+    },
+    {
+      "range": "C4:D4",
+      "data_path": "基本信息.姓名",
+      "style": "value"
+    },
+    {
+      "range": "C5:D5",
+      "data_path": "基本信息.性别",
+      "style": "value"
+    },
+    {
+      "range": "C6:D6",
+      "data_path": "基本信息.出生日期",
+      "style": "value",
+      "format": "date"
+    },
+    {
+      "range": "C7:D7",
+      "data_path": "基本信息.检查时间",
+      "style": "value",
+      "format": "date"
+    },
+    {
+      "range": "C8:D8",
+      "data_path": "基本信息.检查设备",
+      "style": "value"
+    },
+    {
+      "range": "C11:D11",
+      "style": "value",
+      "data_path": "自发性眼震.眼震模式",
+      "value_type": "main_with_note",
+      "secondary_path": "自发性眼震.眼震模式其他说明"
+    },
+    {
+      "range": "C12:D12",
+      "style": "value",
+      "data_path": "自发性眼震.速度"
+    },
+    {
+      "range": "C13:D13",
+      "style": "value",
+      "data_path": "自发性眼震.固视抑制"
+    },
+    {
+      "range": "C14:D14",
+      "style": "value",
+      "data_path": "自发性眼震.结果判读"
+    },
+    {
+      "range": "C17:D17",
+      "style": "value",
+      "data_path": "头脉冲试验.VOR增益 (左外半规管)"
+    },
+    {
+      "range": "C18:D18",
+      "style": "value",
+      "data_path": "头脉冲试验.VOR增益 (右外半规管)"
+    },
+    {
+      "range": "C19:D19",
+      "style": "value",
+      "data_path": "头脉冲试验.头脉冲试验扫视波",
+      "format": "list"
+    },
+    {
+      "range": "C20:D20",
+      "style": "value",
+      "data_path": "头脉冲试验.头脉冲试验检查结果",
+      "format": "list"
+    },
+    {
+      "range": "C23:D23",
+      "style": "value",
+      "data_path": "头脉冲抑制试验 (SHIMP).头脉冲抑制试验增益 (左外半规管)"
+    },
+    {
+      "range": "C24:D24",
+      "style": "value",
+      "data_path": "头脉冲抑制试验 (SHIMP).头脉冲抑制试验增益 (右外半规管)"
+    },
+    {
+      "range": "C25:D25",
+      "style": "value",
+      "data_path": "头脉冲抑制试验 (SHIMP).头脉冲抑制试验补偿性扫视波",
+      "format": "list"
+    },
+    {
+      "range": "C26:D26",
+      "style": "value",
+      "data_path": "头脉冲抑制试验 (SHIMP).头脉冲抑制试验检查结果"
+    },
+    {
+      "range": "C29:D29",
+      "style": "value",
+      "data_path": "温度试验.单侧减弱侧别 (UW)"
+    },
+    {
+      "range": "C30:D30",
+      "style": "value",
+      "data_path": "温度试验.单侧减弱数值 (UW, %)"
+    },
+    {
+      "range": "C31:D31",
+      "style": "value",
+      "data_path": "温度试验.优势偏向侧别 (DP)"
+    },
+    {
+      "range": "C32:D32",
+      "style": "value",
+      "data_path": "温度试验.优势偏向数值 (DP, 度/秒)"
+    },
+    {
+      "range": "C33:D33",
+      "style": "value",
+      "data_path": "温度试验.检查结果"
+    },
+    {
+      "range": "C36:D36",
+      "style": "value",
+      "data_path": "主观视觉垂直线 (SVV).偏斜方向"
+    },
+    {
+      "range": "C37:D37",
+      "style": "value",
+      "data_path": "主观视觉垂直线 (SVV).偏斜角度（度）"
+    },
+    {
+      "range": "C40:D40",
+      "style": "multiline",
+      "paths": [
+        "检查所见",
+        "检查所见.检查所见",
+        "检查所见与分析"
+      ]
+    },
+    {
+      "range": "C43:D43",
+      "style": "multiline",
+      "data_path": "检查结论.检查结论",
+      "format": "list"
+    },
+    {
+      "range": "C46:D46",
+      "style": "value",
+      "data_path": "基本信息.检查医生"
+    }
+  ]
+}

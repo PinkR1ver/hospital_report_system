@@ -1,0 +1,82 @@
+{
+  "description": "前庭功能检查报告 - 全套版",
+  "create_from_blank": false,
+  "template_file": "vestibular_full_template.xlsx",
+  "sheet_name": "前庭报告（全套版）",
+  "output_directory": "excel",
+  "data_formatters": {
+    "date": {
+      "input_format": "%Y/%m/%d",
+      "output_format": "%Y/%m/%d"
+    },
+    "number": {
+      "decimal_places": 2
+    },
+    "list": {
+      "join": true,
+      "separator": "、"
+    }
+  },
+  "empty_value_handling": {
+    "default": "",
+    "check_empty_values": [
+      "",
+      null,
+      [],
+      {},
+      "未知",
+      "无",
+      "N/A",
+      "NULL"
+    ]
+  },
+  "data_cells": [
+    {
+      "cell": "D3",
+      "data_path": "基本信息.ID"
+    },
+    {
+      "cell": "H3",
+      "data_path": "基本信息.姓名"
+    },
+    {
+      "cell": "M3",
+      "data_path": "基本信息.性别"
+    },
+    {
+      "cell": "D4",
+      "data_path": "基本信息.出生日期",
+      "format": "date"
+    },
+    {
+      "cell": "H4",
+      "data_path": "基本信息.检查时间",
+      "format": "date"
+    },
+    {
+      "cell": "M4",
+      "data_path": "基本信息.检查设备"
+    },
+    {
+      "cell": "F64",
+      "paths": [
+        "检查所见.检查所见",
+        "检查所见与分析",
+        "检查所见"
+      ]
+    },
+    {
+      "cell": "F72",
+      "paths": [
+        "检查结论.检查结论",
+        "检查结论"
+      ],
+      "format": "list"
+    },
+    {
+      "cell": "M75",
+      "data_path": "基本信息.检查医生"
+    }
+  ]
+}
+

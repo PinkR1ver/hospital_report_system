@@ -1,0 +1,396 @@
+{
+  "description": "Excel报告生成模板配置",
+  "version": "1.0.0",
+  "template_file": "template/report_template.xlsx",
+  "output_directory": "excel",
+  "worksheets": [
+    {
+      "name": "报告数据",
+      "index": 0,
+      "page_setup": {
+        "orientation": "portrait",
+        "fitToWidth": 1,
+        "fitToHeight": null,
+        "margins": {
+          "left": 0.1,
+          "right": 0.1,
+          "top": 0.1,
+          "bottom": 0.1,
+          "header": 0.1,
+          "footer": 0.1
+        },
+        "print_area": {
+          "dynamic": true,
+          "base_row": 1,
+          "base_col": "A",
+          "end_col": "M"
+        }
+      },
+      "sections": [
+        {
+          "name": "基本信息",
+          "type": "fixed",
+          "start_row": 3,
+          "cells": [
+            {
+              "cell": "E3",
+              "data_path": "基本信息.ID",
+              "format": "text"
+            },
+            {
+              "cell": "H3",
+              "data_path": "基本信息.姓名",
+              "format": "text"
+            },
+            {
+              "cell": "K3",
+              "data_path": "基本信息.性别",
+              "format": "text"
+            },
+            {
+              "cell": "E4",
+              "data_path": "基本信息.出生日期",
+              "format": "date"
+            },
+            {
+              "cell": "H4",
+              "data_path": "基本信息.检查时间",
+              "format": "date"
+            },
+            {
+              "cell": "K4",
+              "data_path": "基本信息.检查设备",
+              "format": "text"
+            }
+          ]
+        },
+        {
+          "name": "自发性眼震",
+          "type": "conditional",
+          "condition": {
+            "check_empty": "自发性眼震",
+            "skip_if_empty": true
+          },
+          "dynamic_start_row": {
+            "base": 6,
+            "previous_section": "基本信息"
+          },
+          "layout": [
+            {
+              "row_offset": 0,
+              "type": "section_title",
+              "merge_range": "A{row}:M{row}",
+              "text": "自发性眼震 (spontaneous nystagmus)",
+              "style": "section_title"
+            },
+            {
+              "row_offset": 1,
+              "type": "header_row",
+              "cells": [
+                {
+                  "merge_range": "A{row}:C{row}",
+                  "text": "模式",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "D{row}:F{row}",
+                  "text": "速度（度/秒）",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "G{row}:I{row}",
+                  "text": "固视抑制",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "K{row}:M{row}",
+                  "text": "检查结果",
+                  "style": "header"
+                }
+              ]
+            },
+            {
+              "row_offset": 2,
+              "type": "data_row",
+              "cells": [
+                {
+                  "merge_range": "A{row}:C{row}",
+                  "data_path": "自发性眼震.自发性眼震模式",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "D{row}:F{row}",
+                  "data_path": "自发性眼震.自发性眼震速度",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "G{row}:I{row}",
+                  "data_path": "自发性眼震.自发性眼震固视抑制",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "K{row}:M{row}",
+                  "data_path": "自发性眼震.自发性眼震检查结果",
+                  "style": "data_cell"
+                }
+              ]
+            },
+            {
+              "row_offset": 3,
+              "type": "spacer",
+              "height": 1
+            }
+          ]
+        },
+        {
+          "name": "凝视性眼震",
+          "type": "conditional",
+          "condition": {
+            "check_empty": "凝视性眼震",
+            "skip_if_empty": true
+          },
+          "dynamic_start_row": {
+            "base": 6,
+            "previous_section": "自发性眼震"
+          },
+          "layout": [
+            {
+              "row_offset": 0,
+              "type": "section_title",
+              "merge_range": "A{row}:M{row}",
+              "text": "凝视性眼震 (gaze-evoked nystagmus)",
+              "style": "section_title"
+            },
+            {
+              "row_offset": 1,
+              "type": "header_row",
+              "cells": [
+                {
+                  "merge_range": "A{row}:B{row}",
+                  "text": "凝视方向",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "C{row}:D{row}",
+                  "text": "左",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "E{row}:F{row}",
+                  "text": "右",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "G{row}:H{row}",
+                  "text": "上",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "I{row}:J{row}",
+                  "text": "下",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "L{row}:M{row}",
+                  "text": "检查结果",
+                  "style": "header"
+                }
+              ]
+            },
+            {
+              "row_offset": 2,
+              "type": "data_row",
+              "cells": [
+                {
+                  "merge_range": "A{row}:B{row}",
+                  "text": "眼震模式",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "C{row}:D{row}",
+                  "data_path": "凝视性眼震.凝视性眼震模式（左）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "E{row}:F{row}",
+                  "data_path": "凝视性眼震.凝视性眼震模式（右）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "G{row}:H{row}",
+                  "data_path": "凝视性眼震.凝视性眼震模式（上）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "I{row}:J{row}",
+                  "data_path": "凝视性眼震.凝视性眼震模式（下）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "L{row}:M{row}",
+                  "data_path": "凝视性眼震.凝视性眼震检查结果",
+                  "style": "data_cell",
+                  "rowspan": 2
+                }
+              ]
+            },
+            {
+              "row_offset": 3,
+              "type": "data_row",
+              "cells": [
+                {
+                  "merge_range": "A{row}:B{row}",
+                  "text": "眼震速度",
+                  "style": "header"
+                },
+                {
+                  "merge_range": "C{row}:D{row}",
+                  "data_path": "凝视性眼震.凝视性眼震速度（左）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "E{row}:F{row}",
+                  "data_path": "凝视性眼震.凝视性眼震速度（右）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "G{row}:H{row}",
+                  "data_path": "凝视性眼震.凝视性眼震速度（上）",
+                  "style": "data_cell"
+                },
+                {
+                  "merge_range": "I{row}:J{row}",
+                  "data_path": "凝视性眼震.凝视性眼震速度（下）",
+                  "style": "data_cell"
+                }
+              ]
+            },
+            {
+              "row_offset": 4,
+              "type": "spacer",
+              "height": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "图片",
+      "index": 1,
+      "page_setup": {
+        "orientation": "portrait",
+        "fitToWidth": 1,
+        "fitToHeight": null,
+        "margins": {
+          "left": 0.1,
+          "right": 0.1,
+          "top": 0.1,
+          "bottom": 0.1,
+          "header": 0.1,
+          "footer": 0.1
+        },
+        "print_area": {
+          "dynamic": true,
+          "base_row": 1,
+          "base_col": "A",
+          "end_col": "H"
+        }
+      },
+      "sections": [
+        {
+          "name": "图片区域",
+          "type": "image_gallery",
+          "start_row": 1,
+          "images": [
+            {
+              "data_path": "头脉冲试验.头脉冲试验示意图",
+              "cell": "A1",
+              "width": 400,
+              "height": 300,
+              "condition": {
+                "check_empty": "头脉冲试验.头脉冲试验示意图",
+                "skip_if_empty": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "styles": {
+    "section_title": {
+      "font": {
+        "name": "宋体",
+        "size": 12,
+        "bold": true
+      },
+      "fill": {
+        "type": "solid",
+        "color": "F0F0F0"
+      },
+      "alignment": {
+        "horizontal": "left",
+        "vertical": "center"
+      },
+      "border": {
+        "all": "thin",
+        "color": "000000"
+      }
+    },
+    "header": {
+      "font": {
+        "name": "宋体",
+        "size": 11,
+        "bold": false
+      },
+      "fill": {
+        "type": "solid",
+        "color": "F0F0F0"
+      },
+      "alignment": {
+        "horizontal": "center",
+        "vertical": "center"
+      },
+      "border": {
+        "all": "thin",
+        "color": "000000"
+      }
+    },
+    "data_cell": {
+      "font": {
+        "name": "宋体",
+        "size": 11,
+        "bold": false
+      },
+      "fill": {
+        "type": "none"
+      },
+      "alignment": {
+        "horizontal": "center",
+        "vertical": "center"
+      },
+      "border": {
+        "all": "thin",
+        "color": "000000"
+      }
+    }
+  },
+  "data_formatters": {
+    "date": {
+      "input_format": "%Y/%m/%d",
+      "output_format": "%Y/%m/%d"
+    },
+    "number": {
+      "decimal_places": 2
+    },
+    "list": {
+      "separator": "、",
+      "join": true
+    }
+  },
+  "empty_value_handling": {
+    "default": "",
+    "check_empty_values": ["", null, [], {}, "未知", "无", "N/A", "NULL"]
+  }
+}
+

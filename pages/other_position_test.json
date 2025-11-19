@@ -1,0 +1,23 @@
+{
+  "page_id": "other_position_test",
+  "title": "位置试验(其他)",
+  "name": "位置试验(其他)",
+  "enabled": true,
+  "required": false,
+  "order": 17,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "position_tests",
+      "name": "位置试验",
+      "order": 1,
+      "fields": [
+        {"key": "坐位-平卧试验", "type": "combobox", "label": "坐位-平卧试验", "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"], "order": 1},
+        {"key": "坐位-低头试验", "type": "combobox", "label": "坐位-低头试验", "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"], "order": 2},
+        {"key": "坐位-仰头试验", "type": "combobox", "label": "坐位-仰头试验", "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"], "order": 3},
+        {"key": "零平面", "type": "combobox", "label": "零平面", "values": ["", "阴性", "仰卧右侧转", "仰卧左侧转", "其他", "配合欠佳"], "order": 4},
+        {"key": "检查结果", "type": "combobox", "label": "位置试验(其他)检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 5}
+      ]
+    }
+  ]
+}

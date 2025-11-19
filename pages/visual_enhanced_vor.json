@@ -1,0 +1,19 @@
+{
+  "page_id": "visual_enhanced_vor",
+  "title": "视觉增强前庭-眼反射试验",
+  "name": "视觉增强VOR",
+  "enabled": true,
+  "required": false,
+  "order": 9,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "vor_main",
+      "name": "检查结果",
+      "order": 1,
+      "fields": [
+        {"key": "检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 1}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "page_id": "svv_test",
+  "title": "主观视觉垂直线 (SVV)",
+  "name": "主观视觉垂直线",
+  "enabled": true,
+  "required": false,
+  "order": 13,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "svv_main",
+      "name": "主观视觉垂直线记录",
+      "order": 1,
+      "fields": [
+        {"key": "偏斜方向", "type": "combobox", "label": "主观视觉垂直线偏斜方向", "values": ["", "左偏", "右偏", "无偏斜", "配合欠佳"], "order": 1},
+        {"key": "偏斜角度（度）", "type": "number", "label": "主观视觉垂直线偏斜角度（度）", "order": 2},
+        {"key": "检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 3}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "page_id": "cvemp_test",
+  "title": "颈肌前庭诱发肌源性电位 (cVEMP)",
+  "name": "cVEMP",
+  "enabled": true,
+  "required": false,
+  "order": 19,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "right_ear",
+      "name": "右耳",
+      "order": 1,
+      "fields": [
+        {"key": "右耳声强阈值 (分贝)", "type": "number", "label": "声强阈值 (cVEMP, 分贝)", "order": 1},
+        {"key": "右耳P13波潜伏期 (毫秒)", "type": "number", "label": "P13波潜伏期 (毫秒)", "order": 2},
+        {"key": "右耳N23波潜伏期 (毫秒)", "type": "number", "label": "N23波潜伏期 (毫秒)", "order": 3},
+        {"key": "右耳P13-N23波间期 (毫秒)", "type": "number", "label": "P13-N23波间期 (毫秒)", "order": 4},
+        {"key": "右耳P13波振幅 (微伏)", "type": "number", "label": "P13波振幅 (微伏)", "order": 5},
+        {"key": "右耳N23波振幅 (微伏)", "type": "number", "label": "N23波振幅 (微伏)", "order": 6},
+        {"key": "右耳P13-N23波振幅 (微伏)", "type": "number", "label": "P13-N23波振幅 (微伏)", "order": 7}
+      ]
+    },
+    {
+      "id": "left_ear",
+      "name": "左耳",
+      "order": 2,
+      "fields": [
+        {"key": "左耳声强阈值 (分贝)", "type": "number", "label": "声强阈值 (cVEMP, 分贝)", "order": 1},
+        {"key": "左耳P13波潜伏期 (毫秒)", "type": "number", "label": "P13波潜伏期 (毫秒)", "order": 2},
+        {"key": "左耳N23波潜伏期 (毫秒)", "type": "number", "label": "N23波潜伏期 (毫秒)", "order": 3},
+        {"key": "左耳P13-N23波间期 (毫秒)", "type": "number", "label": "P13-N23波间期 (毫秒)", "order": 4},
+        {"key": "左耳P13波振幅 (微伏)", "type": "number", "label": "P13波振幅 (微伏)", "order": 5},
+        {"key": "左耳N23波振幅 (微伏)", "type": "number", "label": "N23波振幅 (微伏)", "order": 6},
+        {"key": "左耳P13-N23波振幅 (微伏)", "type": "number", "label": "P13-N23波振幅 (微伏)", "order": 7}
+      ]
+    },
+    {
+      "id": "result",
+      "name": "检查结果",
+      "order": 3,
+      "fields": [
+        {"key": "cVEMP耳间不对称性 (%)", "type": "number", "label": "cVEMP耳间不对称性 (%)", "order": 1},
+        {"key": "检查结果", "type": "combobox", "label": "cVEMP检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 2}
+      ]
+    }
+  ]
+}

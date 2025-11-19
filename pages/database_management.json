@@ -1,0 +1,11 @@
+{
+  "page_id": "database_management",
+  "title": "数据库管理",
+  "name": "数据库管理",
+  "enabled": true,
+  "required": false,
+  "order": 0,
+  "layout": {"type": "grid", "columns": 1, "padding": {"x": 20, "y": 20}}
+}
+
+

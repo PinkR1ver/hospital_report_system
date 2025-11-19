@@ -1,0 +1,21 @@
+{
+  "page_id": "visual_tracking",
+  "title": "视跟踪",
+  "name": "视跟踪",
+  "enabled": true,
+  "required": false,
+  "order": 11,
+  "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
+  "sections": [
+    {
+      "id": "tracking_main",
+      "name": "视跟踪记录",
+      "order": 1,
+      "fields": [
+        {"key": "视跟踪曲线分型", "type": "combobox", "label": "视跟踪曲线分型", "values": ["", "I型曲线", "II型曲线", "III型曲线", "IV型曲线", "配合欠佳"], "order": 1},
+        {"key": "视跟踪增益", "type": "number", "label": "视跟踪增益", "order": 2},
+        {"key": "视跟踪检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 3}
+      ]
+    }
+  ]
+}
