@@ -148,11 +148,18 @@
       "order": 20
     },
     {
+      "id": "exam_findings",
+      "name": "检查所见",
+      "enabled": true,
+      "required": false,
+      "order": 21
+    },
+    {
       "id": "conclusion",
       "name": "检查结论",
       "enabled": true,
       "required": false,
-      "order": 21
+      "order": 22
     }
   ]
 }

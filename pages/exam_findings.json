@@ -1,0 +1,35 @@
+{
+  "page_id": "exam_findings",
+  "title": "检查所见",
+  "name": "检查所见",
+  "enabled": true,
+  "layout": {
+    "type": "grid",
+    "columns": 1,
+    "padding": { "x": 20, "y": 20 },
+    "spacing": { "x": 10, "y": 10 }
+  },
+  "sections": [
+    {
+      "id": "findings_section",
+      "name": "检查所见汇总",
+      "order": 1,
+      "layout": {
+        "type": "grid",
+        "columns": 1,
+        "padding": { "x": 10, "y": 10 }
+      },
+      "fields": [
+        {
+          "key": "检查所见",
+          "type": "textarea",
+          "label": "检查所见",
+          "height": 8,
+          "order": 1
+        }
+      ]
+    }
+  ]
+}
+
+

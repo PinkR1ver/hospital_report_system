@@ -98,6 +98,54 @@ class DataManager:
         
         return "ID"
     
+    def generate_exam_findings_text(self, data: Dict) -> str:
+        """
+        基于各检查页面的结果字段，汇总生成“检查所见”文本（旧版规则的等价实现）
+        """
+        def is_empty(v: Any) -> bool:
+            return v in ("", None, [], {}, "未知", "无", "N/A", "NULL")
+        
+        # 使用各页面的标题（作为根key）及其结果字段key
+        item_to_result_fields: Dict[str, List[str]] = {
+            "自发性眼震": ["结果判读"],
+            "凝视性眼震": ["凝视性眼震检查结果"],
+            "头脉冲试验": ["头脉冲试验检查结果"],
+            "头脉冲抑制试验 (SHIMP)": ["头脉冲抑制试验检查结果"],
+            "眼位反向偏斜": ["眼位反向偏斜检查结果"],
+            "扫视检查": ["扫视检查结果"],
+            "视觉增强前庭-眼反射试验": ["检查结果"],
+            "前庭-眼反射抑制试验": ["检查结果"],
+            "摇头眼震": ["检查结果"],
+            "位置试验 (Dix-Hallpike试验)": ["检查结果"],
+            "位置试验 (仰卧滚转试验)": ["检查结果"],
+            "位置试验(其他)": ["检查结果"],  # 旧版为全角括号，这里使用现有标题
+            "视跟踪": ["视跟踪检查结果"],
+            "视动性眼震": ["检查结果"],
+            "瘘管试验": ["瘘管试验", "检查结果"],  # 优先使用“瘘管试验”复选结果
+            "温度试验": ["检查结果"],
+            "颈肌前庭诱发肌源性电位 (cVEMP)": ["检查结果"],
+            "眼肌前庭诱发肌源性电位 (oVEMP)": ["检查结果"],
+            "主观视觉垂直线 (SVV)": ["检查结果"],
+        }
+        
+        findings: List[str] = []
+        for item_title, fields in item_to_result_fields.items():
+            section = data.get(item_title, {})
+            if not isinstance(section, dict) or not section:
+                continue
+            for field_key in fields:
+                value = section.get(field_key, "")
+                if is_empty(value):
+                    continue
+                if isinstance(value, list):
+                    value_str = "、".join(str(x) for x in value if not is_empty(x))
+                else:
+                    value_str = str(value)
+                if not is_empty(value_str):
+                    findings.append(f"{item_title}：{value_str}")
+                    break  # 一个项目命中一个字段即可
+        return ";".join(findings)
+    
     def collect_page_data(self, pages: Dict) -> Dict:
         """
         收集所有页面的数据
@@ -214,6 +262,22 @@ class DataManager:
         
         basic_info_key = basic_info_page_config.get("title") or basic_info_page_config.get("name") or "基本信息"
         basic_info = data.get(basic_info_key, {})
+        
+        # 自动补全“检查所见”页面内容（若为空）
+        try:
+            exam_findings_root = "检查所见"
+            exam_findings = data.get(exam_findings_root, {})
+            if not isinstance(exam_findings, dict):
+                exam_findings = {}
+            current_text = exam_findings.get("检查所见", "")
+            if not current_text:
+                auto_text = self.generate_exam_findings_text(data)
+                if auto_text:
+                    exam_findings["检查所见"] = auto_text
+                    data[exam_findings_root] = exam_findings
+        except Exception:
+            # 忽略自动补全失败，不影响保存
+            pass
         
         # 创建日期文件夹
         current_date = datetime.now().strftime("%Y-%m-%d")

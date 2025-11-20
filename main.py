@@ -345,6 +345,26 @@ class VestibularFunctionReport:
                 )
         
         if page_name in self.pages:
+            # 进入“检查所见”页面时，若为空则自动生成旧版汇总文本
+            if page_name == "exam_findings":
+                try:
+                    page_obj = self.pages.get("exam_findings")
+                    if hasattr(page_obj, "get_data") and hasattr(page_obj, "set_data"):
+                        current = page_obj.get_data() or {}
+                        root_key = "检查所见"
+                        current_text = ""
+                        if isinstance(current, dict):
+                            section = current.get(root_key, {})
+                            if isinstance(section, dict):
+                                current_text = section.get("检查所见", "")
+                        if not current_text:
+                            # 收集现有页面数据并生成汇总
+                            all_data = self.data_manager.collect_page_data(self.pages)
+                            auto_text = self.data_manager.generate_exam_findings_text(all_data)
+                            if auto_text:
+                                page_obj.set_data({root_key: {"检查所见": auto_text}})
+                except Exception:
+                    pass
             self.pages[page_name].pack(fill="both", expand=True)
             self.current_page = self.pages[page_name]
 

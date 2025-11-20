@@ -1,29 +1,13 @@
 {
   "description": "Excel报告模板索引",
   "version": "1.0.0",
-  "default_template": "default_template",
+  "default_template": "vestibular_full",
   "templates": [
-    {
-      "id": "default_template",
-      "name": "默认模板",
-      "description": "标准前庭功能检查报告模板",
-      "config_file": "default_template_config.json",
-      "template_file": "template/report_template.xlsx",
-      "enabled": true
-    },
     {
       "id": "vestibular_full",
       "name": "前庭报告（全套版）",
       "description": "使用新版全套版模板生成报告",
       "config_file": "vestibular_full_template.json",
-      "template_file": "",
-      "enabled": true
-    },
-    {
-      "id": "vestibular_simple",
-      "name": "前庭报告（简约版）",
-      "description": "使用新版简约版模板生成报告",
-      "config_file": "vestibular_simple_template.json",
       "template_file": "",
       "enabled": true
     }

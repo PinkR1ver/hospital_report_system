@@ -15,11 +15,11 @@
   },
   "report_template": {
     "enabled_pages": [
-      "database_management", "basic_info", "spontaneous_nystagmus", "head_shaking_test", "gaze_nystagmus", 
+      "database_management", "basic_info", "spontaneous_nystagmus", "head_shaking_test", "gaze_nystagmus",
       "head_impulse_test", "head_impulse_suppression_test", "reverse_skew", "saccade",
       "visual_enhanced_vor", "vor_suppression", "visual_tracking", "optokinetic_nystagmus",
       "svv_test", "fistula_test", "dix_hallpike_test", "supine_roll_test", "other_position_test",
-      "caloric_test", "cvemp_test", "ovemp_test", "conclusion"
+      "caloric_test", "cvemp_test", "ovemp_test", "exam_findings", "conclusion"
     ],
     "output_format": "json",
     "file_naming": "{patient_id}_{timestamp}.json"
