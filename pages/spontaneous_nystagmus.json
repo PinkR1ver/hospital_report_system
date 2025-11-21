@@ -27,7 +27,7 @@
           "type": "entry",
           "label": "其他说明",
           "placeholder": "请描述眼震模式",
-          "order": 2,
+          "order": 5,
           "position": {"row": 0, "column": 1},
           "show_when": {"key": "眼震模式", "equals": "其他"}
         },
@@ -55,7 +55,7 @@
           "label": "固视抑制",
           "values": ["阴性", "阳性"],
           "autofill_when": {"key": "眼震模式", "equals": "阴性", "value": "N/A"},
-          "order": 5,
+          "order": 2,
           "position": {"row": 2, "column": 0}
         },
         {

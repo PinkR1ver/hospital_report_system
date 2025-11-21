@@ -220,7 +220,7 @@ class DatabaseManagementPage(ctk.CTkScrollableFrame):
             return
         
         # 使用DataManager加载报告
-        from pages.json_page_renderer import load_page_config
+        from json_page_renderer import load_page_config
         basic_info_page_id = self.controller._get_basic_info_page_id()
         basic_info_page_config = load_page_config(basic_info_page_id)
         
@@ -331,7 +331,7 @@ class DatabaseManagementPage(ctk.CTkScrollableFrame):
             return
         
         # 使用DataManager搜索报告
-        from pages.json_page_renderer import load_page_config
+        from json_page_renderer import load_page_config
         basic_info_page_id = self.controller._get_basic_info_page_id()
         basic_info_page_config = load_page_config(basic_info_page_id)
         
@@ -701,4 +701,5 @@ class DatabaseManagementPage(ctk.CTkScrollableFrame):
                 self.load_reports()
             else:
                 messagebox.showerror("错误", message)
+
 

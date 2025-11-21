@@ -55,15 +55,6 @@
           "required": true,
           "order": 5,
           "position": {"row": 2, "column": 0}
-        },
-        {
-          "key": "检查结果",
-          "type": "radio",
-          "label": "检查结果",
-          "values": ["正常", "异常", "配合欠佳"],
-          "required": true,
-          "order": 5,
-          "position": {"row": 2, "column": 0}
         }
       ]
     }

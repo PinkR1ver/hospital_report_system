@@ -287,12 +287,17 @@ class ExcelGenerator:
             ws = wb.active
         self._clear_template_sheet(ws)
 
+        # 在写入前应用通用的“N/A补齐”规则（由模板JSON中的 na_fill_groups 开关驱动）
+        self._apply_na_fill_rules(json_data, self.config.get("na_fill_groups", []))
+
         for data_cell in self.config.get("data_cells", []):
             coord = data_cell.get("range") or data_cell.get("cell")
             if not coord:
                 continue
             target_coord = self._apply_cell_range(ws, coord)
             cell = ws[target_coord]
+            if isinstance(cell, MergedCell):
+                cell = self._get_merged_master_cell(ws, target_coord)
             value = self._resolve_data_value(data_cell, json_data)
             cell.value = value
             style_name = data_cell.get("style")
@@ -305,6 +310,12 @@ class ExcelGenerator:
             self.template_id if self.template_id and self.template_id != "default_template" else None
         )
         output_path = self._build_output_path(json_data, output_path, suffix=suffix)
+        # 若已存在同名文件，先删除再保存，避免覆盖异常
+        try:
+            if os.path.exists(output_path):
+                os.remove(output_path)
+        except Exception:
+            pass
         wb.save(output_path)
         return output_path
 
@@ -397,6 +408,20 @@ class ExcelGenerator:
         return start
 
     def _resolve_data_value(self, cell_config, data):
+        # 1) presence_from_list: 通用规则——若列表包含指定值则返回 present_value，否则 absent_value
+        presence_cfg = cell_config.get("presence_from_list")
+        if presence_cfg:
+            source_path = presence_cfg.get("source_path", "")
+            includes = presence_cfg.get("includes", [])
+            present_value = presence_cfg.get("present_value", "√")
+            absent_value = presence_cfg.get("absent_value", "")
+            source_value = self._get_data_value(data, source_path)
+            if isinstance(source_value, list):
+                present = any(item in source_value for item in includes)
+            else:
+                present = False
+            return present_value if present else absent_value
+
         paths = cell_config.get("paths")
         value = ""
 
@@ -453,6 +478,40 @@ class ExcelGenerator:
 
     def _clear_template_sheet(self, worksheet):
         pass
+
+    def _set_data_value(self, data: dict, data_path: str, new_value):
+        """根据数据路径设置值（创建缺失层级）"""
+        keys = data_path.split(".")
+        cur = data
+        for key in keys[:-1]:
+            if key not in cur or not isinstance(cur[key], dict):
+                cur[key] = {}
+            cur = cur[key]
+        cur[keys[-1]] = new_value
+
+    def _apply_na_fill_rules(self, data: dict, groups: list) -> None:
+        """
+        通用“N/A补齐”规则（由模板JSON配置 na_fill_groups 驱动）：
+        - 对每个分组（data_paths 列表），若组内部分有值且部分为空，则将空值补为 fill_value（默认"N/A"）
+        - 若组内全部为空，则不处理
+        """
+        if not groups:
+            return
+        for group in groups:
+            try:
+                data_paths = group.get("data_paths", [])
+                if not data_paths:
+                    continue
+                fill_value = group.get("fill_value", "N/A")
+                values = [self._get_data_value(data, p) for p in data_paths]
+                has_any = any(not self._is_empty(v) for v in values)
+                all_empty = all(self._is_empty(v) for v in values)
+                if has_any and not all_empty:
+                    for p in data_paths:
+                        if self._is_empty(self._get_data_value(data, p)):
+                            self._set_data_value(data, p, fill_value)
+            except Exception:
+                continue
 
     def _sanitize_path_component(self, value: str) -> str:
         if not value:

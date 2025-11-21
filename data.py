@@ -32,7 +32,7 @@ class DataManager:
         Returns:
             基本信息页面ID
         """
-        from pages.json_page_renderer import load_page_config
+        from json_page_renderer import load_page_config
         
         # 读取页面索引
         index_path = os.path.join("pages", "index.json")
@@ -83,7 +83,7 @@ class DataManager:
         Returns:
             患者ID字段的key
         """
-        from pages.json_page_renderer import load_page_config
+        from json_page_renderer import load_page_config
         
         basic_info_page_id = self.get_basic_info_page_id(load_page_config_func)
         page_config = load_page_config(basic_info_page_id)
@@ -187,7 +187,7 @@ class DataManager:
         Returns:
             (是否通过验证, 缺失字段列表)
         """
-        from pages.json_page_renderer import load_page_config
+        from json_page_renderer import load_page_config
         
         page_config = load_page_config(basic_info_page_id)
         if not page_config:
@@ -223,7 +223,7 @@ class DataManager:
         Returns:
             (是否成功, 消息或文件路径)
         """
-        from pages.json_page_renderer import load_page_config
+        from json_page_renderer import load_page_config
         
         # 如果data为None，从pages收集数据
         if data is None:

@@ -7,7 +7,7 @@ import subprocess
 import platform
 
 # 导入JSON页面渲染器
-from pages.json_page_renderer import JSONPageRenderer, load_page_config
+from json_page_renderer import JSONPageRenderer, load_page_config
 # 导入数据管理器
 from data import DataManager
 
@@ -308,7 +308,7 @@ class VestibularFunctionReport:
                 if page_config:
                     # 特殊处理：数据库管理页面使用专门的类
                     if page_info["id"] == "database_management":
-                        from pages.database_management import DatabaseManagementPage
+                        from database_management import DatabaseManagementPage
                         self.pages[page_info["id"]] = DatabaseManagementPage(self.content_frame, self)
                     else:
                         self.pages[page_info["id"]] = JSONPageRenderer(self.content_frame, self, page_config)
@@ -409,7 +409,10 @@ class VestibularFunctionReport:
             # 清空所有页面的输入
             for page in self.pages.values():
                 if hasattr(page, 'clear_inputs'):
-                    page.clear_inputs()
+                    try:
+                        page.clear_inputs()
+                    except Exception as e:
+                        print(f"清空页面字段时出错: {e}")
 
             # 切换到基本信息页面（从配置中动态获取）
             basic_info_page_id = self._get_basic_info_page_id()

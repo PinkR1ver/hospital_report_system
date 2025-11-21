@@ -35,6 +35,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
         self.checkbox_groups = {}
         self.field_configs = {}
         self.field_frames = {}  # 存储字段容器，用于条件显示
+        self.prev_radio_values = {}  # 记录各radio字段上一次已选值
         self._build_ui()
 
     def _build_ui(self):
@@ -181,6 +182,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
         elif field_type == "radio":
             var = ctk.StringVar()
             self.vars[key] = var
+            # 初始化上一次值
+            self.prev_radio_values[key] = ""
             widget = ctk.CTkFrame(parent, fg_color="transparent")
             for i, val in enumerate(field.get("values", [])):
                 rb = ctk.CTkRadioButton(
@@ -188,6 +191,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                     text=val,
                     variable=var,
                     value=val,
+                    command=(lambda v=val, k=key: self._toggle_radio(k, v)),
                     font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                     text_color=("gray30", "gray80")
                 )
@@ -389,6 +393,23 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
         if field.get('show_when'):
             self._apply_visibility(field)
 
+    def _toggle_radio(self, key, value):
+        """支持再次点击已选中的单选按钮以取消选择"""
+        try:
+            # 使用上一次的值来判断是否取消；因为命令回调执行时变量已被按钮设为当前value
+            prev = self.prev_radio_values.get(key, "")
+            var = self.vars.get(key)
+            if var is None:
+                return
+            if prev == value:
+                var.set("")
+                self.prev_radio_values[key] = ""
+            else:
+                var.set(value)
+                self.prev_radio_values[key] = value
+        except Exception:
+            pass
+
     def _apply_visibility(self, field):
         cond = field.get('show_when')
         if not cond:
@@ -526,6 +547,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                     var.set(val in sel)
             elif key in self.vars:
                 self.vars[key].set(value)
+                if self.field_types.get(key) == "radio":
+                    self.prev_radio_values[key] = value or ""
             elif isinstance(widget, DateEntry):
                 if value:
                     try:
@@ -552,17 +575,47 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
     def clear_inputs(self):
         """清空所有输入"""
         for key, widget in self.widgets.items():
-            if key in self.checkbox_groups:
-                for _, var in self.checkbox_groups[key]:
-                    var.set(False)
-            elif key in self.vars:
-                self.vars[key].set("")
-            elif isinstance(widget, DateEntry):
-                widget.delete(0, "end")
-            elif isinstance(widget, ctk.CTkTextbox):
-                widget.delete("1.0", "end")
-            else:
-                widget.delete(0, "end")
+            try:
+                # 复选框组
+                if key in self.checkbox_groups:
+                    for _, var in self.checkbox_groups[key]:
+                        var.set(False)
+                    continue
+                # 通过变量管理的字段（radio/combobox/自定义等）
+                if key in self.vars:
+                    self.vars[key].set("")
+                    # 若为单选，重置上一次值
+                    if self.field_types.get(key) == "radio":
+                        self.prev_radio_values[key] = ""
+                    continue
+                # 日期
+                if isinstance(widget, DateEntry):
+                    try:
+                        # 尝试清空
+                        widget.set_date("")
+                    except Exception:
+                        try:
+                            widget.delete(0, "end")
+                        except Exception:
+                            pass
+                    continue
+                # 多行文本
+                if isinstance(widget, ctk.CTkTextbox):
+                    widget.delete("1.0", "end")
+                    continue
+                # 组合框（无变量的极少数情况）
+                if hasattr(widget, "set") and not isinstance(widget, ctk.CTkEntry):
+                    try:
+                        widget.set("")
+                        continue
+                    except Exception:
+                        pass
+                # 普通输入
+                if hasattr(widget, "delete"):
+                    widget.delete(0, "end")
+            except Exception:
+                # 忽略单个字段清理异常，避免中断“新建”流程
+                pass
 
 
 def load_page_config(page_id):
@@ -573,3 +626,5 @@ def load_page_config(page_id):
             return json.load(f)
     except FileNotFoundError:
         return None
+
+
