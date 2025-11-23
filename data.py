@@ -403,16 +403,26 @@ class DataManager:
                             })
 
         def _parse_exam_time(r: Dict) -> float:
-            """将检查时间解析为排序用时间戳，解析失败时退回文件修改时间"""
-            et = r.get("exam_time") or ""
-            for fmt in ("%Y/%m/%d", "%Y-%m-%d", "%Y.%m.%d", "%Y%m%d"):
-                try:
-                    dt = datetime.strptime(et, fmt)
-                    return dt.timestamp()
-                except Exception:
-                    continue
+            """
+            仅根据文件名里的时间戳排序（患者ID_YYYYMMDD_HHMMSS.json），精确到秒；
+            解析失败时退回文件修改时间。
+            """
+            file_path = r.get("file_path", "")
+            # 从文件名中解析 patientID_YYYYMMDD_HHMMSS.json
             try:
-                return os.path.getmtime(r.get("file_path", ""))
+                base = os.path.basename(file_path)
+                name, _ = os.path.splitext(base)
+                parts = name.split("_")
+                if len(parts) >= 2:
+                    ts = parts[-1]  # YYYYMMDD_HHMMSS
+                    dt = datetime.strptime(ts, "%Y%m%d_%H%M%S")
+                    return dt.timestamp()
+            except Exception:
+                pass
+
+            # 退回文件修改时间
+            try:
+                return os.path.getmtime(file_path)
             except Exception:
                 return 0.0
 
