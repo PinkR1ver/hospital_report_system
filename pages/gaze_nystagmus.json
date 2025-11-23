@@ -20,10 +20,20 @@
           "order": 1
         },
         {
+          "key": "凝视性眼震模式（正中）其他说明",
+          "type": "entry",
+          "label": "其他说明",
+          "show_when": {
+            "key": "凝视性眼震模式（正中）",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
           "key": "凝视性眼震速度（正中）",
           "type": "number",
           "label": "凝视性眼震速度（度/秒）",
-          "order": 2
+          "order": 3
         }
       ]
     },
@@ -40,10 +50,20 @@
           "order": 1
         },
         {
+          "key": "凝视性眼震模式（上）其他说明",
+          "type": "entry",
+          "label": "其他说明",
+          "show_when": {
+            "key": "凝视性眼震模式（上）",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
           "key": "凝视性眼震速度（上）",
           "type": "number",
           "label": "凝视性眼震速度（度/秒）",
-          "order": 2
+          "order": 3
         }
       ]
     },
@@ -60,10 +80,20 @@
           "order": 1
         },
         {
+          "key": "凝视性眼震模式（下）其他说明",
+          "type": "entry",
+          "label": "其他说明",
+          "show_when": {
+            "key": "凝视性眼震模式（下）",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
           "key": "凝视性眼震速度（下）",
           "type": "number",
           "label": "凝视性眼震速度（度/秒）",
-          "order": 2
+          "order": 3
         }
       ]
     },
@@ -80,10 +110,20 @@
           "order": 1
         },
         {
+          "key": "凝视性眼震模式（左）其他说明",
+          "type": "entry",
+          "label": "其他说明",
+          "show_when": {
+            "key": "凝视性眼震模式（左）",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
           "key": "凝视性眼震速度（左）",
           "type": "number",
           "label": "凝视性眼震速度（度/秒）",
-          "order": 2
+          "order": 3
         }
       ]
     },
@@ -100,10 +140,20 @@
           "order": 1
         },
         {
+          "key": "凝视性眼震模式（右）其他说明",
+          "type": "entry",
+          "label": "其他说明",
+          "show_when": {
+            "key": "凝视性眼震模式（右）",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
           "key": "凝视性眼震速度（右）",
           "type": "number",
           "label": "凝视性眼震速度（度/秒）",
-          "order": 2
+          "order": 3
         }
       ]
     },

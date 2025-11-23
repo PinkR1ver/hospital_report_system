@@ -28,9 +28,29 @@
       ]
     },
     {
+      "id": "up_saccade",
+      "name": "上向扫视",
+      "order": 3,
+      "fields": [
+        {"key": "扫视延迟时间 (上向, 毫秒)", "type": "number", "label": "扫视延迟时间 (毫秒)", "order": 1},
+        {"key": "扫视峰速度 (上向, 度/秒)", "type": "number", "label": "扫视峰速度 (度/秒)", "order": 2},
+        {"key": "扫视精确度 (上向, %)", "type": "number", "label": "扫视精确度 (%)", "order": 3}
+      ]
+    },
+    {
+      "id": "down_saccade",
+      "name": "下向扫视",
+      "order": 4,
+      "fields": [
+        {"key": "扫视延迟时间 (下向, 毫秒)", "type": "number", "label": "扫视延迟时间 (毫秒)", "order": 1},
+        {"key": "扫视峰速度 (下向, 度/秒)", "type": "number", "label": "扫视峰速度 (度/秒)", "order": 2},
+        {"key": "扫视精确度 (下向, %)", "type": "number", "label": "扫视精确度 (%)", "order": 3}
+      ]
+    },
+    {
       "id": "result",
       "name": "检查结果",
-      "order": 3,
+      "order": 5,
       "fields": [
         {"key": "扫视检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 1}
       ]

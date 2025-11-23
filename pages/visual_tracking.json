@@ -1,20 +1,94 @@
 {
   "page_id": "visual_tracking",
-  "title": "视跟踪",
-  "name": "视跟踪",
+  "title": "平稳跟踪试验",
+  "name": "平稳跟踪试验",
   "enabled": true,
   "required": false,
   "order": 11,
   "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
   "sections": [
     {
-      "id": "tracking_main",
-      "name": "视跟踪记录",
+      "id": "horizontal_10",
+      "name": "水平（10°）",
       "order": 1,
       "fields": [
-        {"key": "视跟踪曲线分型", "type": "combobox", "label": "视跟踪曲线分型", "values": ["", "I型曲线", "II型曲线", "III型曲线", "IV型曲线", "配合欠佳"], "order": 1},
-        {"key": "视跟踪增益", "type": "number", "label": "视跟踪增益", "order": 2},
-        {"key": "视跟踪检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 3}
+        {
+          "key": "水平（10°）扫视样跟踪",
+          "type": "checkboxes",
+          "label": "扫视样跟踪",
+          "values": ["向左", "向右", "向上", "向下"],
+          "order": 1
+        },
+        {
+          "key": "水平（10°）曲线分布",
+          "type": "combobox",
+          "label": "曲线分布",
+          "values": ["", "I型曲线", "II型曲线", "III型曲线", "IV型曲线", "配合欠佳"],
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "horizontal_20",
+      "name": "水平（20°）",
+      "order": 2,
+      "fields": [
+        {
+          "key": "水平（20°）扫视样跟踪",
+          "type": "checkboxes",
+          "label": "扫视样跟踪",
+          "values": ["向左", "向右", "向上", "向下"],
+          "order": 1
+        },
+        {
+          "key": "水平（20°）曲线分布",
+          "type": "combobox",
+          "label": "曲线分布",
+          "values": ["", "I型曲线", "II型曲线", "III型曲线", "IV型曲线", "配合欠佳"],
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "vertical_10",
+      "name": "垂直（10°）",
+      "order": 3,
+      "fields": [
+        {
+          "key": "垂直（10°）扫视样跟踪",
+          "type": "checkboxes",
+          "label": "扫视样跟踪",
+          "values": ["向左", "向右", "向上", "向下"],
+          "order": 1
+        },
+        {
+          "key": "垂直（10°）曲线分布",
+          "type": "combobox",
+          "label": "曲线分布",
+          "values": ["", "I型曲线", "II型曲线", "III型曲线", "IV型曲线", "配合欠佳"],
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "vertical_20",
+      "name": "垂直（20°）",
+      "order": 4,
+      "fields": [
+        {
+          "key": "垂直（20°）扫视样跟踪",
+          "type": "checkboxes",
+          "label": "扫视样跟踪",
+          "values": ["向左", "向右", "向上", "向下"],
+          "order": 1
+        },
+        {
+          "key": "垂直（20°）曲线分布",
+          "type": "combobox",
+          "label": "曲线分布",
+          "values": ["", "I型曲线", "II型曲线", "III型曲线", "IV型曲线", "配合欠佳"],
+          "order": 2
+        }
       ]
     }
   ]

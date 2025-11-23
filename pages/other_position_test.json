@@ -12,11 +12,41 @@
       "name": "位置试验",
       "order": 1,
       "fields": [
-        {"key": "坐位-平卧试验", "type": "combobox", "label": "坐位-平卧试验", "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"], "order": 1},
-        {"key": "坐位-低头试验", "type": "combobox", "label": "坐位-低头试验", "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"], "order": 2},
-        {"key": "坐位-仰头试验", "type": "combobox", "label": "坐位-仰头试验", "values": ["", "阴性", "右跳性眼震", "左跳性眼震", "其他", "配合欠佳"], "order": 3},
-        {"key": "零平面", "type": "combobox", "label": "零平面", "values": ["", "阴性", "仰卧右侧转", "仰卧左侧转", "其他", "配合欠佳"], "order": 4},
-        {"key": "检查结果", "type": "combobox", "label": "位置试验(其他)检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 5}
+        {
+          "key": "侧躺试验 (SLT)",
+          "type": "combobox",
+          "label": "侧躺试验 (SLT)",
+          "values": ["", "右SLT阳性", "左SLT阳性", "双侧SLT阳性", "SLT阴性", "配合欠佳"],
+          "order": 1
+        },
+        {
+          "key": "坐位-平卧试验 (LDT)",
+          "type": "combobox",
+          "label": "坐位-平卧试验 (LDT)",
+          "values": ["", "LDT可见右跳眼震", "LDT可见左跳眼震", "LDT未见水平眼震", "配合欠佳"],
+          "order": 2
+        },
+        {
+          "key": "低头试验 (BT)",
+          "type": "combobox",
+          "label": "低头试验 (BT)",
+          "values": ["", "BT可见右跳眼震", "BT可见左跳眼震", "BT未见水平眼震", "配合欠佳"],
+          "order": 3
+        },
+        {
+          "key": "仰头试验 (LT)",
+          "type": "combobox",
+          "label": "仰头试验 (LT)",
+          "values": ["", "LT可见右跳眼震", "LT可见左跳眼震", "LT未见水平眼震", "配合欠佳"],
+          "order": 4
+        },
+        {
+          "key": "悬头试验 (HHT)",
+          "type": "combobox",
+          "label": "悬头试验 (HHT)",
+          "values": ["", "HHT可见右跳眼震", "HHT可见左跳眼震", "HHT未见水平眼震", "配合欠佳"],
+          "order": 5
+        }
       ]
     }
   ]

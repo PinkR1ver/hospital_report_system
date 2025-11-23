@@ -106,32 +106,18 @@
       "order": 14
     },
     {
-      "id": "dix_hallpike_test",
-      "name": "Dix-Hallpike试验",
+      "id": "position_test",
+      "name": "位置试验",
       "enabled": true,
       "required": false,
       "order": 15
-    },
-    {
-      "id": "supine_roll_test",
-      "name": "仰卧滚转试验",
-      "enabled": true,
-      "required": false,
-      "order": 16
-    },
-    {
-      "id": "other_position_test",
-      "name": "位置试验(其他)",
-      "enabled": true,
-      "required": false,
-      "order": 17
     },
     {
       "id": "caloric_test",
       "name": "温度试验",
       "enabled": true,
       "required": false,
-      "order": 18
+      "order": 16
     },
     {
       "id": "cvemp_test",

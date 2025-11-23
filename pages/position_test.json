@@ -1,0 +1,559 @@
+{
+  "page_id": "position_test",
+  "title": "位置试验",
+  "name": "位置试验",
+  "enabled": true,
+  "required": false,
+  "order": 15,
+  "layout": {
+    "type": "grid",
+    "columns": 2,
+    "padding": {
+      "x": 20,
+      "y": 20
+    }
+  },
+  "sections": [
+    {
+      "id": "dht_right",
+      "name": "Dix-Hallpike试验（右侧）",
+      "order": 1,
+      "fields": [
+        {
+          "key": "右侧眼震模式",
+          "type": "combobox",
+          "label": "眼震模式",
+          "values": [
+            "",
+            "上跳伴右扭眼震",
+            "上跳伴左扭眼震",
+            "下跳伴右扭眼震",
+            "下跳伴左扭眼震",
+            "右跳眼震",
+            "左跳眼震",
+            "右跳+右扭眼震",
+            "左跳+左扭眼震",
+            "右扭眼震",
+            "左扭眼震",
+            "上跳眼震",
+            "下跳眼震",
+            "其他",
+            "阴性",
+            "配合欠佳"
+          ],
+          "order": 1
+        },
+        {
+          "key": "右侧眼震模式其他说明",
+          "type": "entry",
+          "label": "眼震模式其他说明",
+          "show_when": {
+            "key": "右侧眼震模式",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
+          "key": "右侧坐起眼震模式",
+          "type": "combobox",
+          "label": "坐起眼震模式",
+          "values": [
+            "",
+            "坐起反向",
+            "坐起同向",
+            "无眼震",
+            "其他"
+          ],
+          "order": 3
+        },
+        {
+          "key": "右侧坐起眼震模式其他说明",
+          "type": "entry",
+          "label": "坐起眼震模式其他说明",
+          "show_when": {
+            "key": "右侧坐起眼震模式",
+            "equals": "其他"
+          },
+          "order": 4
+        },
+        {
+          "key": "右侧前庭症状",
+          "type": "combobox",
+          "label": "前庭症状",
+          "values": [
+            "",
+            "眩晕",
+            "头晕",
+            "恶心",
+            "呕吐",
+            "其他",
+            "阴性"
+          ],
+          "order": 4
+        },
+        {
+          "key": "右侧前庭症状其他说明",
+          "type": "entry",
+          "label": "前庭症状其他说明",
+          "show_when": {
+            "key": "右侧前庭症状",
+            "equals": "其他"
+          },
+          "order": 5
+        },
+        {
+          "key": "右侧眼震潜伏期 (秒)",
+          "type": "number",
+          "label": "眼震潜伏期 (秒)",
+          "order": 6
+        },
+        {
+          "key": "右侧眼震持续时长 (秒)",
+          "type": "number",
+          "label": "眼震持续时长 (秒)",
+          "order": 7
+        },
+        {
+          "key": "右侧眼震最大速度 (度/秒)",
+          "type": "number",
+          "label": "眼震最大速度 (度/秒)",
+          "order": 8
+        },
+        {
+          "key": "右侧眼震疲劳性",
+          "type": "combobox",
+          "label": "眼震疲劳性",
+          "values": [
+            "",
+            "是",
+            "否",
+            "配合欠佳"
+          ],
+          "order": 9
+        }
+      ]
+    },
+    {
+      "id": "dht_left",
+      "name": "Dix-Hallpike试验（左侧）",
+      "order": 2,
+      "fields": [
+        {
+          "key": "左侧眼震模式",
+          "type": "combobox",
+          "label": "眼震模式",
+          "values": [
+            "",
+            "上跳伴右扭眼震",
+            "上跳伴左扭眼震",
+            "下跳伴右扭眼震",
+            "下跳伴左扭眼震",
+            "右跳眼震",
+            "左跳眼震",
+            "右跳+右扭眼震",
+            "左跳+左扭眼震",
+            "右扭眼震",
+            "左扭眼震",
+            "上跳眼震",
+            "下跳眼震",
+            "其他",
+            "阴性",
+            "配合欠佳"
+          ],
+          "order": 1
+        },
+        {
+          "key": "左侧眼震模式其他说明",
+          "type": "entry",
+          "label": "眼震模式其他说明",
+          "show_when": {
+            "key": "左侧眼震模式",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
+          "key": "左侧坐起眼震模式",
+          "type": "combobox",
+          "label": "坐起眼震模式",
+          "values": [
+            "",
+            "坐起反向",
+            "坐起同向",
+            "无眼震",
+            "其他"
+          ],
+          "order": 3
+        },
+        {
+          "key": "左侧坐起眼震模式其他说明",
+          "type": "entry",
+          "label": "坐起眼震模式其他说明",
+          "show_when": {
+            "key": "左侧坐起眼震模式",
+            "equals": "其他"
+          },
+          "order": 4
+        },
+        {
+          "key": "左侧前庭症状",
+          "type": "combobox",
+          "label": "前庭症状",
+          "values": [
+            "",
+            "眩晕",
+            "头晕",
+            "恶心",
+            "呕吐",
+            "其他",
+            "阴性"
+          ],
+          "order": 4
+        },
+        {
+          "key": "左侧前庭症状其他说明",
+          "type": "entry",
+          "label": "前庭症状其他说明",
+          "show_when": {
+            "key": "左侧前庭症状",
+            "equals": "其他"
+          },
+          "order": 5
+        },
+        {
+          "key": "左侧眼震潜伏期 (秒)",
+          "type": "number",
+          "label": "眼震潜伏期 (秒)",
+          "order": 6
+        },
+        {
+          "key": "左侧眼震持续时长 (秒)",
+          "type": "number",
+          "label": "眼震持续时长 (秒)",
+          "order": 7
+        },
+        {
+          "key": "左侧眼震最大速度 (度/秒)",
+          "type": "number",
+          "label": "眼震最大速度 (度/秒)",
+          "order": 8
+        },
+        {
+          "key": "左侧眼震疲劳性",
+          "type": "combobox",
+          "label": "眼震疲劳性",
+          "values": [
+            "",
+            "是",
+            "否",
+            "配合欠佳"
+          ],
+          "order": 9
+        }
+      ]
+    },
+    {
+      "id": "rt_right",
+      "name": "仰卧滚转试验（右侧）",
+      "order": 3,
+      "fields": [
+        {
+          "key": "右侧RT眼震模式",
+          "type": "combobox",
+          "label": "眼震模式",
+          "values": [
+            "",
+            "上跳伴右扭眼震",
+            "上跳伴左扭眼震",
+            "下跳伴右扭眼震",
+            "下跳伴左扭眼震",
+            "右跳眼震",
+            "左跳眼震",
+            "右跳+右扭眼震",
+            "左跳+左扭眼震",
+            "右扭眼震",
+            "左扭眼震",
+            "上跳眼震",
+            "下跳眼震",
+            "其他",
+            "阴性",
+            "配合欠佳"
+          ],
+          "order": 1
+        },
+        {
+          "key": "右侧RT眼震模式其他说明",
+          "type": "entry",
+          "label": "眼震模式其他说明",
+          "show_when": {
+            "key": "右侧RT眼震模式",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
+          "key": "右侧RT前庭症状",
+          "type": "combobox",
+          "label": "前庭症状",
+          "values": [
+            "",
+            "眩晕",
+            "头晕",
+            "恶心",
+            "呕吐",
+            "其他",
+            "阴性"
+          ],
+          "order": 3
+        },
+        {
+          "key": "右侧RT前庭症状其他说明",
+          "type": "entry",
+          "label": "前庭症状其他说明",
+          "show_when": {
+            "key": "右侧RT前庭症状",
+            "equals": "其他"
+          },
+          "order": 4
+        },
+        {
+          "key": "右侧RT眼震潜伏期 (秒)",
+          "type": "number",
+          "label": "眼震潜伏期 (秒)",
+          "order": 5
+        },
+        {
+          "key": "右侧RT眼震持续时长 (秒)",
+          "type": "number",
+          "label": "眼震持续时长 (秒)",
+          "order": 6
+        },
+        {
+          "key": "右侧RT眼震最大速度 (度/秒)",
+          "type": "number",
+          "label": "眼震最大速度 (度/秒)",
+          "order": 7
+        },
+        {
+          "key": "右侧RT眼震疲劳性",
+          "type": "combobox",
+          "label": "眼震疲劳性",
+          "values": [
+            "",
+            "是",
+            "否",
+            "配合欠佳"
+          ],
+          "order": 8
+        }
+      ]
+    },
+    {
+      "id": "rt_left",
+      "name": "仰卧滚转试验（左侧）",
+      "order": 4,
+      "fields": [
+        {
+          "key": "左侧RT眼震模式",
+          "type": "combobox",
+          "label": "眼震模式",
+          "values": [
+            "",
+            "上跳伴右扭眼震",
+            "上跳伴左扭眼震",
+            "下跳伴右扭眼震",
+            "下跳伴左扭眼震",
+            "右跳眼震",
+            "左跳眼震",
+            "右跳+右扭眼震",
+            "左跳+左扭眼震",
+            "右扭眼震",
+            "左扭眼震",
+            "上跳眼震",
+            "下跳眼震",
+            "其他",
+            "阴性",
+            "配合欠佳"
+          ],
+          "order": 1
+        },
+        {
+          "key": "左侧RT眼震模式其他说明",
+          "type": "entry",
+          "label": "眼震模式其他说明",
+          "show_when": {
+            "key": "左侧RT眼震模式",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
+          "key": "左侧RT前庭症状",
+          "type": "combobox",
+          "label": "前庭症状",
+          "values": [
+            "",
+            "眩晕",
+            "头晕",
+            "恶心",
+            "呕吐",
+            "其他",
+            "阴性"
+          ],
+          "order": 3
+        },
+        {
+          "key": "左侧RT前庭症状其他说明",
+          "type": "entry",
+          "label": "前庭症状其他说明",
+          "show_when": {
+            "key": "左侧RT前庭症状",
+            "equals": "其他"
+          },
+          "order": 4
+        },
+        {
+          "key": "左侧RT眼震潜伏期 (秒)",
+          "type": "number",
+          "label": "眼震潜伏期 (秒)",
+          "order": 5
+        },
+        {
+          "key": "左侧RT眼震持续时长 (秒)",
+          "type": "number",
+          "label": "眼震持续时长 (秒)",
+          "order": 6
+        },
+        {
+          "key": "左侧RT眼震最大速度 (度/秒)",
+          "type": "number",
+          "label": "眼震最大速度 (度/秒)",
+          "order": 7
+        },
+        {
+          "key": "左侧RT眼震疲劳性",
+          "type": "combobox",
+          "label": "眼震疲劳性",
+          "values": [
+            "",
+            "是",
+            "否",
+            "配合欠佳"
+          ],
+          "order": 8
+        }
+      ]
+    },
+    {
+      "id": "other_position_tests",
+      "name": "其他位置试验",
+      "order": 5,
+      "fields": [
+        {
+          "key": "侧躺试验 (SLT)",
+          "type": "combobox",
+          "label": "侧躺试验 (SLT)",
+          "values": [
+            "",
+            "右SLT阳性",
+            "左SLT阳性",
+            "双侧SLT阳性",
+            "SLT阴性",
+            "配合欠佳"
+          ],
+          "order": 1
+        },
+        {
+          "key": "坐位-平卧试验 (LDT)",
+          "type": "combobox",
+          "label": "坐位-平卧试验 (LDT)",
+          "values": [
+            "",
+            "LDT可见右跳眼震",
+            "LDT可见左跳眼震",
+            "LDT未见水平眼震",
+            "配合欠佳"
+          ],
+          "order": 2
+        },
+        {
+          "key": "低头试验 (BT)",
+          "type": "combobox",
+          "label": "低头试验 (BT)",
+          "values": [
+            "",
+            "BT可见右跳眼震",
+            "BT可见左跳眼震",
+            "BT未见水平眼震",
+            "配合欠佳"
+          ],
+          "order": 3
+        },
+        {
+          "key": "仰头试验 (LT)",
+          "type": "combobox",
+          "label": "仰头试验 (LT)",
+          "values": [
+            "",
+            "LT可见右跳眼震",
+            "LT可见左跳眼震",
+            "LT未见水平眼震",
+            "配合欠佳"
+          ],
+          "order": 4
+        },
+        {
+          "key": "悬头试验 (HHT)",
+          "type": "combobox",
+          "label": "悬头试验 (HHT)",
+          "values": [
+            "",
+            "HHT可见右跳眼震",
+            "HHT可见左跳眼震",
+            "HHT未见水平眼震",
+            "配合欠佳"
+          ],
+          "order": 5
+        }
+      ]
+    },
+    {
+      "id": "position_result",
+      "name": "位置试验结果",
+      "order": 6,
+      "fields": [
+        {
+          "key": "位置试验检查结果",
+          "type": "combobox",
+          "label": "检查结果",
+          "values": [
+            "",
+            "DHT阴性",
+            "RT阴性",
+            "右DHT阳性",
+            "左DHT阳性",
+            "双侧DHT阳性",
+            "DHT诱发不典型位置性眼震",
+            "RT诱发双侧向地性眼震，右侧为著",
+            "RT诱发双侧背地性眼震，左侧为著",
+            "RT诱发不典型位置性眼震",
+            "其他"
+          ],
+          "order": 1
+        },
+        {
+          "key": "位置试验检查结果其他说明",
+          "type": "entry",
+          "label": "检查结果其他说明",
+          "show_when": {
+            "key": "位置试验检查结果",
+            "equals": "其他"
+          },
+          "order": 2
+        }
+      ]
+    }
+  ]
+}
+
+

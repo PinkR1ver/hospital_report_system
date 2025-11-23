@@ -1,0 +1,92 @@
+{
+  "empty_values": [
+    "未知",
+    "无",
+    "N/A",
+    "NULL"
+  ],
+  "items": [
+    {
+      "title": "自发性眼震",
+      "result_fields": ["结果判读"]
+    },
+    {
+      "title": "凝视性眼震",
+      "result_fields": ["凝视性眼震检查结果"]
+    },
+    {
+      "title": "头脉冲试验",
+      "result_fields": ["头脉冲试验检查结果"]
+    },
+    {
+      "title": "头脉冲抑制试验 (SHIMP)",
+      "result_fields": ["头脉冲抑制试验检查结果"]
+    },
+    {
+      "title": "眼位反向偏斜",
+      "result_fields": ["眼位反向偏斜检查结果"]
+    },
+    {
+      "title": "扫视检查",
+      "result_fields": ["扫视检查结果"]
+    },
+    {
+      "title": "视觉增强前庭-眼反射试验",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "前庭-眼反射抑制试验",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "摇头眼震",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "位置试验 (Dix-Hallpike试验)",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "位置试验 (仰卧滚转试验)",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "位置试验(其他)",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "位置试验",
+      "result_fields": ["位置试验检查结果"]
+    },
+    {
+      "title": "视跟踪",
+      "result_fields": ["视跟踪检查结果"]
+    },
+    {
+      "title": "视动性眼震",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "瘘管试验",
+      "result_fields": ["瘘管试验", "检查结果"]
+    },
+    {
+      "title": "温度试验",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "颈肌前庭诱发肌源性电位 (cVEMP)",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "眼肌前庭诱发肌源性电位 (oVEMP)",
+      "result_fields": ["检查结果"]
+    },
+    {
+      "title": "主观视觉垂直线 (SVV)",
+      "result_fields": ["检查结果"]
+    }
+  ]
+}
+
+

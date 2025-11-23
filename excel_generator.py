@@ -415,12 +415,26 @@ class ExcelGenerator:
             includes = presence_cfg.get("includes", [])
             present_value = presence_cfg.get("present_value", "√")
             absent_value = presence_cfg.get("absent_value", "")
+            # 可选：当同组任意值存在而当前includes不命中时，用特定缺省（例如 "N/A"）
+            group_includes = presence_cfg.get("group_includes", [])
+            absent_when_group_present = presence_cfg.get("absent_value_when_group_present")
             source_value = self._get_data_value(data, source_path)
             if isinstance(source_value, list):
-                present = any(item in source_value for item in includes)
+                # 兼容字符串
+                if isinstance(includes, str):
+                    includes_list = [includes]
+                else:
+                    includes_list = list(includes) if includes else []
+                present = any(item in source_value for item in includes_list)
+                group_present = any(item in source_value for item in (group_includes or []))
             else:
                 present = False
-            return present_value if present else absent_value
+                group_present = False
+            if present:
+                return present_value
+            if group_present and absent_when_group_present is not None:
+                return absent_when_group_present
+            return absent_value
 
         paths = cell_config.get("paths")
         value = ""

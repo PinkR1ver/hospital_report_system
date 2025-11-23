@@ -21,6 +21,9 @@ class DataManager:
         self.db_path = db_path
         self.config = config
         self.report_template_config = config.get("report_template", {})
+        # “检查所见”自动汇总规则与空值配置（懒加载，由JSON完全驱动）
+        self._exam_findings_rules: Optional[Dict[str, List[str]]] = None
+        self._exam_findings_empty_values: Optional[List[str]] = None
     
     def get_basic_info_page_id(self, load_page_config_func) -> str:
         """
@@ -98,35 +101,62 @@ class DataManager:
         
         return "ID"
     
+    def _load_exam_findings_rules(self) -> Dict[str, List[str]]:
+        """
+        加载“检查所见”自动汇总规则：
+        - 规则与“空值”完全来自 JSON（exam_findings_mapping.json）
+        - 若JSON不存在或有问题，则返回空规则（不做任何自动汇总）
+        """
+        if self._exam_findings_rules is not None:
+            return self._exam_findings_rules
+
+        self._exam_findings_rules = {}
+        self._exam_findings_empty_values = []
+
+        config_path = os.path.join(os.path.dirname(__file__), "exam_findings_mapping.json")
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+
+            # 结果字段映射
+            rules: Dict[str, List[str]] = {}
+            for item in cfg.get("items", []):
+                title = item.get("title")
+                fields = item.get("result_fields") or []
+                if isinstance(title, str) and isinstance(fields, list):
+                    rules[title] = [str(x) for x in fields]
+
+            # 空值定义（仅限字符串，类型无业务含义）
+            empty_vals = cfg.get("empty_values", [])
+            if isinstance(empty_vals, list):
+                self._exam_findings_empty_values = [str(v) for v in empty_vals]
+            else:
+                self._exam_findings_empty_values = []
+
+            self._exam_findings_rules = rules
+        except Exception:
+            # 任意异常时，保持空规则和空的空值列表
+            self._exam_findings_rules = {}
+            self._exam_findings_empty_values = []
+
+        return self._exam_findings_rules
+
     def generate_exam_findings_text(self, data: Dict) -> str:
         """
-        基于各检查页面的结果字段，汇总生成“检查所见”文本（旧版规则的等价实现）
+        基于各检查页面的结果字段，汇总生成“检查所见”文本
+        规则与“空值”完全来自 exam_findings_mapping.json
         """
+        item_to_result_fields = self._load_exam_findings_rules()
+        empty_strings = self._exam_findings_empty_values or []
+
         def is_empty(v: Any) -> bool:
-            return v in ("", None, [], {}, "未知", "无", "N/A", "NULL")
-        
-        # 使用各页面的标题（作为根key）及其结果字段key
-        item_to_result_fields: Dict[str, List[str]] = {
-            "自发性眼震": ["结果判读"],
-            "凝视性眼震": ["凝视性眼震检查结果"],
-            "头脉冲试验": ["头脉冲试验检查结果"],
-            "头脉冲抑制试验 (SHIMP)": ["头脉冲抑制试验检查结果"],
-            "眼位反向偏斜": ["眼位反向偏斜检查结果"],
-            "扫视检查": ["扫视检查结果"],
-            "视觉增强前庭-眼反射试验": ["检查结果"],
-            "前庭-眼反射抑制试验": ["检查结果"],
-            "摇头眼震": ["检查结果"],
-            "位置试验 (Dix-Hallpike试验)": ["检查结果"],
-            "位置试验 (仰卧滚转试验)": ["检查结果"],
-            "位置试验(其他)": ["检查结果"],  # 旧版为全角括号，这里使用现有标题
-            "视跟踪": ["视跟踪检查结果"],
-            "视动性眼震": ["检查结果"],
-            "瘘管试验": ["瘘管试验", "检查结果"],  # 优先使用“瘘管试验”复选结果
-            "温度试验": ["检查结果"],
-            "颈肌前庭诱发肌源性电位 (cVEMP)": ["检查结果"],
-            "眼肌前庭诱发肌源性电位 (oVEMP)": ["检查结果"],
-            "主观视觉垂直线 (SVV)": ["检查结果"],
-        }
+            # 通用空：None / 空串 / 空容器
+            if v in ("", None, [], {}):
+                return True
+            # 由JSON定义的业务空值（仅按字符串比较）
+            if isinstance(v, str) and v in empty_strings:
+                return True
+            return False
         
         findings: List[str] = []
         for item_title, fields in item_to_result_fields.items():
@@ -354,11 +384,11 @@ class DataManager:
         if not os.path.exists(report_folder):
             return reports
         
-        # 遍历所有日期文件夹
-        for date_folder in sorted(os.listdir(report_folder), reverse=True):
+        # 遍历所有日期文件夹（先收集，再按检查时间排序，最新在上）
+        for date_folder in os.listdir(report_folder):
             date_path = os.path.join(report_folder, date_folder)
             if os.path.isdir(date_path):
-                for report_file in sorted(os.listdir(date_path), reverse=True):
+                for report_file in os.listdir(date_path):
                     if report_file.endswith('.json'):
                         file_path = os.path.join(date_path, report_file)
                         data = self.load_report(file_path)
@@ -371,7 +401,23 @@ class DataManager:
                                 'exam_time': basic_info.get("检查时间", "未知"),
                                 'data': data
                             })
-        
+
+        def _parse_exam_time(r: Dict) -> float:
+            """将检查时间解析为排序用时间戳，解析失败时退回文件修改时间"""
+            et = r.get("exam_time") or ""
+            for fmt in ("%Y/%m/%d", "%Y-%m-%d", "%Y.%m.%d", "%Y%m%d"):
+                try:
+                    dt = datetime.strptime(et, fmt)
+                    return dt.timestamp()
+                except Exception:
+                    continue
+            try:
+                return os.path.getmtime(r.get("file_path", ""))
+            except Exception:
+                return 0.0
+
+        # 按检查时间从新到旧排序
+        reports.sort(key=_parse_exam_time, reverse=True)
         return reports
     
     def search_reports(self, search_text: str, basic_info_key: str = "基本信息") -> List[Dict]:

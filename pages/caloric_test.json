@@ -8,46 +8,180 @@
   "layout": {"type": "grid", "columns": 2, "padding": {"x": 20, "y": 20}},
   "sections": [
     {
-      "id": "uw",
-      "name": "单侧减弱 (UW)",
+      "id": "stim_records",
+      "name": "温度刺激记录",
       "order": 1,
       "fields": [
-        {"key": "单侧减弱侧别 (UW)", "type": "combobox", "label": "侧别", "values": ["", "右耳", "左耳", "左右对称"], "order": 1},
-        {"key": "单侧减弱数值 (UW, %)", "type": "number", "label": "数值 (%)", "order": 2}
+        {
+          "key": "44℃右侧眼震方向",
+          "type": "combobox",
+          "label": "44℃ 右侧 眼震方向",
+          "values": ["", "右跳", "左跳", "上跳", "下跳", "其他"],
+          "order": 1
+        },
+        {
+          "key": "44℃右侧眼震方向其他说明",
+          "type": "entry",
+          "label": "44℃ 右侧 眼震方向其他说明",
+          "show_when": {
+            "key": "44℃右侧眼震方向",
+            "equals": "其他"
+          },
+          "order": 2
+        },
+        {
+          "key": "44℃右侧SPVmax (°/s)",
+          "type": "number",
+          "label": "44℃ 右侧 SPVmax (°/s)",
+          "order": 3
+        },
+        {
+          "key": "44℃右侧固视抑制指数",
+          "type": "number",
+          "label": "44℃ 右侧 固视抑制指数",
+          "order": 4
+        },
+        {
+          "key": "44℃左侧眼震方向",
+          "type": "combobox",
+          "label": "44℃ 左侧 眼震方向",
+          "values": ["", "右跳", "左跳", "上跳", "下跳", "其他"],
+          "order": 5
+        },
+        {
+          "key": "44℃左侧眼震方向其他说明",
+          "type": "entry",
+          "label": "44℃ 左侧 眼震方向其他说明",
+          "show_when": {
+            "key": "44℃左侧眼震方向",
+            "equals": "其他"
+          },
+          "order": 6
+        },
+        {
+          "key": "44℃左侧SPVmax (°/s)",
+          "type": "number",
+          "label": "44℃ 左侧 SPVmax (°/s)",
+          "order": 7
+        },
+        {
+          "key": "44℃左侧固视抑制指数",
+          "type": "number",
+          "label": "44℃ 左侧 固视抑制指数",
+          "order": 8
+        },
+        {
+          "key": "30℃右侧眼震方向",
+          "type": "combobox",
+          "label": "30℃ 右侧 眼震方向",
+          "values": ["", "右跳", "左跳", "上跳", "下跳", "其他"],
+          "order": 9
+        },
+        {
+          "key": "30℃右侧眼震方向其他说明",
+          "type": "entry",
+          "label": "30℃ 右侧 眼震方向其他说明",
+          "show_when": {
+            "key": "30℃右侧眼震方向",
+            "equals": "其他"
+          },
+          "order": 10
+        },
+        {
+          "key": "30℃右侧SPVmax (°/s)",
+          "type": "number",
+          "label": "30℃ 右侧 SPVmax (°/s)",
+          "order": 11
+        },
+        {
+          "key": "30℃右侧固视抑制指数",
+          "type": "number",
+          "label": "30℃ 右侧 固视抑制指数",
+          "order": 12
+        },
+        {
+          "key": "30℃左侧眼震方向",
+          "type": "combobox",
+          "label": "30℃ 左侧 眼震方向",
+          "values": ["", "右跳", "左跳", "上跳", "下跳", "其他"],
+          "order": 13
+        },
+        {
+          "key": "30℃左侧眼震方向其他说明",
+          "type": "entry",
+          "label": "30℃ 左侧 眼震方向其他说明",
+          "show_when": {
+            "key": "30℃左侧眼震方向",
+            "equals": "其他"
+          },
+          "order": 14
+        },
+        {
+          "key": "30℃左侧SPVmax (°/s)",
+          "type": "number",
+          "label": "30℃ 左侧 SPVmax (°/s)",
+          "order": 15
+        },
+        {
+          "key": "30℃左侧固视抑制指数",
+          "type": "number",
+          "label": "30℃ 左侧 固视抑制指数",
+          "order": 16
+        }
       ]
     },
     {
       "id": "dp",
-      "name": "优势偏向 (DP)",
+      "name": "单侧减弱与优势偏向",
       "order": 2,
       "fields": [
-        {"key": "优势偏向侧别 (DP)", "type": "combobox", "label": "侧别", "values": ["", "右耳", "左耳", "左右对称"], "order": 1},
-        {"key": "优势偏向数值 (DP, 度/秒)", "type": "number", "label": "数值 (度/秒)", "order": 2}
-      ]
-    },
-    {
-      "id": "spv",
-      "name": "最大慢相速度总和",
-      "order": 3,
-      "fields": [
-        {"key": "最大慢相速度总和（右耳, 度/秒）", "type": "number", "label": "右耳 (度/秒)", "order": 1},
-        {"key": "最大慢相速度总和（左耳, 度/秒）", "type": "number", "label": "左耳 (度/秒)", "order": 2}
-      ]
-    },
-    {
-      "id": "fi",
-      "name": "固视抑制指数",
-      "order": 4,
-      "fields": [
-        {"key": "固视抑制指数 (FI, %)", "type": "number", "label": "固视抑制指数 (FI, %)", "order": 1}
+        {
+          "key": "单侧减弱侧别 (UW)",
+          "type": "combobox",
+          "label": "单侧减弱侧别 (UW)",
+          "values": ["", "左耳", "右耳", "无"],
+          "order": 1
+        },
+        {
+          "key": "单侧减弱数值 (UW, %)",
+          "type": "number",
+          "label": "单侧减弱数值 (UW, %)",
+          "order": 2
+        },
+        {
+          "key": "优势偏向侧别 (DP)",
+          "type": "combobox",
+          "label": "优势偏向侧别 (DP)",
+          "values": ["", "左耳", "右耳", "无"],
+          "order": 3
+        },
+        {
+          "key": "优势偏向数值 (DP, %)",
+          "type": "number",
+          "label": "优势偏向数值 (DP, %)",
+          "order": 4
+        }
       ]
     },
     {
       "id": "result",
       "name": "检查结果",
-      "order": 5,
+      "order": 3,
       "fields": [
-        {"key": "检查结果", "type": "combobox", "label": "温度试验检查结果", "values": ["", "左外半规管功能减退", "右外半规管功能减退", "双外半规管功能减退", "双外半规管功能正常", "配合欠佳"], "order": 1}
+        {
+          "key": "检查结果",
+          "type": "combobox",
+          "label": "温度试验检查结果",
+          "values": [
+            "",
+            "未见明显异常",
+            "右侧反应减弱",
+            "左侧反应减弱",
+            "双侧反应减弱",
+            "双侧反应亢进"
+          ],
+          "order": 1
+        }
       ]
     }
   ]

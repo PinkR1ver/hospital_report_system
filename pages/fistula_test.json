@@ -13,13 +13,26 @@
       "order": 1,
       "fields": [
         {
-          "key": "瘘管试验",
-          "type": "checkboxes",
-          "label": "瘘管试验",
-          "values": ["阴性", "右耳阳性", "左耳阳性", "右耳弱阳性", "左耳弱阳性", "双耳阳性", "双耳弱阳性", "配合欠佳"],
+          "key": "左耳诱发情况",
+          "type": "combobox",
+          "label": "左耳诱发情况",
+          "values": ["", "诱发眼震", "诱发眼/头晕", "阴性"],
           "order": 1
         },
-        {"key": "检查结果", "type": "combobox", "label": "检查结果", "values": ["", "正常", "异常", "配合欠佳"], "order": 2}
+        {
+          "key": "右耳诱发情况",
+          "type": "combobox",
+          "label": "右耳诱发情况",
+          "values": ["", "诱发眼震", "诱发眼/头晕", "阴性"],
+          "order": 2
+        },
+        {
+          "key": "检查结果",
+          "type": "combobox",
+          "label": "检查结果",
+          "values": ["", "阳性", "阴性"],
+          "order": 3
+        }
       ]
     }
   ]
