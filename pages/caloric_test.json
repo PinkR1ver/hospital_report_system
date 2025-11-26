@@ -147,15 +147,15 @@
           "type": "number",
           "label": "单侧减弱数值 (UW, %)",
           "order": 2
-        },
-        {
+    },
+    {
           "key": "优势偏向侧别 (DP)",
           "type": "combobox",
           "label": "优势偏向侧别 (DP)",
           "values": ["", "左耳", "右耳", "无"],
           "order": 3
-        },
-        {
+    },
+    {
           "key": "优势偏向数值 (DP, %)",
           "type": "number",
           "label": "优势偏向数值 (DP, %)",

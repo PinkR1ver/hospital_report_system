@@ -11,9 +11,26 @@ from json_page_renderer import JSONPageRenderer, load_page_config
 # 导入数据管理器
 from data import DataManager
 
-# 设置CustomTkinter主题 - 使用深色模式，更现代美观
-ctk.set_appearance_mode("dark")  # 使用深色模式，更高级
-ctk.set_default_color_theme("blue")  # 蓝色主题
+DEFAULT_THEME_COLORS = {
+    "window_bg": ("#F4F4F4", "#1C1C1C"),
+    "header_bg": ("#E6E6E6", "#2B2B2B"),
+    "sidebar_bg": ("#EFEFEF", "#1F1F1F"),
+    "content_bg": ("#FFFFFF", "#242424"),
+    "section_bg": ("#FAFAFA", "#2B2B2B"),
+    "text_primary": ("#333333", "#E0E0E0"),
+    "text_secondary": ("#666666", "#A0A0A0"),
+    "accent_primary": ("#3B8ED0", "#1F6AA5"),
+    "accent_hover": ("#36719F", "#144870"),
+    "border": ("#D0D0D0", "#404040"),
+    "input_bg": ("#FFFFFF", "#343638"),
+    "input_border": ("#C0C0C0", "#505050"),
+    "dropdown_bg": ("#FFFFFF", "#2a2d2e"),
+    "dropdown_hover": ("#F0F0F0", "#343638"),
+    "dropdown_text": ("#333333", "#E0E0E0"),
+    "success": ("#2CC069", "#2CC069"),
+    "warning": ("#E2B203", "#E2B203"),
+    "error": ("#CF4F4F", "#CF4F4F"),
+}
 
 # 设置清晰的字体
 import platform
@@ -33,10 +50,13 @@ else:  # Linux
 
 class VestibularFunctionReport:
     def __init__(self):
-        self.root = ctk.CTk()
         self.config_file = "config.json"
 
         self.load_config()
+        self.theme_palette = self._apply_theme_from_config()
+
+        self.root = ctk.CTk()
+        self.root.configure(fg_color=self.get_color("window_bg", "transparent"))
 
         # 设置窗口大小（使用更大的窗口）
         window_size = self.config["system"].get("window_size", {"width": 1200, "height": 800})
@@ -83,6 +103,65 @@ class VestibularFunctionReport:
                 "report_template": {"enabled_pages": ["basic_info"]}
             }
 
+    def _apply_theme_from_config(self):
+        """根据config.json应用主题设置并返回颜色表"""
+        themes_cfg = self.config.get("system", {}).get("themes", {})
+        presets = themes_cfg.get("presets", {}) or {}
+        current_key = themes_cfg.get("current")
+        theme = presets.get(current_key)
+        if not theme and presets:
+            # 选取第一个可用预设
+            first_key = next(iter(presets))
+            theme = presets[first_key]
+        if not theme:
+            theme = {
+                "appearance_mode": "system",
+                "color_theme": "blue",
+                "colors": {}
+            }
+
+        appearance = theme.get("appearance_mode", "system")
+        color_theme = theme.get("color_theme", "blue")
+
+        try:
+            ctk.set_appearance_mode(appearance)
+        except Exception:
+            ctk.set_appearance_mode("system")
+        try:
+            ctk.set_default_color_theme(color_theme)
+        except Exception:
+            ctk.set_default_color_theme("blue")
+
+        palette = {}
+        colors = theme.get("colors", {})
+        for key, fallback in DEFAULT_THEME_COLORS.items():
+            palette[key] = self._ensure_color_tuple(colors.get(key), fallback)
+        # 合并用户定义但不在默认表的颜色键
+        for key, value in colors.items():
+            if key not in palette:
+                palette[key] = self._ensure_color_tuple(value, DEFAULT_THEME_COLORS.get(key, ("#FFFFFF", "#1A1A1A")))
+        return palette
+
+    def _ensure_color_tuple(self, value, fallback):
+        """保证颜色为CustomTkinter可识别的(light, dark)元组"""
+        if isinstance(value, (list, tuple)):
+            if len(value) >= 2:
+                return (value[0], value[1])
+            if len(value) == 1:
+                return (value[0], value[0])
+        if isinstance(value, str):
+            return (value, value)
+        return fallback
+
+    def get_color(self, key, fallback=None):
+        """从主题表中获取颜色"""
+        color = self.theme_palette.get(key) if hasattr(self, "theme_palette") else None
+        if color:
+            return color
+        if fallback is not None:
+            return fallback
+        return DEFAULT_THEME_COLORS.get(key, ("#FFFFFF", "#1A1A1A"))
+
     def create_database_folders(self):
         """创建数据库文件夹"""
         if not os.path.exists(self.db_path):
@@ -104,13 +183,14 @@ class VestibularFunctionReport:
         # 创建主框架
         self.main_frame = ctk.CTkFrame(self.root, fg_color="transparent")
         self.main_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        self.root.configure(fg_color=self.get_color("window_bg", "transparent"))
 
         # 创建侧边栏 - 美化样式，添加透明度效果
         self.sidebar = ctk.CTkFrame(
             self.main_frame, 
             width=220, 
             corner_radius=15,
-            fg_color=("gray85", "gray18"),  # 更浅的背景，增加高级感
+            fg_color=self.get_color("sidebar_bg", ("gray85", "gray18")),  # 更浅的背景，增加高级感
             border_width=0
         )
         self.sidebar.pack(side="left", fill="y", padx=(0, 10))
@@ -120,7 +200,7 @@ class VestibularFunctionReport:
         self.content_frame = ctk.CTkFrame(
             self.main_frame, 
             corner_radius=15,
-            fg_color=("gray92", "gray14"),  # 更浅的背景，增加高级感
+            fg_color=self.get_color("content_bg", ("gray92", "gray14")),  # 更浅的背景，增加高级感
             border_width=0
         )
         self.content_frame.pack(side="right", fill="both", expand=True)
@@ -141,11 +221,13 @@ class VestibularFunctionReport:
             self.root, 
             height=45, 
             corner_radius=0,
-            fg_color=("gray88", "gray22"),  # 与主内容区区分，增加层次感
+            fg_color=self.get_color("header_bg", ("gray88", "gray22")),  # 与主内容区区分，增加层次感
             border_width=0
         )
         menu_frame.pack(fill="x", padx=0, pady=0)
         menu_frame.pack_propagate(False)
+        primary_btn_color = self.get_color("accent_primary", ("gray70", "gray30"))
+        primary_btn_hover = self.get_color("accent_hover", ("gray60", "gray40"))
         
         # 文件菜单按钮 - 使用清晰字体和更高级的样式
         file_btn = ctk.CTkButton(
@@ -156,8 +238,8 @@ class VestibularFunctionReport:
             height=32,
             corner_radius=8,
             font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray60", "gray40"),
+            fg_color=primary_btn_color,
+            hover_color=primary_btn_hover,
             border_width=0
         )
         file_btn.pack(side="left", padx=6, pady=6)
@@ -170,14 +252,14 @@ class VestibularFunctionReport:
             height=32,
             corner_radius=8,
             font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray60", "gray40"),
+            fg_color=primary_btn_color,
+            hover_color=primary_btn_hover,
             border_width=0
         )
         save_btn.pack(side="left", padx=3, pady=6)
         
         # 分隔 - 使用透明度效果
-        separator = ctk.CTkFrame(menu_frame, width=1, fg_color=("gray65", "gray35"))
+        separator = ctk.CTkFrame(menu_frame, width=1, fg_color=self.get_color("border", ("gray65", "gray35")))
         separator.pack(side="left", fill="y", padx=8, pady=8)
         
         # 数据库菜单按钮
@@ -189,8 +271,8 @@ class VestibularFunctionReport:
             height=32,
             corner_radius=8,
             font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray60", "gray40"),
+            fg_color=primary_btn_color,
+            hover_color=primary_btn_hover,
             border_width=0
         )
         db_change_btn.pack(side="left", padx=3, pady=6)
@@ -203,14 +285,14 @@ class VestibularFunctionReport:
             height=32,
             corner_radius=8,
             font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray60", "gray40"),
+            fg_color=primary_btn_color,
+            hover_color=primary_btn_hover,
             border_width=0
         )
         db_open_btn.pack(side="left", padx=3, pady=6)
         
         # 分隔
-        separator2 = ctk.CTkFrame(menu_frame, width=1, fg_color=("gray65", "gray35"))
+        separator2 = ctk.CTkFrame(menu_frame, width=1, fg_color=self.get_color("border", ("gray65", "gray35")))
         separator2.pack(side="left", fill="y", padx=8, pady=8)
         
         # 帮助菜单按钮
@@ -222,8 +304,8 @@ class VestibularFunctionReport:
             height=32,
             corner_radius=8,
             font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray60", "gray40"),
+            fg_color=primary_btn_color,
+            hover_color=primary_btn_hover,
             border_width=0
         )
         about_btn.pack(side="right", padx=6, pady=6)
@@ -258,7 +340,7 @@ class VestibularFunctionReport:
             self.sidebar, 
             text="页面导航", 
             font=ctk.CTkFont(family=DEFAULT_FONT_LARGE[0], size=13, weight="bold"),
-            text_color=("gray30", "gray85")
+            text_color=self.get_color("text_primary", ("gray30", "gray85"))
         )
         title_label.pack(pady=(12, 8))
         
@@ -278,6 +360,14 @@ class VestibularFunctionReport:
         enabled_pages.sort(key=lambda x: x.get("order", 999))
         
         self.sidebar_buttons = {}
+        self.sidebar_button_styles = {
+            "default_fg": self.get_color("border", ("gray72", "gray28")),
+            "default_hover": self.get_color("accent_hover", ("gray65", "gray35")),
+            "default_text": self.get_color("text_primary", ("gray20", "gray90")),
+            "active_fg": self.get_color("accent_primary", ("gray60", "gray40")),
+            "active_hover": self.get_color("accent_hover", ("gray55", "gray45")),
+            "active_text": ("white", "white"),
+        }
         for page_info in enabled_pages:
             button = ctk.CTkButton(
                 scrollable_frame,
@@ -287,10 +377,10 @@ class VestibularFunctionReport:
                 height=32,
                 corner_radius=10,
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-                fg_color=("gray72", "gray28"),
-                hover_color=("gray65", "gray35"),
+                fg_color=self.sidebar_button_styles["default_fg"],
+                hover_color=self.sidebar_button_styles["default_hover"],
                 border_width=0,
-                text_color=("gray20", "gray90")
+                text_color=self.sidebar_button_styles["default_text"]
             )
             button.pack(pady=3, padx=10)
             self.sidebar_buttons[page_info["id"]] = button
@@ -311,7 +401,7 @@ class VestibularFunctionReport:
                         from database_management import DatabaseManagementPage
                         self.pages[page_info["id"]] = DatabaseManagementPage(self.content_frame, self)
                     else:
-                        self.pages[page_info["id"]] = JSONPageRenderer(self.content_frame, self, page_config)
+                        self.pages[page_info["id"]] = JSONPageRenderer(self.content_frame, self, page_config, self.theme_palette)
         
         # 隐藏所有页面
         for page in self.pages.values():
@@ -330,18 +420,25 @@ class VestibularFunctionReport:
             self.current_page.pack_forget()
         
         # 更新按钮状态 - 美化选中效果，增加高级感
+        styles = getattr(self, "sidebar_button_styles", {})
+        default_fg = styles.get("default_fg", ("gray72", "gray28"))
+        default_hover = styles.get("default_hover", ("gray65", "gray35"))
+        default_text = styles.get("default_text", ("gray20", "gray90"))
+        active_fg = styles.get("active_fg", ("gray60", "gray40"))
+        active_hover = styles.get("active_hover", ("gray55", "gray45"))
+        active_text = styles.get("active_text", ("white", "white"))
         for btn_id, btn in self.sidebar_buttons.items():
             if btn_id == page_name:
                 btn.configure(
-                    fg_color=("gray60", "gray40"), 
-                    hover_color=("gray55", "gray45"),
-                    text_color=("white", "white")
+                    fg_color=active_fg, 
+                    hover_color=active_hover,
+                    text_color=active_text
                 )
             else:
                 btn.configure(
-                    fg_color=("gray72", "gray28"), 
-                    hover_color=("gray65", "gray35"),
-                    text_color=("gray20", "gray90")
+                    fg_color=default_fg, 
+                    hover_color=default_hover,
+                    text_color=default_text
                 )
         
         if page_name in self.pages:

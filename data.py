@@ -401,7 +401,7 @@ class DataManager:
                                 'exam_time': basic_info.get("检查时间", "未知"),
                                 'data': data
                             })
-
+        
         def _parse_exam_time(r: Dict) -> float:
             """
             仅根据文件名里的时间戳排序（患者ID_YYYYMMDD_HHMMSS.json），精确到秒；

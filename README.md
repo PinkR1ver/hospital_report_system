@@ -1,187 +1,124 @@
 # 前庭功能检查报告系统 v2.0
 
-## 系统概述
+## 1. 系统架构示意图
 
-这是一个基于配置文件的前庭功能检查报告系统，使用CustomTkinter构建现代化的用户界面。系统的主要特点是：
+本系统是一个**完全配置驱动**（Configuration-Driven）的桌面应用。Python 代码仅作为通用引擎，具体的业务界面、逻辑、报告格式全由 JSON 文件定义。
 
-- **动态配置**: 所有页面和字段都通过配置文件定义，无需修改代码即可调整界面
-- **现代化UI**: 使用CustomTkinter提供更美观的用户界面
-- **模块化设计**: 页面模块化，易于扩展和维护
-- **数据安全**: 配置文件加密存储，支持密码保护
+```mermaid
+graph TD
+    subgraph "用户界面层 (GUI)"
+        Main[main.py (入口)] -->|读取| Config[config.json (全局配置)]
+        Main -->|加载| Renderer[json_page_renderer.py (通用渲染器)]
+        Renderer -->|渲染| PageJSON[pages/*.json (界面定义)]
+    end
 
-## 系统架构
+    subgraph "数据处理层 (Logic)"
+        Renderer -->|收集数据| DataManager[data.py (数据管家)]
+        DataManager -->|保存/读取| ReportFile[vest_database/report/*.json]
+        DataManager -->|自动汇总规则| Mapping[exam_findings_mapping.json]
+    end
 
-### 配置文件结构 (config.json)
-
-```json
-{
-  "system": {
-    "name": "前庭功能检查报告系统",
-    "version": "2.0.0",
-    "theme": "blue",
-    "font_size": 14,
-    "window_size": {"width": 1500, "height": 900}
-  },
-  "database": {
-    "path": "vest_database",
-    "folders": ["report", "pic", "video", "HIS"]
-  },
-  "pages": {
-    "basic_info": {
-      "name": "基本信息",
-      "enabled": true,
-      "required": true,
-      "fields": {
-        "patient_info": {
-          "name": "患者基本信息",
-          "fields": {
-            "ID": {
-              "type": "entry",
-              "label": "ID",
-              "required": true,
-              "placeholder": "请输入患者ID"
-            }
-            // ... 更多字段配置
-          }
-        }
-      }
-    }
-  },
-  "report_template": {
-    "enabled_pages": ["basic_info"],
-    "output_format": "json",
-    "file_naming": "{patient_id}_{timestamp}.json"
-  }
-}
+    subgraph "报告生成层 (Export)"
+        DataManager -->|传递数据| DBPage[database_management.py (管理页)]
+        DBPage -->|调用| Generator[excel_generator.py (Excel 引擎)]
+        Generator -->|读取| TemplateConfig[vestibular_full_template.json]
+        Generator -->|填充| TemplateXLSX[vestibular_full_template.xlsx]
+        Generator -->|输出| Output[最终报告 .xlsx]
+    end
 ```
 
-### 页面模块结构
+---
 
+## 2. 核心设计理念
+
+- **UI 解耦**：界面不是用 Python 代码写死的，而是读取 `pages/` 下的 JSON 动态生成。改字段、改选项、改布局只需改 JSON。
+- **报告解耦**：Excel 报告的生成逻辑（填哪个格子、N/A 补齐规则、列表拼接）全部在 `vest_database/templates/*.json` 里配置。
+- **规则解耦**：“检查所见”的自动汇总逻辑（哪些字段要汇总、什么算空值）由 `exam_findings_mapping.json` 定义。
+
+---
+
+## 3. 项目文件结构解析
+
+```text
+hospital_report_system/
+├── main.py                         # [程序入口] 初始化窗口、菜单、导航栏，调度各模块
+├── config.json                     # [全局配置] 系统名称、窗口大小、数据库路径、启用页面列表
+├── data.py                         # [数据核心] 负责报告的 CRUD、文件读写、检查所见自动汇总
+├── database_management.py          # [数据库页] 报告列表管理、搜索、调用生成器导出 Excel
+├── excel_generator.py              # [导出引擎] 通用 Excel 生成器，解析模板配置执行写入
+├── json_page_renderer.py           # [UI 引擎]  通用界面渲染器，解析 page JSON 生成控件
+├── exam_findings_mapping.json      # [业务规则] 定义“检查所见”自动汇总的字段来源与空值判定
+├── hospital_report.spec            # [打包脚本] Windows PyInstaller 打包配置
+├── xlsx_reader.py                  # [开发工具] 辅助脚本，用于解析 Excel 结构生成 JSON（开发用）
+├── requirements.txt                # [环境依赖] Python 依赖库
+│
+├── pages/                          # [界面配置] 存放所有检查页面的布局定义
+│   ├── index.json                  # 页面导航索引（定义顺序、显示名称、启用状态）
+│   ├── basic_info.json             # 基本信息页
+│   ├── position_test.json          # 位置试验（整合 DHT/RT/其他位置试验）
+│   ├── caloric_test.json           # 温度试验
+│   ├── ... (head_impulse, saccade 等其他检查项)
+│   └── exam_findings.json          # 检查所见页
+│
+└── vest_database/                  # [数据存储] 默认数据库目录
+    ├── report/                     # 存放生成的患者报告 JSON (按日期文件夹归档)
+    └── templates/                  # [报告模板]
+        ├── templates_index.json            # 模板索引
+        ├── vestibular_full_template.json   # 全套版模板映射配置（核心映射文件）
+        └── vestibular_full_template.xlsx   # 全套版 Excel 底表
 ```
-pages/
-├── __init__.py
-└── basic_info_page.py
-```
 
-每个页面模块都继承自`ctk.CTkFrame`，并实现以下方法：
-- `get_data()`: 获取页面数据
-- `set_data(data)`: 设置页面数据
-- `clear_inputs()`: 清空输入字段
+---
 
-## 安装和运行
+## 4. 关键配置指南
 
-### 1. 安装依赖
+### 4.1 修改界面 (pages/*.json)
+想在“自发性眼震”页面加一个字段？
+1. 打开 `pages/spontaneous_nystagmus.json`。
+2. 在 `fields` 数组里加一项：
+   ```json
+   {
+     "key": "新字段名",
+     "type": "entry",  // 或 combobox, number, radio...
+     "label": "显示名称",
+     "order": 99
+   }
+   ```
+3. 重启程序即生效。
 
+### 4.2 修改报告导出 (templates/*.json)
+想把新字段导出到 Excel 的 C50 格子？
+1. 打开 `vest_database/templates/vestibular_full_template.json`。
+2. 在 `data_cells` 里加一项：
+   ```json
+   {
+     "cell": "C50",
+     "data_path": "自发性眼震.新字段名"
+   }
+   ```
+
+### 4.3 修改“检查所见”自动汇总
+想把新字段加入自动汇总？
+1. 打开根目录 `exam_findings_mapping.json`。
+2. 在对应模块的 `result_fields` 列表里加上 `"新字段名"`。
+
+### 4.4 配置 N/A 自动补齐
+想让某组字段在“部分有值、部分为空”时自动填 N/A？
+1. 打开模板 JSON。
+2. 在 `na_fill_groups` 里添加一组 `data_paths`。
+
+---
+
+## 5. 运行与打包
+
+### 运行
 ```bash
 pip install -r requirements.txt
-```
-
-### 2. 运行系统
-
-```bash
 python main.py
 ```
 
-### 3. 首次运行
-
-首次运行时系统会要求：
-1. 输入激活码: `524865`
-2. 设置系统密码
-3. 系统将自动创建数据库文件夹结构
-
-## 功能特性
-
-### 当前版本功能 (v2.0)
-
-- ✅ 基本信息页面 (可配置)
-- ✅ 现代化CustomTkinter界面
-- ✅ 配置文件驱动的页面生成
-- ✅ 数据加密存储
-- ✅ 密码保护
-- ✅ 数据库管理
-
-### 计划功能
-
-- 🔄 更多检查页面 (根据配置文件动态生成)
-- 🔄 PDF报告生成
-- 🔄 数据导入/导出
-- 🔄 用户权限管理
-- 🔄 报告模板自定义
-
-## 配置文件说明
-
-### 系统配置 (system)
-
-- `name`: 系统名称
-- `version`: 版本号
-- `theme`: UI主题 (blue, green, dark-blue)
-- `font_size`: 字体大小
-- `window_size`: 窗口大小
-
-### 数据库配置 (database)
-
-- `path`: 数据库根路径
-- `folders`: 子文件夹列表
-
-### 页面配置 (pages)
-
-每个页面包含：
-- `name`: 页面显示名称
-- `enabled`: 是否启用
-- `required`: 是否必需
-- `fields`: 字段配置
-
-### 字段类型
-
-- `entry`: 文本输入框
-- `combobox`: 下拉选择框
-- `date`: 日期选择器
-- `checkbox`: 复选框
-- `radio`: 单选按钮
-
-## 开发指南
-
-### 添加新页面
-
-1. 在`pages/`目录下创建新的页面模块
-2. 在`config.json`中添加页面配置
-3. 在`report_template.enabled_pages`中添加页面名称
-4. 在`main.py`的`create_pages()`方法中添加页面实例化
-
-### 自定义字段
-
-在配置文件的`fields`部分添加新字段：
-
-```json
-"new_field": {
-  "type": "entry",
-  "label": "新字段",
-  "required": true,
-  "placeholder": "请输入内容"
-}
+### 打包 (Windows)
+```bash
+pyinstaller hospital_report.spec
 ```
-
-## 故障排除
-
-### 常见问题
-
-1. **激活码错误**: 确保使用正确的激活码 `524865`
-2. **密码错误**: 如果忘记密码，删除`config.json`文件重新设置
-3. **依赖安装失败**: 确保Python版本兼容，建议使用Python 3.8+
-
-### 日志和调试
-
-系统会在控制台输出错误信息，请检查：
-- 配置文件格式是否正确
-- 依赖包是否正确安装
-- 文件权限是否正确
-
-## 许可证
-
-MIT License
-
-## 联系方式
-
-- Author: JudeW
-- Email: pinkr1veroops@gmail.com
-
+打包后在 `dist/hospital_report` 目录生成可执行文件（目录形式，非单文件）。

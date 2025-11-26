@@ -23,8 +23,9 @@ else:  # Linux
 class JSONPageRenderer(ctk.CTkScrollableFrame):
     """通用的JSON页面渲染器"""
     
-    def __init__(self, master, controller, page_config):
-        super().__init__(master)
+    def __init__(self, master, controller, page_config, theme_colors=None):
+        self.theme_colors = theme_colors or {}
+        super().__init__(master, fg_color=self._color("content_bg", ("gray96", "gray14")))
         self.controller = controller
         self.page_config = page_config
         self.widgets = {}
@@ -38,6 +39,17 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
         self.prev_radio_values = {}  # 记录各radio字段上一次已选值
         self._build_ui()
 
+    def _color(self, key, fallback):
+        value = self.theme_colors.get(key)
+        if isinstance(value, (list, tuple)):
+            if len(value) >= 2:
+                return (value[0], value[1])
+            if len(value) == 1:
+                return (value[0], value[0])
+        if isinstance(value, str):
+            return value
+        return fallback
+
     def _build_ui(self):
         """根据JSON配置构建UI"""
         # 页面标题 - 使用清晰字体
@@ -46,7 +58,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
             self, 
             text=title, 
             font=ctk.CTkFont(family=DEFAULT_FONT_LARGE[0], size=15, weight="bold"),
-            text_color=("gray20", "gray90")
+            text_color=self._color("text_primary", ("gray20", "gray90"))
         )
         title_label.pack(pady=(12, 8))
         
@@ -63,9 +75,9 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
         section_frame = ctk.CTkFrame(
             parent, 
             corner_radius=12,
-            fg_color=("gray96", "gray19"),  # 更浅的背景，增加层次感
+            fg_color=self._color("section_bg", ("gray96", "gray19")),  # 更浅的背景，增加层次感
             border_width=1,
-            border_color=("gray85", "gray28")  # 更柔和的边框
+            border_color=self._color("border", ("gray85", "gray28"))  # 更柔和的边框
         )
         section_frame.pack(fill="x", pady=4, padx=20)
         
@@ -75,7 +87,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 section_frame,
                 text=section_name,
                 font=ctk.CTkFont(family=DEFAULT_FONT_BOLD[0], size=12, weight="bold"),
-                text_color=("gray25", "gray85")
+                text_color=self._color("text_primary", ("gray25", "gray85"))
             )
             section_title.pack(pady=(8, 4))
         
@@ -131,7 +143,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
             parent, 
             text=label_text,
             font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-            text_color=("gray30", "gray80")
+            text_color=self._color("text_secondary", ("gray30", "gray80"))
         )
         
         # 创建输入控件
@@ -144,8 +156,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                 corner_radius=8,
                 border_width=1,
-                fg_color=("gray98", "gray16"),
-                border_color=("gray75", "gray32")
+                fg_color=self._color("input_bg", ("gray98", "gray16")),
+                border_color=self._color("input_border", ("gray75", "gray32"))
             )
         elif field_type == "number":
             widget = ctk.CTkEntry(
@@ -156,8 +168,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                 corner_radius=8,
                 border_width=1,
-                fg_color=("gray98", "gray16"),
-                border_color=("gray75", "gray32"),
+                fg_color=self._color("input_bg", ("gray98", "gray16")),
+                border_color=self._color("input_border", ("gray75", "gray32")),
                 validate="key",
                 validatecommand=(parent.register(self._validate_number), '%P')
             )
@@ -173,10 +185,13 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 dropdown_font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                 corner_radius=8,
                 border_width=1,
-                fg_color=("gray98", "gray16"),
-                border_color=("gray75", "gray32"),
-                button_color=("gray70", "gray30"),
-                button_hover_color=("gray65", "gray35")
+                fg_color=self._color("input_bg", ("gray98", "gray16")),
+                border_color=self._color("input_border", ("gray75", "gray32")),
+                button_color=self._color("accent_primary", ("gray70", "gray30")),
+                button_hover_color=self._color("accent_hover", ("gray65", "gray35")),
+                dropdown_fg_color=self._color("dropdown_bg", ("gray90", "gray20")),
+                dropdown_hover_color=self._color("dropdown_hover", ("gray80", "gray28")),
+                dropdown_text_color=self._color("dropdown_text", ("gray10", "gray90"))
             )
             self.vars[key] = var
         elif field_type == "radio":
@@ -193,7 +208,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                     value=val,
                     command=(lambda v=val, k=key: self._toggle_radio(k, v)),
                     font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-                    text_color=("gray30", "gray80")
+                    text_color=self._color("text_secondary", ("gray30", "gray80"))
                 )
                 rb.grid(row=0, column=i, padx=10, pady=5)
         elif field_type == "checkboxes":
@@ -207,7 +222,7 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                     text=val,
                     variable=var,
                     font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
-                    text_color=("gray30", "gray80")
+                    text_color=self._color("text_secondary", ("gray30", "gray80"))
                 )
                 row = i // 2
                 col = i % 2
@@ -237,8 +252,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                 corner_radius=8,
                 border_width=1,
-                fg_color=("gray98", "gray16"),
-                border_color=("gray75", "gray32")
+                fg_color=self._color("input_bg", ("gray98", "gray16")),
+                border_color=self._color("input_border", ("gray75", "gray32"))
             )
             entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
 
@@ -269,9 +284,10 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 height=28,
                 corner_radius=8,
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=10),
-                fg_color=("gray70", "gray30"),
-                hover_color=("gray65", "gray35"),
-                border_width=0
+                fg_color=self._color("accent_primary", ("gray70", "gray30")),
+                hover_color=self._color("accent_hover", ("gray65", "gray35")),
+                border_width=0,
+                text_color=("white", "white")
             )
             btn_browse.pack(side="left", padx=3)
             btn_open = ctk.CTkButton(
@@ -282,9 +298,10 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 height=28,
                 corner_radius=8,
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=10),
-                fg_color=("gray70", "gray30"),
-                hover_color=("gray65", "gray35"),
-                border_width=0
+                fg_color=self._color("accent_primary", ("gray70", "gray30")),
+                hover_color=self._color("accent_hover", ("gray65", "gray35")),
+                border_width=0,
+                text_color=("white", "white")
             )
             btn_open.pack(side="left", padx=3)
             btn_clear = ctk.CTkButton(
@@ -295,9 +312,10 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 height=28,
                 corner_radius=8,
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=10),
-                fg_color=("gray70", "gray30"),
-                hover_color=("gray65", "gray35"),
-                border_width=0
+                fg_color=self._color("accent_primary", ("gray70", "gray30")),
+                hover_color=self._color("accent_hover", ("gray65", "gray35")),
+                border_width=0,
+                text_color=("white", "white")
             )
             btn_clear.pack(side="left", padx=3)
 
@@ -310,8 +328,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                 corner_radius=8,
                 border_width=1,
-                fg_color=("gray98", "gray16"),
-                border_color=("gray75", "gray32")
+                fg_color=self._color("input_bg", ("gray98", "gray16")),
+                border_color=self._color("input_border", ("gray75", "gray32"))
             )
         else:
             widget = ctk.CTkEntry(
@@ -321,8 +339,8 @@ class JSONPageRenderer(ctk.CTkScrollableFrame):
                 font=ctk.CTkFont(family=DEFAULT_FONT[0], size=DEFAULT_FONT[1]),
                 corner_radius=8,
                 border_width=1,
-                fg_color=("gray98", "gray16"),
-                border_color=("gray75", "gray32")
+                fg_color=self._color("input_bg", ("gray98", "gray16")),
+                border_color=self._color("input_border", ("gray75", "gray32"))
             )
         
         # 使用grid布局让字段更紧凑
