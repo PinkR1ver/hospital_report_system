@@ -6,24 +6,24 @@
 
 ```mermaid
 graph TD
-    subgraph "用户界面层 (GUI)"
-        Main[main.py (入口)] -->|读取| Config[config.json (全局配置)]
-        Main -->|加载| Renderer[json_page_renderer.py (通用渲染器)]
-        Renderer -->|渲染| PageJSON[pages/*.json (界面定义)]
+    subgraph "用户界面层 - GUI"
+        Main["main.py<br/>(入口)"] -->|读取| Config["config.json<br/>(全局配置)"]
+        Main -->|加载| Renderer["json_page_renderer.py<br/>(通用渲染器)"]
+        Renderer -->|渲染| PageJSON["pages/*.json<br/>(界面定义)"]
     end
 
-    subgraph "数据处理层 (Logic)"
-        Renderer -->|收集数据| DataManager[data.py (数据管家)]
-        DataManager -->|保存/读取| ReportFile[vest_database/report/*.json]
-        DataManager -->|自动汇总规则| Mapping[exam_findings_mapping.json]
+    subgraph "数据处理层 - Logic"
+        Renderer -->|收集数据| DataManager["data.py<br/>(数据管家)"]
+        DataManager -->|保存/读取| ReportFile["vest_database/report/*.json"]
+        DataManager -->|自动汇总规则| Mapping["exam_findings_mapping.json"]
     end
 
-    subgraph "报告生成层 (Export)"
-        DataManager -->|传递数据| DBPage[database_management.py (管理页)]
-        DBPage -->|调用| Generator[excel_generator.py (Excel 引擎)]
-        Generator -->|读取| TemplateConfig[vestibular_full_template.json]
-        Generator -->|填充| TemplateXLSX[vestibular_full_template.xlsx]
-        Generator -->|输出| Output[最终报告 .xlsx]
+    subgraph "报告生成层 - Export"
+        DataManager -->|传递数据| DBPage["database_management.py<br/>(管理页)"]
+        DBPage -->|调用| Generator["excel_generator.py<br/>(Excel 引擎)"]
+        Generator -->|读取| TemplateConfig["vestibular_full_template.json"]
+        Generator -->|填充| TemplateXLSX["vestibular_full_template.xlsx"]
+        Generator -->|输出| Output["最终报告 .xlsx"]
     end
 ```
 
@@ -103,9 +103,50 @@ hospital_report_system/
 2. 在对应模块的 `result_fields` 列表里加上 `"新字段名"`。
 
 ### 4.4 配置 N/A 自动补齐
-想让某组字段在“部分有值、部分为空”时自动填 N/A？
+想让某组字段在"部分有值、部分为空"时自动填 N/A？
 1. 打开模板 JSON。
 2. 在 `na_fill_groups` 里添加一组 `data_paths`。
+
+### 4.5 主题配置
+系统支持多种预设主题和自定义配色方案。
+
+#### 切换预设主题
+打开根目录 `config.json`，找到 `system.themes.current` 字段：
+```json
+"themes": {
+  "current": "blue_light"   // 可选: blue_light, blue_pro, light_clean
+}
+```
+
+#### 预设主题说明
+- **blue_light**: 蓝色亮色风格（白底黑字，适合日间使用）
+- **blue_pro**: 专业深蓝风格（深色模式，适合夜间或长时间使用）
+- **light_clean**: 清爽亮色风格（极简白色风格）
+
+#### 自定义主题颜色
+在 `config.json` 的 `system.themes.presets` 中可以自定义颜色：
+```json
+"presets": {
+  "my_theme": {
+    "description": "我的自定义主题",
+    "appearance_mode": "light",    // light, dark, 或 system
+    "color_theme": "blue",         // CustomTkinter 内置主题: blue, green, dark-blue
+    "colors": {
+      "window_bg": ["#F5F6F8", "#F5F6F8"],        // [浅色模式, 深色模式]
+      "text_primary": ["#1A1A1A", "#E0E0E0"],
+      "accent_primary": ["#3B8ED0", "#3B8ED0"]
+      // ... 更多颜色配置
+    }
+  }
+}
+```
+
+可自定义的颜色键包括：
+- `window_bg`, `header_bg`, `sidebar_bg`, `content_bg`, `section_bg` - 背景色
+- `text_primary`, `text_secondary` - 文字颜色
+- `accent_primary`, `accent_hover` - 强调色和悬停色
+- `border`, `input_bg`, `input_border` - 边框和输入框
+- `success`, `warning`, `error` - 状态提示色
 
 ---
 
